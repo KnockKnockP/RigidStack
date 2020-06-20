@@ -1,12 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class objectScript : MonoBehaviour {
     private objectClass[] _objectClass = new objectClass[5];
-    //[SerializeField] private Sprite[] objectSprites = null;
-    [SerializeField] private GameObject[] objects = null;
     [SerializeField] private Image[] images = null;
+    private Sprite[] sprites  = new Sprite[5];
+    [SerializeField] private GameObject[] objects = null;
 
     private void Awake() {
         for (short i = 0; i < images.Length; i++) {
@@ -27,13 +28,30 @@ public class objectScript : MonoBehaviour {
     }
 
     private void shuffleItems() {
+        bool isDuplicate;
         for (short i = 0; i < images.Length; i++) {
-            //images[i].sprite = objectSprites[UnityEngine.Random.Range(0, objectSprites.Length)];
             short random = (short)(UnityEngine.Random.Range(0, objects.Length));
-            images[i].sprite = objects[random].GetComponent<SpriteRenderer>().sprite;
-            _objectClass[i].objectCount = random;
-            images[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
+            Sprite randomSprite = objects[random].GetComponent<SpriteRenderer>().sprite;
+            isDuplicate = false;
+            for (short j = 0; j < sprites.Length; j++) {
+                if (sprites[j] == randomSprite) {
+                    isDuplicate = true;
+                    i--;
+                    break;
+                }
+            }
+            if (isDuplicate == false) {
+                images[i].sprite = randomSprite;
+                sprites[i] = images[i].sprite;
+                _objectClass[i].objectCount = (short)(UnityEngine.Random.Range(1, 5));
+                images[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
+            }
         }
+        return;
+    }
+
+    public void reset() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         return;
     }
 }
