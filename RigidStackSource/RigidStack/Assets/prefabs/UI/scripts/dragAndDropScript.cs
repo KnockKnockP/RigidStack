@@ -5,7 +5,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     private objectClass objectImageGameObjectObjectClass;
     public static dragAndDropScript _dragAndDropScript;
     private Camera mainCamera;
-    private GameObject placeHolderGameObject, placedGameObject;
+    private GameObject placedGameObject;
     [SerializeField] private GameObject objectImageGameObject = null, towerObjects = null, dockPanel = null, objectEditingPanel = null;
     [HideInInspector] public GameObject objectToPlace;
 
@@ -25,10 +25,9 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
             if (StaticVariables.isDragging == false) {
                 StaticVariables.isDragging = true;
                 _dragAndDropScript = this;
-                placeHolderGameObject = objectToPlace;
-                placeHolderGameObject.GetComponent<PolygonCollider2D>().enabled = false;
-                placeHolderGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-                placedGameObject = Instantiate(placeHolderGameObject, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, towerObjects.transform);
+                placedGameObject = Instantiate(objectToPlace, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, towerObjects.transform);
+                placedGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
             }
         }
         return;
@@ -46,6 +45,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
         if (objectImageGameObjectObjectClass.objectCount != 0) {
             if (StaticVariables.isDragging == true) {
+                placedGameObject.GetComponent<postDragAndDropScript>().placedGameObject = placedGameObject;
                 enableObjectEditingPanel();
                 StaticVariables.isDragging = false;
             }
@@ -55,9 +55,11 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     public void placeObject() {
         Rigidbody2D rigidbody2D = placedGameObject.GetComponent<Rigidbody2D>();
-        disableObjectEditingPanel();
+        placedGameObject.transform.position = new Vector3(placedGameObject.transform.position.x, placedGameObject.transform.position.y, 0);
         objectImageGameObjectObjectClass.objectCount--;
-        placedGameObject.GetComponent<PolygonCollider2D>().enabled = true;
+        disableObjectEditingPanel();
+        placedGameObject.GetComponent<postDragAndDropScript>().suicide();
+        placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
         return;
     }
@@ -69,12 +71,12 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     }
 
     public void rotateLeft() {
-        placedGameObject.transform.Rotate(0f, 0f, 5f);
+        placedGameObject.transform.Rotate(0f, 0f, StaticVariables.angle);
         return;
     }
 
     public void rotateRight() {
-        placedGameObject.transform.Rotate(0f, 0f, -5f);
+        placedGameObject.transform.Rotate(0f, 0f, -StaticVariables.angle);
         return;
     }
 

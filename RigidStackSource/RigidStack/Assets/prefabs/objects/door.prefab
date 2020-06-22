@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7450563060719275787}
   - component: {fileID: 870555258722015462}
-  - component: {fileID: 5701360446511056157}
-  - component: {fileID: 7526803428523823329}
+  - component: {fileID: -1253391948209443662}
+  - component: {fileID: 8503802617942512685}
+  - component: {fileID: 9017456125093559144}
   m_Layer: 0
   m_Name: door
   m_TagString: Untagged
@@ -83,14 +84,14 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &5701360446511056157
+--- !u!60 &-1253391948209443662
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 972910995934178373}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -112,7 +113,7 @@ PolygonCollider2D:
       - {x: -2.5, y: -5}
       - {x: 2.5, y: -5}
       - {x: 2.5, y: 5}
---- !u!50 &7526803428523823329
+--- !u!50 &8503802617942512685
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -133,3 +134,16 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 7
+--- !u!114 &9017456125093559144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972910995934178373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3252ed5ef74f0e747ab19a44df8b3cf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placedGameObject: {fileID: 0}
