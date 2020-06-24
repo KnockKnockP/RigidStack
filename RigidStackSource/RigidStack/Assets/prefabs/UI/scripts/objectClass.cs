@@ -10,8 +10,10 @@ public class objectClass : MonoBehaviour {
         set {
             _objectCount = value;
             counterText.text = _objectCount.ToString();
+            if (_objectCount == 0) {
+                Debug.Log("You can not use this object.");
+            }
         }
     }
     [SerializeField] private Text counterText = null;
-    //[SerializeField] private Image _objectSprite = null;
 }

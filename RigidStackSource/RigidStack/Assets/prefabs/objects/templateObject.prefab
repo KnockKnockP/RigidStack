@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 4066143604225231544}
   - component: {fileID: 6815755850084248506}
   - component: {fileID: 3143912039278302248}
-  - component: {fileID: -2246698965318399092}
+  - component: {fileID: 2199066637753886674}
   m_Layer: 0
-  m_Name: tempObject1
+  m_Name: templateObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: aa7338202c0f833488cd85d86beb141e, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!60 &6815755850084248506
@@ -134,7 +134,7 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!114 &-2246698965318399092
+--- !u!114 &2199066637753886674
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

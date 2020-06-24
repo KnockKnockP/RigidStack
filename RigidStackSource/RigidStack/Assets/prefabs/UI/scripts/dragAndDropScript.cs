@@ -1,46 +1,94 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public static class StaticVariables {
-    public static bool isDragging;
-}
-
 public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
+    private objectClass objectImageGameObjectObjectClass;
+    public static dragAndDropScript _dragAndDropScript;
     private Camera mainCamera;
-    private GameObject placeHolderGameObject, placedGameObject;
+    private GameObject placedGameObject;
+    [SerializeField] private GameObject objectImageGameObject = null, towerObjects = null, dockPanel = null, objectEditingPanel = null;
     [HideInInspector] public GameObject objectToPlace;
 
     private void Awake() {
+        objectImageGameObjectObjectClass = objectImageGameObject.GetComponent<objectClass>();
         mainCamera = Camera.main;
         return;
     }
 
+    private void Start() {
+        disableObjectEditingPanel();
+        return;
+    }
+
     public virtual void OnPointerDown(PointerEventData pointerEventData) {
-        if (StaticVariables.isDragging == false) {
-            StaticVariables.isDragging = true;
-            placeHolderGameObject = objectToPlace;
-            placeHolderGameObject.GetComponent<PolygonCollider2D>().enabled = false;
-            placeHolderGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-            placedGameObject = Instantiate(placeHolderGameObject, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity);
+        if (objectImageGameObjectObjectClass.objectCount != 0) {
+            if (StaticVariables.isDragging == false) {
+                StaticVariables.isDragging = true;
+                _dragAndDropScript = this;
+                placedGameObject = Instantiate(objectToPlace, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, towerObjects.transform);
+                placedGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
+            }
         }
         return;
     }
 
     public virtual void OnDrag(PointerEventData pointerEventData) {
-        if (StaticVariables.isDragging == true) {
-            placedGameObject.transform.position = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        if (objectImageGameObjectObjectClass.objectCount != 0) {
+            if (StaticVariables.isDragging == true) {
+                placedGameObject.transform.position = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+            }
         }
         return;
     }
 
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
-        if (StaticVariables.isDragging == true) {
-            Rigidbody2D rigidbody2D = placedGameObject.GetComponent<Rigidbody2D>();
-            placedGameObject.GetComponent<PolygonCollider2D>().enabled = true;
-            rigidbody2D.constraints = RigidbodyConstraints2D.None;
-            StaticVariables.isDragging = false;
+        if (objectImageGameObjectObjectClass.objectCount != 0) {
+            if (StaticVariables.isDragging == true) {
+                placedGameObject.GetComponent<postDragAndDropScript>().placedGameObject = placedGameObject;
+                enableObjectEditingPanel();
+                StaticVariables.isDragging = false;
+            }
         }
+        return;
+    }
+
+    public void placeObject() {
+        Rigidbody2D rigidbody2D = placedGameObject.GetComponent<Rigidbody2D>();
+        placedGameObject.transform.position = new Vector3(placedGameObject.transform.position.x, placedGameObject.transform.position.y, 0);
+        objectImageGameObjectObjectClass.objectCount--;
+        disableObjectEditingPanel();
+        placedGameObject.GetComponent<postDragAndDropScript>().suicide();
+        placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
+        rigidbody2D.constraints = RigidbodyConstraints2D.None;
+        return;
+    }
+
+    public void cancelPlacingObject() {
+        Destroy(placedGameObject);
+        disableObjectEditingPanel();
+        return;
+    }
+
+    public void rotateLeft() {
+        placedGameObject.transform.Rotate(0f, 0f, StaticVariables.angle);
+        return;
+    }
+
+    public void rotateRight() {
+        placedGameObject.transform.Rotate(0f, 0f, -StaticVariables.angle);
+        return;
+    }
+
+    private void enableObjectEditingPanel() {
+        dockPanel.SetActive(false);
+        objectEditingPanel.SetActive(true);
+        return;
+    }
+
+    private void disableObjectEditingPanel() {
+        dockPanel.SetActive(true);
+        objectEditingPanel.SetActive(false);
         return;
     }
 }
