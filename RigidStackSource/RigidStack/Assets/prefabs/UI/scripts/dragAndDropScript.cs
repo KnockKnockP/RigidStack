@@ -83,6 +83,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     private void enableObjectEditingPanel() {
         dockPanel.SetActive(false);
         objectEditingPanel.SetActive(true);
+        FindObjectOfType<objectEditingScript>().updateAngleValue();
         return;
     }
 

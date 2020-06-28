@@ -4230,3 +4230,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   angleText: {fileID: 1439618605}
+  slider: {fileID: 1652410130}

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class objectEditingScript : MonoBehaviour {
     [SerializeField] private Text angleText = null;
+    [SerializeField] private Slider slider = null;
 
     public void confirmPlacement() {
         dragAndDropScript._dragAndDropScript.placeObject();
@@ -24,8 +25,19 @@ public class objectEditingScript : MonoBehaviour {
         return;
     }
 
-    public void updateAngleValue(Slider slider) {
-        StaticVariables.angle = (byte)(slider.value);
+    public void updateAngleValue() {
+        slider.value = StaticVariables.angle;
+        makeText();
+        return;
+    }
+
+    public void updateAngleValue(Slider _slider) {
+        StaticVariables.angle = (byte)(_slider.value);
+        makeText();
+        return;
+    }
+
+    private void makeText() {
         angleText.text = "";
         if (StaticVariables.angle < 10) {
             angleText.text = "00";
