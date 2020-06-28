@@ -7,4 +7,14 @@ public class floorScript : MonoBehaviour {
         }
         return;
     }
+
+    private void OnTriggerEnter2D() {
+        StaticVariables.isCollisionFishy = true;
+        return;
+    }
+
+    private void OnTriggerExit2D() {
+        StaticVariables.isCollisionFishy = false;
+        return;
+    }
 }
