@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class objectScript : MonoBehaviour {
     private objectClass[] _objectClass = new objectClass[5];
     [SerializeField] private Image[] images = null;
-    private Sprite[] sprites  = new Sprite[5];
+    private Sprite[] sprites = new Sprite[5];
     [SerializeField] private GameObject[] objects = null;
 
     private void Awake() {
@@ -47,6 +47,17 @@ public class objectScript : MonoBehaviour {
                 images[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
             }
         }
+        return;
+    }
+
+    public void giveMoreItems() {
+        foreach (Image image in images) {
+            image.sprite = null;
+        }
+        for (short i = 0; i < sprites.Length; i++) {
+            sprites[i] = null;
+        }
+        shuffleItems();
         return;
     }
 
