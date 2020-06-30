@@ -7,9 +7,26 @@ public class preMainMenuScript : MonoBehaviour {
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
 
     private void Awake() {
-        checkForUpdate();
-        checkNoticeText();
+        noticeText.text = "Checking internet.";
+        if (checkInternetConnection() == true) {
+            noticeText.text = "Internet connected.";
+            checkForUpdate();
+            checkNoticeText();
+        } else {
+            noticeText.text = "Internet not connected.";
+        }
         return;
+    }
+
+    //https://stackoverflow.com/a/2031831.
+    public static bool checkInternetConnection() {
+        try {
+            WebClient webClient = new WebClient();
+            webClient.OpenRead("http://google.com/generate_204");
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     private void checkForUpdate() {
@@ -34,7 +51,6 @@ public class preMainMenuScript : MonoBehaviour {
         Stream stream = webClient.OpenRead("https://knockknockp.github.io/RigidStack/notice.txt");
         StreamReader streamReader = new StreamReader(stream);
         noticeText.text = streamReader.ReadToEnd();
-        noticeText.gameObject.SetActive(true);
         stream.Close();
         streamReader.Close();
         return;
