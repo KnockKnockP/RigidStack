@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
     private objectClass objectImageGameObjectObjectClass;
+    private heightScript _heightScript;
     public static dragAndDropScript _dragAndDropScript;
     private Camera mainCamera;
     private GameObject placedGameObject;
@@ -11,6 +12,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     private void Awake() {
         objectImageGameObjectObjectClass = objectImageGameObject.GetComponent<objectClass>();
+        _heightScript = FindObjectOfType<heightScript>();
         mainCamera = Camera.main;
         return;
     }
@@ -59,6 +61,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
         objectImageGameObjectObjectClass.objectCount--;
         disableObjectEditingPanel();
         placedGameObject.GetComponent<postDragAndDropScript>().suicide();
+        _heightScript.placedObjectsTransforms.Add(placedGameObject.transform);
         placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
         return;

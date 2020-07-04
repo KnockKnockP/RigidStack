@@ -38,7 +38,7 @@ public class cameraScript : MonoBehaviour {
     private void moveCameraDown() {
         Vector3 newPosition = mainCamera.transform.position;
         newPosition.y = (newPosition.y - StaticClass.cameraMovementSpeed);
-        if (newPosition.y >= -3) {
+        if (newPosition.y >= -2) {
             mainCamera.transform.position = newPosition;
         }
         return;
