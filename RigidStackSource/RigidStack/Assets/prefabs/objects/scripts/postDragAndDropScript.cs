@@ -13,7 +13,7 @@ public class postDragAndDropScript : MonoBehaviour {
 
     private void OnMouseDrag() {
         placedGameObject.transform.position = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-        if (StaticVariables.isCollisionFishy == true) {
+        if (StaticClass.isCollisionFishy == true) {
             _objectEditingScript.confirmButton.interactable = false;
         }
         return;

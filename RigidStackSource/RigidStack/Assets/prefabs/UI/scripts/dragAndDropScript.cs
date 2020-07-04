@@ -22,8 +22,8 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     public virtual void OnPointerDown(PointerEventData pointerEventData) {
         if (objectImageGameObjectObjectClass.objectCount != 0) {
-            if (StaticVariables.isDragging == false) {
-                StaticVariables.isDragging = true;
+            if (StaticClass.isDragging == false) {
+                StaticClass.isDragging = true;
                 _dragAndDropScript = this;
                 placedGameObject = Instantiate(objectToPlace, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, towerObjects.transform);
                 placedGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
@@ -35,7 +35,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     public virtual void OnDrag(PointerEventData pointerEventData) {
         if (objectImageGameObjectObjectClass.objectCount != 0) {
-            if (StaticVariables.isDragging == true) {
+            if (StaticClass.isDragging == true) {
                 placedGameObject.transform.position = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
             }
         }
@@ -44,10 +44,10 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
         if (objectImageGameObjectObjectClass.objectCount != 0) {
-            if (StaticVariables.isDragging == true) {
+            if (StaticClass.isDragging == true) {
                 placedGameObject.GetComponent<postDragAndDropScript>().placedGameObject = placedGameObject;
                 enableObjectEditingPanel();
-                StaticVariables.isDragging = false;
+                StaticClass.isDragging = false;
             }
         }
         return;
@@ -71,12 +71,12 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     }
 
     public void rotateLeft() {
-        placedGameObject.transform.Rotate(0f, 0f, StaticVariables.angle);
+        placedGameObject.transform.Rotate(0f, 0f, StaticClass.angle);
         return;
     }
 
     public void rotateRight() {
-        placedGameObject.transform.Rotate(0f, 0f, -StaticVariables.angle);
+        placedGameObject.transform.Rotate(0f, 0f, -StaticClass.angle);
         return;
     }
 

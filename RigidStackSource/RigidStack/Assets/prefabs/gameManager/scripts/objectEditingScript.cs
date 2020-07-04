@@ -27,25 +27,25 @@ public class objectEditingScript : MonoBehaviour {
     }
 
     public void updateAngleValue() {
-        slider.value = StaticVariables.angle;
+        slider.value = StaticClass.angle;
         makeText();
         return;
     }
 
     public void updateAngleValue(Slider _slider) {
-        StaticVariables.angle = (byte)(_slider.value);
+        StaticClass.angle = (byte)(_slider.value);
         makeText();
         return;
     }
 
     private void makeText() {
         angleText.text = "";
-        if (StaticVariables.angle < 10) {
+        if (StaticClass.angle < 10) {
             angleText.text = "00";
-        } else if (StaticVariables.angle < 100) {
+        } else if (StaticClass.angle < 100) {
             angleText.text = "0";
         }
-        angleText.text = (angleText.text + StaticVariables.angle.ToString());
+        angleText.text = (angleText.text + StaticClass.angle.ToString());
         return;
     }
 }

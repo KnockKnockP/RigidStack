@@ -1,30 +1,34 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class preMainMenuScript : MonoBehaviour {
+    private string exceptionMessage;
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
 
     private void Awake() {
-        noticeText.text = "Checking internet.";
+        noticeText.text = "Checking internet connection.";
         if (checkInternetConnection() == true) {
-            noticeText.text = "Internet connected.";
+            noticeText.text = "Connected to the internet";
             checkForUpdate();
             checkNoticeText();
         } else {
-            noticeText.text = "Internet not connected.";
+            noticeText.color = Color.red;
+            noticeText.text = "Not connected to the internet. (" + exceptionMessage + ".).";
         }
         return;
     }
 
     //https://stackoverflow.com/a/2031831.
-    public static bool checkInternetConnection() {
+    public bool checkInternetConnection() {
         try {
             WebClient webClient = new WebClient();
             webClient.OpenRead("http://google.com/generate_204");
             return true;
-        } catch {
+        } catch (Exception exception) {
+            exceptionMessage = exception.Message;
             return false;
         }
     }

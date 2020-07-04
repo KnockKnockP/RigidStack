@@ -30,14 +30,14 @@ public class cameraScript : MonoBehaviour {
 
     private void moveCameraUp() {
         Vector3 newPosition = mainCamera.transform.position;
-        newPosition.y = (newPosition.y + StaticVariables.cameraMovementSpeed);
+        newPosition.y = (newPosition.y + StaticClass.cameraMovementSpeed);
         mainCamera.transform.position = newPosition;
         return;
     }
 
     private void moveCameraDown() {
         Vector3 newPosition = mainCamera.transform.position;
-        newPosition.y = (newPosition.y - StaticVariables.cameraMovementSpeed);
+        newPosition.y = (newPosition.y - StaticClass.cameraMovementSpeed);
         if (newPosition.y >= -3) {
             mainCamera.transform.position = newPosition;
         }
