@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class heightScript : MonoBehaviour {
     [SerializeField] private Text heightText;
-    public List<Transform> placedObjectsTransforms = new List<Transform>();
+    [HideInInspector] public List<Transform> placedObjectsTransforms = new List<Transform>();
 
     private void Update() {
         short maxHeight = -9999;
