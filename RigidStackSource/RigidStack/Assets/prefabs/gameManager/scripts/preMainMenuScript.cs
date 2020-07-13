@@ -9,6 +9,7 @@ public class preMainMenuScript : MonoBehaviour {
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
 
     private void Awake() {
+        limitFPS();
         noticeText.text = "Checking internet connection.";
         if (checkInternetConnection() == true) {
             noticeText.text = "Connected to the internet";
@@ -18,6 +19,11 @@ public class preMainMenuScript : MonoBehaviour {
             noticeText.color = Color.red;
             noticeText.text = "Not connected to the internet. (" + exceptionMessage + ".).";
         }
+        return;
+    }
+
+    private void limitFPS() {
+        Application.targetFrameRate = Screen.currentResolution.refreshRate;
         return;
     }
 
