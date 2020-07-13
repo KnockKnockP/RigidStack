@@ -61,7 +61,9 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
         objectImageGameObjectObjectClass.objectCount--;
         disableObjectEditingPanel();
         placedGameObject.GetComponent<postDragAndDropScript>().suicide();
+        _heightScript.placedObjects.Add(placedGameObject);
         _heightScript.placedObjectsTransforms.Add(placedGameObject.transform);
+        _heightScript.placedObjectsRigidbody2D.Add(placedGameObject.GetComponent<Rigidbody2D>());
         placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
         return;

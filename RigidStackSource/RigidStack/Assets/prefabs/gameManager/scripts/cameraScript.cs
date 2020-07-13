@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class cameraScript : MonoBehaviour {
     private bool shouldMoveCameraUp, shouldMoveCameraDown;
-    [SerializeField] private Transform platformTransform, girdTransform;
-    [SerializeField] private Text templateText;
+    [SerializeField] private Transform platformTransform = null, girdTransform = null;
     private Camera mainCamera;
 
     private void Awake() {
