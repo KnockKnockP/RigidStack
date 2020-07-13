@@ -6,10 +6,8 @@ public class objectiveScript : MonoBehaviour {
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
     private List<Canvas> textCanvases = new List<Canvas>();
-    //private Camera mainCamera;
 
     private void Awake() {
-        //mainCamera = Camera.main;
         generateObjective(true);
         return;
     }
@@ -20,7 +18,6 @@ public class objectiveScript : MonoBehaviour {
             freezeAll();
         }
         for (long i = StaticClass.objectiveScore; i <= (StaticClass.objectiveScore + 10); i = (i + 5)) {
-            //Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2((mainCamera.transform.position.x - mainCamera.transform.localScale.x), i), Quaternion.identity, heightTextsParent);
             Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(0, i), Quaternion.identity, heightTextsParent);
             newCanvas.GetComponentInChildren<Text>().text = newCanvas.transform.position.y.ToString();
             newCanvas.gameObject.SetActive(true);
