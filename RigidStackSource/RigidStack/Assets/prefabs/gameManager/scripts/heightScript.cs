@@ -20,11 +20,17 @@ public class heightScript : MonoBehaviour {
     }
     [HideInInspector] public int _maxHeight;
     [HideInInspector] public float tolerance = -0.01f;
+    private objectiveScript _objectiveScript;
     [SerializeField] private Text heightText = null;
     [HideInInspector] public List<Transform> placedObjectsTransforms = new List<Transform>();
     [HideInInspector] public List<Rigidbody2D> placedObjectsRigidbody2D = new List<Rigidbody2D>();
     private GameObject previousFrameGameObject;
     [HideInInspector] public List<GameObject> placedObjects = new List<GameObject>();
+
+    private void Awake() {
+        _objectiveScript = FindObjectOfType<objectiveScript>();
+        return;
+    }
 
     private void FixedUpdate() {
         int maxHeight = -9999;
@@ -44,7 +50,8 @@ public class heightScript : MonoBehaviour {
                         } else if (frameCount == 2) {
                             currentFrameGameObject = placedObjects[i];
                             if (previousFrameGameObject == currentFrameGameObject) {
-                                Debug.Log("Yay!");
+                                Debug.Log("Generating new objective.");
+                                _objectiveScript.generateObjective(false);
                             }
                             frameCount = 0;
                         }
@@ -55,21 +62,3 @@ public class heightScript : MonoBehaviour {
         return;
     }
 }
-
-/*
-if (frameCount == 1) {
-    previousFrameGameObject = placedObjects[i];
-    frameCount++;
-    continue;
-} else if (frameCount == 2) {
-    currentFrameGameObject = placedObjects[i];
-    Debug.Log(currentFrameGameObject.GetComponent<Rigidbody2D>().velocity);
-    if (previousFrameGameObject == currentFrameGameObject) {
-        frameCount = 0;
-    } else {
-        frameCount = 0;
-    }
-} else {
-    frameCount++;
-}
-*/

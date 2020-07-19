@@ -12,12 +12,12 @@ public class objectiveScript : MonoBehaviour {
         return;
     }
 
-    private void generateObjective(bool isFromAwake) {
+    public void generateObjective(bool isFromAwake) {
         if (isFromAwake == false) {
             reset();
             freezeAll();
         }
-        for (long i = StaticClass.objectiveScore; i <= (StaticClass.objectiveScore + 10); i = (i + 5)) {
+        for (int i = StaticClass.objectiveScore; i <= (StaticClass.objectiveScore + 10); i = (i + 5)) {
             Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(0, i), Quaternion.identity, heightTextsParent);
             newCanvas.GetComponentInChildren<Text>().text = newCanvas.transform.position.y.ToString();
             newCanvas.gameObject.SetActive(true);
@@ -39,7 +39,7 @@ public class objectiveScript : MonoBehaviour {
 
     private void reset() {
         foreach (Canvas _textCanvas in textCanvases) {
-            Destroy(_textCanvas);
+            Destroy(_textCanvas.gameObject);
         }
         textCanvases.Clear();
         return;
