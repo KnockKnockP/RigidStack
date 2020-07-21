@@ -3,9 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class objectiveScript : MonoBehaviour {
+    private readonly byte newObjectiveScoreAddition = 10;
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
-    private List<Canvas> textCanvases = new List<Canvas>();
+    private readonly List<Canvas> textCanvases = new List<Canvas>();
 
     private void Awake() {
         generateObjective(true);
@@ -23,7 +24,7 @@ public class objectiveScript : MonoBehaviour {
             newCanvas.gameObject.SetActive(true);
             textCanvases.Add(newCanvas);
         }
-        StaticClass.objectiveScore = (StaticClass.objectiveScore + 10);
+        StaticClass.objectiveScore = (StaticClass.objectiveScore + newObjectiveScoreAddition);
         return;
     }
 
