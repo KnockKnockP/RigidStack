@@ -3,11 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class heightScript : MonoBehaviour {
-    /*
-        Rigidbody2D's velocity is Vector2.zero at the first frame of the object's existence.
-        We will be safe and make sure it stays at Vector2.zero for atleast 3 frames.
-        We are going to use frameCount to track the frames.
-    */
     private byte _frameCount;
     private byte frameCount {
         get {
