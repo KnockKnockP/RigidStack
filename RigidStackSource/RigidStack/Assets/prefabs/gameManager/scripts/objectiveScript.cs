@@ -49,6 +49,7 @@ public class objectiveScript : MonoBehaviour {
         foreach (Transform placedObjectsTransform in _heightScript.placedObjectsTransforms) {
             GameObject placedObject = placedObjectsTransform.gameObject;
             placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+            placedObject.GetComponent<SpriteRenderer>().color = new Color32(50, 50, 50, 255);
         }
         StaticClass.objectiveScore = _heightScript._maxHeight;
         return;
