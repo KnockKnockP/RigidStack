@@ -35,7 +35,7 @@ public class heightScript : MonoBehaviour {
                 int yPosition = (int)(placedObjectsTransforms[i].position.y);
                 if (yPosition > maxHeight) {
                     maxHeight = yPosition;
-                    heightText.text = maxHeight.ToString();
+                    heightText.text = ("Score : " + maxHeight.ToString());
                     _maxHeight = maxHeight;
                     if (_maxHeight >= StaticClass.objectiveScore) {
                         frameCount++;
