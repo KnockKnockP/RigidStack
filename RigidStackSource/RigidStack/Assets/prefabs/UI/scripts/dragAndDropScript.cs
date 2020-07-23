@@ -2,15 +2,17 @@
 using UnityEngine.EventSystems;
 
 public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
+    private sharedMonobehaviour _sharedMonobehaviour;
     private objectClass objectImageGameObjectObjectClass;
     private heightScript _heightScript;
     public static dragAndDropScript _dragAndDropScript;
     private Camera mainCamera;
     private GameObject placedGameObject;
-    [SerializeField] private GameObject objectImageGameObject = null, towerObjects = null, dockPanel = null, objectEditingPanel = null;
     [HideInInspector] public GameObject objectToPlace;
+    [SerializeField] private GameObject objectImageGameObject = null;
 
     private void Awake() {
+        _sharedMonobehaviour = FindObjectOfType<sharedMonobehaviour>();
         objectImageGameObjectObjectClass = objectImageGameObject.GetComponent<objectClass>();
         _heightScript = FindObjectOfType<heightScript>();
         mainCamera = Camera.main;
@@ -27,7 +29,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
             if (StaticClass.isDragging == false) {
                 StaticClass.isDragging = true;
                 _dragAndDropScript = this;
-                placedGameObject = Instantiate(objectToPlace, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, towerObjects.transform);
+                placedGameObject = Instantiate(objectToPlace, mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, _sharedMonobehaviour.towerObjects.transform);
                 placedGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
                 placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
             }
@@ -86,15 +88,15 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     }
 
     private void enableObjectEditingPanel() {
-        dockPanel.SetActive(false);
-        objectEditingPanel.SetActive(true);
+        _sharedMonobehaviour.dockPanel.SetActive(false);
+        _sharedMonobehaviour.objectEditingPanel.SetActive(true);
         FindObjectOfType<objectEditingScript>().updateAngleValue();
         return;
     }
 
     private void disableObjectEditingPanel() {
-        dockPanel.SetActive(true);
-        objectEditingPanel.SetActive(false);
+        _sharedMonobehaviour.dockPanel.SetActive(true);
+        _sharedMonobehaviour.objectEditingPanel.SetActive(false);
         return;
     }
 }

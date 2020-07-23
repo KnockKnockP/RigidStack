@@ -3621,26 +3621,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 236020926}
     m_Modifications:
-    - target: {fileID: 238349375, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: objectImageGameObject
-      value: 
-      objectReference: {fileID: 955863679}
     - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
       propertyPath: objectImageGameObject
       value: 
       objectReference: {fileID: 955863679}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: towerObjects
-      value: 
-      objectReference: {fileID: 1287847411}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: dockPanel
-      value: 
-      objectReference: {fileID: 1402084107}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: objectEditingPanel
-      value: 
-      objectReference: {fileID: 758157996}
     - target: {fileID: 3497769611518909246, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
         type: 3}
       propertyPath: m_Name
@@ -5462,26 +5446,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 236020926}
     m_Modifications:
-    - target: {fileID: 238349375, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: objectImageGameObject
-      value: 
-      objectReference: {fileID: 132569940}
     - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
       propertyPath: objectImageGameObject
       value: 
       objectReference: {fileID: 132569940}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: towerObjects
-      value: 
-      objectReference: {fileID: 1287847411}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: dockPanel
-      value: 
-      objectReference: {fileID: 1402084107}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: objectEditingPanel
-      value: 
-      objectReference: {fileID: 758157996}
     - target: {fileID: 3497769611518909246, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
         type: 3}
       propertyPath: m_Name
@@ -6196,31 +6164,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 236020926}
     m_Modifications:
-    - target: {fileID: 238349375, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: objectImageGameObject
-      value: 
-      objectReference: {fileID: 454515083}
     - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
       propertyPath: objectImageGameObject
       value: 
       objectReference: {fileID: 454515083}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: towerObjects
-      value: 
-      objectReference: {fileID: 1287847411}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: dockPanel
-      value: 
-      objectReference: {fileID: 1402084107}
-    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
-      propertyPath: objectEditingPanel
-      value: 
-      objectReference: {fileID: 758157996}
-    - target: {fileID: 3497769611518909244, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3497769611518909246, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
         type: 3}
       propertyPath: m_Name
@@ -6669,3 +6616,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuPanel: {fileID: 2019807157}
+--- !u!114 &7619175099963299235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619175099963299228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721b6b22fa4afc2409723266012bfec6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerObjects: {fileID: 1287847411}
+  dockPanel: {fileID: 1402084107}
+  objectEditingPanel: {fileID: 758157996}

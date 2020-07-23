@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 public static class StaticClass {
+    //Might add objectiveScript.cs's newObjectiveScoreAddition and newSecond = 15 to here.
     public static bool isDragging, isCollisionFishy;
     public static byte angle = 1;
     public static float cameraMovementSpeed = 0.1f;
@@ -13,13 +14,5 @@ public static class StaticClass {
             _objectiveScore = value;
             Debug.Log("Objective score has been set to " + objectiveScore);
         }
-    }
-
-    public static Color Color32ToColor(byte r, byte g, byte b) {
-        return new Color((r / 255), (g / 255), (b / 255));
-    }
-
-    public static Color Color32ToColor(byte r, byte g, byte b, byte a) {
-        return new Color((r / 255), (g / 255), (b / 255), (a / 255));
     }
 }
