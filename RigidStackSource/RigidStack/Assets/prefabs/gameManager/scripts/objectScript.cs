@@ -13,10 +13,6 @@ public class objectScript : MonoBehaviour {
         for (short i = 0; i < images.Length; i++) {
             _objectClass[i] = images[i].GetComponent<objectClass>();
         }
-        return;
-    }
-
-    private void Start() {
         resetRandomization();
         shuffleItems();
         return;
@@ -43,7 +39,8 @@ public class objectScript : MonoBehaviour {
             if (isDuplicate == false) {
                 images[i].sprite = randomSprite;
                 sprites[i] = images[i].sprite;
-                _objectClass[i].objectCount = (short)(UnityEngine.Random.Range(1, 5));
+                //DIFFICULTY IMPLEMENTATION
+                _objectClass[i].objectCount = (short)(UnityEngine.Random.Range(1, 10));
                 images[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
             }
         }
