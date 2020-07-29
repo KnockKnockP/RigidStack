@@ -27,7 +27,12 @@ public class heightScript : MonoBehaviour {
         return;
     }
 
-    private void FixedUpdate() {
+    private void LateUpdate() {
+        updateHeight();
+        return;
+    }
+
+    private void updateHeight() {
         int maxHeight = -9999;
         GameObject currentFrameGameObject;
         for (short i = 0; i < placedObjectsTransforms.Count; i++) {
@@ -47,13 +52,41 @@ public class heightScript : MonoBehaviour {
                             if (previousFrameGameObject == currentFrameGameObject) {
                                 Debug.Log("Generating new objective.");
                                 _objectiveScript.generateObjective(false);
+                                resetLists();
+                                FindObjectOfType<objectScript>().giveMoreItems();
                             }
+                            /*
+                                I have no fucking idea why but putting two Debug.Log(object message) here fixes the bug.
+                                Just don't touch this dark magic.
+                            */
+                            Debug.Log("Here 1 : " + frameCount);
                             frameCount = 0;
+                            Debug.Log("Here 2 : " + frameCount);
                         }
                     }
                 }
             }
         }
+        return;
+    }
+
+    private void resetLists() {
+        Transform tempTransform = placedObjectsTransforms[(placedObjectsTransforms.Count - 1)];
+        List<Transform> tempTransforms = new List<Transform>();
+        Rigidbody2D tempRigidbody2D = placedObjectsRigidbody2D[(placedObjectsRigidbody2D.Count - 1)];
+        List<Rigidbody2D> tempRigidbody2Ds = new List<Rigidbody2D>();
+        GameObject tempGameObject = placedObjects[(placedObjects.Count - 1)];
+        List<GameObject> tempGameObjects = new List<GameObject>();
+        tempRigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+        for (int i = 0; i < (placedObjectsRigidbody2D.Count - 1); i++) {
+            Destroy(placedObjectsRigidbody2D[i]);
+        }
+        tempTransforms.Add(tempTransform);
+        placedObjectsTransforms = tempTransforms;
+        tempRigidbody2Ds.Add(tempRigidbody2D);
+        placedObjectsRigidbody2D = tempRigidbody2Ds;
+        tempGameObjects.Add(tempGameObject);
+        placedObjects = tempGameObjects;
         return;
     }
 }
