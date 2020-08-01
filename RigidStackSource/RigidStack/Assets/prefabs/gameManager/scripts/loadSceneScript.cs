@@ -8,7 +8,7 @@ public static class SceneNames {
 
 public class loadSceneScript : MonoBehaviour {
     public void loadScene(string sceneName) {
-        StaticClass.objectiveScore = 0;
+        objectiveScript.objectiveScore = 0;
         SceneManager.LoadScene(sceneName);
         return;
     }

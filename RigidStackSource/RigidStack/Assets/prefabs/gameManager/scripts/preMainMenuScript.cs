@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class preMainMenuScript : MonoBehaviour {
-    private string exceptionMessage;
+    private string exceptionMessage1, exceptionMessage2;
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
 
     private void Awake() {
@@ -17,7 +17,9 @@ public class preMainMenuScript : MonoBehaviour {
             checkNoticeText();
         } else {
             noticeText.color = Color.red;
-            noticeText.text = "Not connected to the internet. (" + exceptionMessage + ".).";
+            noticeText.text = ("Failed to connect to the internet (Two attempts.).\r\n" +
+                               exceptionMessage1 + ",\r\n" + 
+                               exceptionMessage2 + ".");
         }
         return;
     }
@@ -31,10 +33,17 @@ public class preMainMenuScript : MonoBehaviour {
     public bool checkInternetConnection() {
         try {
             WebClient webClient = new WebClient();
-            webClient.OpenRead("http://google.com/generate_204");
+            webClient.OpenRead("https://www.google.com/generate_204");
             return true;
         } catch (Exception exception) {
-            exceptionMessage = exception.Message;
+            exceptionMessage1 = exception.Message;
+        }
+        try {
+            WebClient webClient = new WebClient();
+            webClient.OpenRead("https://www.baidu.com/");
+            return true;
+        } catch (Exception exception) {
+            exceptionMessage2 = exception.Message;
             return false;
         }
     }

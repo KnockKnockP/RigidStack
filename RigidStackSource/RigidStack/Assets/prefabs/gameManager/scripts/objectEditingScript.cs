@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 
 public class objectEditingScript : MonoBehaviour {
+    [HideInInspector] public static byte angle = 1;
+
     [SerializeField] private Text angleText = null;
     public Button confirmButton = null;
     [SerializeField] private Slider slider = null;
@@ -27,25 +29,25 @@ public class objectEditingScript : MonoBehaviour {
     }
 
     public void updateAngleValue() {
-        slider.value = StaticClass.angle;
+        slider.value = angle;
         makeText();
         return;
     }
 
     public void updateAngleValue(Slider _slider) {
-        StaticClass.angle = (byte)(_slider.value);
+        angle = (byte)(_slider.value);
         makeText();
         return;
     }
 
     private void makeText() {
         angleText.text = "";
-        if (StaticClass.angle < 10) {
+        if (angle < 10) {
             angleText.text = "00";
-        } else if (StaticClass.angle < 100) {
+        } else if (angle < 100) {
             angleText.text = "0";
         }
-        angleText.text = (angleText.text + StaticClass.angle.ToString());
+        angleText.text = (angleText.text + angle.ToString());
         return;
     }
 }

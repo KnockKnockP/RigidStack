@@ -1,18 +1,35 @@
 ﻿using UnityEngine;
 
-public static class StaticClass {
-    //Might add objectiveScript.cs's newObjectiveScoreAddition and newSecond = 15 to here.
-    public static bool isDragging, isCollisionFishy;
-    public static byte angle = 1;
-    public static float cameraMovementSpeed = 0.1f;
-    private static int _objectiveScore;
-    public static int objectiveScore {
-        get {
-            return _objectiveScore;
-        }
-        set {
-            _objectiveScore = value;
-            Debug.Log("Objective score has been set to " + objectiveScore);
-        }
+static class StaticClass {
+    public static bool isInBetweenOfTwoValues(byte value, byte least, byte max) {
+        return ((value > least) && (value < max));
+    }
+
+    public static bool isInBetweenOfTwoValues(int value, int least, int max) {
+        return ((value > least) && (value < max));
+    }
+
+    public static bool isInBetweenOfTwoValues(float value, float least, float max) {
+        return((value > least) && (value < max));
+    }
+
+    public static bool isInBetweenOfTwoValues(Vector2 value, float least, float max) {
+        return ((value.x > least) && (value.x < max) && (value.y > least) && (value.y < max));
+    }
+
+    public static bool isInBetweenOrEqualToTwoValues(byte value, byte least, byte max) {
+        return ((value >= least) && (value <= max));
+    }
+
+    public static bool isInBetweenOrEqualToTwoValues(int value, int least, int max) {
+        return ((value >= least) && (value <= max));
+    }
+
+    public static bool isInBetweenOrEqualToTwoValues(float value, float least, float max) {
+        return ((value >= least) && (value <= max));
+    }
+
+    public static bool isInBetweenOrEqualToTwoValues(Vector2 value, float least, float max) {
+        return ((value.x >= least) && (value.x <= max) && (value.y >= least) && (value.y <= max));
     }
 }

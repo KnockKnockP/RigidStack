@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class objectClass : MonoBehaviour {
+public class dragAndDropImageScript : MonoBehaviour {
     private short _objectCount = 0;
     [HideInInspector] public short objectCount {
         get {
@@ -9,11 +9,11 @@ public class objectClass : MonoBehaviour {
         }
         set {
             _objectCount = value;
-            counterText.text = _objectCount.ToString();
+            objectCounterText.text = _objectCount.ToString();
             if (_objectCount == 0) {
                 Debug.Log("You can not use this object.");
             }
         }
     }
-    [SerializeField] private Text counterText = null;
+    [SerializeField] private Text objectCounterText = null;
 }

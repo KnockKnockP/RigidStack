@@ -4,14 +4,17 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class objectScript : MonoBehaviour {
-    private objectClass[] _objectClass = new objectClass[5];
-    [SerializeField] private Image[] images = null;
+    private dragAndDropImageScript[] dragAndDropImageScripts = new dragAndDropImageScript[5];
+    [SerializeField] private Image[] dragAndDropImages = null;
+
+    //We are going to use this array to check for duplicates.
     private Sprite[] sprites = new Sprite[5];
+
     [SerializeField] private GameObject[] objects = null;
 
     private void Awake() {
-        for (short i = 0; i < images.Length; i++) {
-            _objectClass[i] = images[i].GetComponent<objectClass>();
+        for (short i = 0; i < dragAndDropImages.Length; i++) {
+            dragAndDropImageScripts[i] = dragAndDropImages[i].GetComponent<dragAndDropImageScript>();
         }
         resetRandomization();
         shuffleItems();
@@ -25,9 +28,12 @@ public class objectScript : MonoBehaviour {
 
     private void shuffleItems() {
         bool isDuplicate;
-        for (short i = 0; i < images.Length; i++) {
+        for (short i = 0; i < dragAndDropImages.Length; i++) {
+            //We pick the random object to assign to.
             short random = (short)(UnityEngine.Random.Range(0, objects.Length));
+            //We get the sprite of the random object.
             Sprite randomSprite = objects[random].GetComponent<SpriteRenderer>().sprite;
+            //We check if the object we have chose was already assigned.
             isDuplicate = false;
             for (short j = 0; j < sprites.Length; j++) {
                 if (sprites[j] == randomSprite) {
@@ -37,18 +43,18 @@ public class objectScript : MonoBehaviour {
                 }
             }
             if (isDuplicate == false) {
-                images[i].sprite = randomSprite;
-                sprites[i] = images[i].sprite;
+                dragAndDropImages[i].sprite = randomSprite;
+                sprites[i] = dragAndDropImages[i].sprite;
                 //DIFFICULTY IMPLEMENTATION
-                _objectClass[i].objectCount = (short)(UnityEngine.Random.Range(1, 10));
-                images[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
+                dragAndDropImageScripts[i].objectCount = (short)(UnityEngine.Random.Range(1, 10));
+                dragAndDropImages[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
             }
         }
         return;
     }
 
     public void giveMoreItems() {
-        foreach (Image image in images) {
+        foreach (Image image in dragAndDropImages) {
             image.sprite = null;
         }
         for (short i = 0; i < sprites.Length; i++) {

@@ -640,7 +640,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!156049354 &378434608
 Grid:
@@ -1600,7 +1600,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Score : 0'
+  m_Text: 'Score : 0 / 0.'
 --- !u!222 &688816210
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1919,7 +1919,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &804567130
 Transform:
@@ -3677,8 +3677,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 236020926}
     m_Modifications:
+    - target: {fileID: 238349375, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: objectCounterText
+      value: 
+      objectReference: {fileID: 955863681}
     - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
       propertyPath: objectImageGameObject
+      value: 
+      objectReference: {fileID: 955863679}
+    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: _sharedMonobehaviour
+      value: 
+      objectReference: {fileID: 7619175099963299235}
+    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: dragAndDropImageGameobject
       value: 
       objectReference: {fileID: 955863679}
     - target: {fileID: 3497769611518909246, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
@@ -3817,6 +3829,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 955863677}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &955863681 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1709680669, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
+    type: 3}
+  m_PrefabInstance: {fileID: 955863677}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1030255032
 GameObject:
   m_ObjectHideFlags: 0
@@ -5584,10 +5608,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 236020926}
     m_Modifications:
+    - target: {fileID: 238349375, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: objectCounterText
+      value: 
+      objectReference: {fileID: 1667780640}
     - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
       propertyPath: objectImageGameObject
       value: 
       objectReference: {fileID: 132569940}
+    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: dragAndDropImageGameobject
+      value: 
+      objectReference: {fileID: 132569940}
+    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: _sharedMonobehaviour
+      value: 
+      objectReference: {fileID: 7619175099963299235}
     - target: {fileID: 3497769611518909246, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
         type: 3}
       propertyPath: m_Name
@@ -5716,6 +5752,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1667780640 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1709680669, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
+    type: 3}
+  m_PrefabInstance: {fileID: 1667780637}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1784475362
@@ -6238,6 +6286,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: platform
       objectReference: {fileID: 0}
+    - target: {fileID: 1286257869036953297, guid: a13ceace893eb1c4db4b3cf0a0c85398,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 1286257869036953299, guid: a13ceace893eb1c4db4b3cf0a0c85398,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6308,8 +6361,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 236020926}
     m_Modifications:
+    - target: {fileID: 238349375, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: objectCounterText
+      value: 
+      objectReference: {fileID: 3497769611750373123}
     - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
       propertyPath: objectImageGameObject
+      value: 
+      objectReference: {fileID: 454515083}
+    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: _sharedMonobehaviour
+      value: 
+      objectReference: {fileID: 7619175099963299235}
+    - target: {fileID: 454515086, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+      propertyPath: dragAndDropImageGameobject
       value: 
       objectReference: {fileID: 454515083}
     - target: {fileID: 3497769611518909246, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
@@ -6424,6 +6489,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1fad6eac23013ae468f8c5bbebd3b0ba, type: 3}
+--- !u!114 &3497769611750373123 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1709680669, guid: 1fad6eac23013ae468f8c5bbebd3b0ba,
+    type: 3}
+  m_PrefabInstance: {fileID: 3497769611750373122}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5463136633025921676
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6677,7 +6754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fa7e6911f9cf5846a8094a516c6d8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  images:
+  dragAndDropImages:
   - {fileID: 238349374}
   - {fileID: 1667780639}
   - {fileID: 955863678}
@@ -6712,6 +6789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0150f7677116c6743ac0c7fe2a8fecd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sharedMonobehaviour: {fileID: 7619175099963299235}
   platformTransform: {fileID: 1286257870278225829}
   girdTransform: {fileID: 378434609}
 --- !u!114 &7619175099963299232
@@ -6726,12 +6804,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02c4ddca0d99e9742b89daed83c9569e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHeight: 0
   tolerance: -0.01
-  heightText: {fileID: 688816209}
+  maxHeight: 0
   placedObjectsTransforms: []
   placedObjectsRigidbody2D: []
   placedObjects: []
+  heightText: {fileID: 688816209}
 --- !u!114 &7619175099963299233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6744,12 +6822,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84de976f075c354a81ff748dc5904c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newObjectiveScoreAddition: 10
-  newSecond: 15
+  _sharedMonobehaviour: {fileID: 7619175099963299235}
   timerText: {fileID: 797998249}
   heightTextsParent: {fileID: 830823893}
   textCanvasTemplate: {fileID: 1180730670}
-  cannons: {fileID: 627405725}
+  cannonGrouperObject: {fileID: 627405725}
   cannon: {fileID: 1286257869036953297, guid: 26474ecd5fb611f459907e995ba2c418, type: 3}
 --- !u!114 &7619175099963299234
 MonoBehaviour:
@@ -6776,6 +6853,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 721b6b22fa4afc2409723266012bfec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420031}
   towerObjects: {fileID: 1287847411}
   dockPanel: {fileID: 1402084107}
   objectEditingPanel: {fileID: 758157996}

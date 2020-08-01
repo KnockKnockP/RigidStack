@@ -1,19 +1,22 @@
 ﻿using UnityEngine;
 
 public class postDragAndDropScript : MonoBehaviour {
+    [HideInInspector] public sharedMonobehaviour _sharedMonobehaviour;
+
+    public static bool isCollisionFishy;
     private objectEditingScript _objectEditingScript;
-    private Camera mainCamera;
+
+    //The object we are going to manipulate.
     [HideInInspector] public GameObject placedGameObject;
 
     private void Awake() {
         _objectEditingScript = FindObjectOfType<objectEditingScript>();
-        mainCamera = Camera.main;
         return;
     }
 
     private void OnMouseDrag() {
-        placedGameObject.transform.position = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-        if (StaticClass.isCollisionFishy == true) {
+        placedGameObject.transform.position = _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        if (isCollisionFishy == true) {
             _objectEditingScript.confirmButton.interactable = false;
         }
         return;

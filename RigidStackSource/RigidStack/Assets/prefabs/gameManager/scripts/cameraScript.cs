@@ -1,16 +1,22 @@
 ﻿using UnityEngine;
 
 public class cameraScript : MonoBehaviour {
+    [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
+
+
     private bool shouldMoveCameraUp, shouldMoveCameraDown;
+
+
+    public static float cameraMovementSpeed = 0.1f;
+
+
     [SerializeField] private Transform platformTransform = null, girdTransform = null;
-    private Camera mainCamera;
 
     private void Awake() {
         Vector3 position = platformTransform.position;
-        mainCamera = Camera.main;
         position.y = (position.y + girdTransform.position.y);
-        position.z = mainCamera.transform.position.z;
-        mainCamera.transform.position = position;
+        position.z = _sharedMonobehaviour.mainCamera.transform.position.z;
+        _sharedMonobehaviour.mainCamera.transform.position = position;
         return;
     }
 
@@ -34,17 +40,17 @@ public class cameraScript : MonoBehaviour {
     }
 
     private void moveCameraUp() {
-        Vector3 newPosition = mainCamera.transform.position;
-        newPosition.y = (newPosition.y + StaticClass.cameraMovementSpeed);
-        mainCamera.transform.position = newPosition;
+        Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
+        newPosition.y = (newPosition.y + cameraMovementSpeed);
+        _sharedMonobehaviour.mainCamera.transform.position = newPosition;
         return;
     }
 
     private void moveCameraDown() {
-        Vector3 newPosition = mainCamera.transform.position;
-        newPosition.y = (newPosition.y - StaticClass.cameraMovementSpeed);
+        Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
+        newPosition.y = (newPosition.y - cameraMovementSpeed);
         if (newPosition.y >= -2) {
-            mainCamera.transform.position = newPosition;
+            _sharedMonobehaviour.mainCamera.transform.position = newPosition;
         }
         return;
     }

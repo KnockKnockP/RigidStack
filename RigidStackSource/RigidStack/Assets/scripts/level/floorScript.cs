@@ -9,12 +9,12 @@ public class floorScript : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D() {
-        StaticClass.isCollisionFishy = true;
+        postDragAndDropScript.isCollisionFishy = true;
         return;
     }
 
     private void OnTriggerExit2D() {
-        StaticClass.isCollisionFishy = false;
+        postDragAndDropScript.isCollisionFishy = false;
         return;
     }
 }

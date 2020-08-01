@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 public class pauseScript : MonoBehaviour {
+    //Pause menu.
     private bool isPaused;
     [SerializeField] private GameObject pauseMenuPanel = null;
 
@@ -23,7 +24,8 @@ public class pauseScript : MonoBehaviour {
     }
 
     public void exit() {
-        Debug.LogWarning("Call the save function here.");
+        Debug.LogWarning("Call the save function here.\r\n" +
+                         "Also, put the core of the exit function into the save manager script when we make it.");
         Application.Quit();
         return;
     }
