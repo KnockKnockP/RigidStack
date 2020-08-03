@@ -12,6 +12,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
 
     //The object the player can place using this drag and drop image.
+    private short spriteOrder;
     [HideInInspector] public GameObject objectToPlace;
 
     //The placed gameobject.
@@ -39,6 +40,10 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
                 placedGameObject = Instantiate(objectToPlace, _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), Quaternion.identity, _sharedMonobehaviour.towerObjects.transform);
                 placedGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
                 placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
+                placedGameObject.GetComponent<SpriteRenderer>().sortingOrder = spriteOrder;
+                if (spriteOrder != 32766) {
+                    spriteOrder++;
+                }
             }
         }
         return;

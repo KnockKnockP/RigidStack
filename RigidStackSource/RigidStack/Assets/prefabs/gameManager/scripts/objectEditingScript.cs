@@ -41,6 +41,20 @@ public class objectEditingScript : MonoBehaviour {
         return;
     }
 
+    public void updateAngleValue(Text inputText) {
+        if (inputText.text.Length == 0) {
+            inputText.text = ("0" + inputText.text);
+        }
+        if (byte.TryParse(inputText.text, out angle) == false) {
+            return;
+        }
+        makeText();
+        updateAngleValue();
+        inputText.text = "";
+        Debug.Log(angle);
+        return;
+    }
+
     private void makeText() {
         angleText.text = "";
         if (angle < 10) {
