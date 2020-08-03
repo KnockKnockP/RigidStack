@@ -58,11 +58,11 @@ public class objectiveScript : MonoBehaviour {
         second = newSecond;
 
         int newScore = (objectiveScore + newObjectiveScoreAddition);
+        float leftSide = (_sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x + textCanvasTemplate.GetComponent<RectTransform>().rect.width - textCanvasTemplate.transform.localScale.x);
         for (int i = objectiveScore; i <= newScore; i = (i + 5)) {
-            Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(0, i), Quaternion.identity, heightTextsParent);
+            Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(leftSide, i), Quaternion.identity, heightTextsParent);
             newCanvas.GetComponentInChildren<Text>().text = (newCanvas.transform.position.y.ToString() + ".");
             newCanvas.gameObject.SetActive(true);
-
             textCanvases.Add(newCanvas);
 
             generateCannons(i, isFromAwake);
