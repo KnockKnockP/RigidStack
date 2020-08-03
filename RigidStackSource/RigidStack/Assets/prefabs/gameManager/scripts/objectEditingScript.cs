@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class objectEditingScript : MonoBehaviour {
     [HideInInspector] public static byte angle = 1;
 
+
     [SerializeField] private Text angleText = null;
     public Button confirmButton = null;
     [SerializeField] private Slider slider = null;

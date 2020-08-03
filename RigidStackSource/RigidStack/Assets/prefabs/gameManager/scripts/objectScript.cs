@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class objectScript : MonoBehaviour {
@@ -9,6 +8,7 @@ public class objectScript : MonoBehaviour {
 
     //We are going to use this array to check for duplicates.
     private Sprite[] sprites = new Sprite[5];
+
 
     [SerializeField] private GameObject[] objects = null;
 
@@ -61,11 +61,6 @@ public class objectScript : MonoBehaviour {
             sprites[i] = null;
         }
         shuffleItems();
-        return;
-    }
-
-    public void reset() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         return;
     }
 }

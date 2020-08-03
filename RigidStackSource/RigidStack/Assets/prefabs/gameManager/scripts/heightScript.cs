@@ -6,7 +6,12 @@ public class heightScript : MonoBehaviour {
     private byte frameCount;
     //DIFFICULTY IMPLEMENTATION
     [HideInInspector] public float tolerance = -0.01f;
-    [HideInInspector] public int maxHeight;
+    /*
+        maxHeight is the maximum score for the whole account.
+        currentGameMaxHeight is the maximum score for this only game.
+        When the player dies, currentGameMaxHeight gets resetted.
+    */
+    [HideInInspector] public static int maxHeight, currentGameMaxHeight;
 
 
     private GameObject previousFrameGameObject;
@@ -23,7 +28,12 @@ public class heightScript : MonoBehaviour {
         return;
     }
 
-    private void LateUpdate() {
+    private void Start() {
+        heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore.ToString() + ".");
+        return;
+    }
+
+    private void FixedUpdate() {
         updateHeight();
         return;
     }
@@ -37,9 +47,12 @@ public class heightScript : MonoBehaviour {
                 int yPosition = (int)(placedObjectsTransforms[i].position.y);
                 if (yPosition > currentFrameMaxHeight) {
                     currentFrameMaxHeight = yPosition;
-                    heightText.text = ("Score : " + currentFrameMaxHeight.ToString() + " / " + objectiveScript.objectiveScore.ToString() + ".");
-                    maxHeight = currentFrameMaxHeight;
-                    if (currentFrameMaxHeight >= objectiveScript.objectiveScore) {
+                    currentGameMaxHeight = currentFrameMaxHeight;
+                    if (currentGameMaxHeight > maxHeight) {
+                        maxHeight = currentGameMaxHeight;
+                    }
+                    heightText.text = ("Score : " + currentFrameMaxHeight.ToString() + " / " + _objectiveScript.objectiveScore.ToString() + ".");
+                    if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
                         frameCount++;
                         if (frameCount == 1) {
                             previousFrameGameObject = placedObjects[i];
@@ -74,16 +87,19 @@ public class heightScript : MonoBehaviour {
             Destroy(placedObjectsRigidbody2D[i]);
         }
 
-        List<Transform> tempTransforms = new List<Transform>();
-        tempTransforms.Add(placedObjectsTransforms[(placedObjectsTransforms.Count - 1)]);
+        List<Transform> tempTransforms = new List<Transform> {
+            placedObjectsTransforms[(placedObjectsTransforms.Count - 1)]
+        };
         placedObjectsTransforms = tempTransforms;
 
-        List<Rigidbody2D> tempRigidbody2Ds = new List<Rigidbody2D>();
-        tempRigidbody2Ds.Add(tempRigidbody2D);
+        List<Rigidbody2D> tempRigidbody2Ds = new List<Rigidbody2D> {
+            tempRigidbody2D
+        };
         placedObjectsRigidbody2D = tempRigidbody2Ds;
 
-        List<GameObject> tempGameObjects = new List<GameObject>();
-        tempGameObjects.Add(placedObjects[(placedObjects.Count - 1)]);
+        List<GameObject> tempGameObjects = new List<GameObject> {
+            placedObjects[(placedObjects.Count - 1)]
+        };
         placedObjects = tempGameObjects;
         return;
     }

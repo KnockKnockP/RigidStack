@@ -4,12 +4,14 @@ public class cameraScript : MonoBehaviour {
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
 
 
+    [SerializeField] private endMenuManager _endMenuManager = null;
     private bool shouldMoveCameraUp, shouldMoveCameraDown;
 
 
     public static float cameraMovementSpeed = 0.1f;
 
 
+    [HideInInspector] public Vector3 originalCameraPosition;
     [SerializeField] private Transform platformTransform = null, girdTransform = null;
 
     private void Awake() {
@@ -17,10 +19,11 @@ public class cameraScript : MonoBehaviour {
         position.y = (position.y + girdTransform.position.y);
         position.z = _sharedMonobehaviour.mainCamera.transform.position.z;
         _sharedMonobehaviour.mainCamera.transform.position = position;
+        originalCameraPosition = position;
         return;
     }
 
-    private void FixedUpdate() {
+    private void Update() {
         if (shouldMoveCameraUp == true) {
             moveCameraUp();
         } else if (shouldMoveCameraDown == true) {
@@ -40,6 +43,7 @@ public class cameraScript : MonoBehaviour {
     }
 
     private void moveCameraUp() {
+        _endMenuManager.shouldMoveTheCamera = false;
         Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
         newPosition.y = (newPosition.y + cameraMovementSpeed);
         _sharedMonobehaviour.mainCamera.transform.position = newPosition;
@@ -47,6 +51,7 @@ public class cameraScript : MonoBehaviour {
     }
 
     private void moveCameraDown() {
+        _endMenuManager.shouldMoveTheCamera = false;
         Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
         newPosition.y = (newPosition.y - cameraMovementSpeed);
         if (newPosition.y >= -2) {

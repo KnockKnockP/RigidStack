@@ -15,7 +15,8 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     [HideInInspector] public GameObject objectToPlace;
 
     //The placed gameobject.
-    private GameObject placedGameObject;
+    [HideInInspector] public GameObject placedGameObject;
+
 
     public static dragAndDropScript _dragAndDropScript;
 
@@ -78,6 +79,8 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
         placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
+
+        placedGameObject = null;
         return;
     }
 

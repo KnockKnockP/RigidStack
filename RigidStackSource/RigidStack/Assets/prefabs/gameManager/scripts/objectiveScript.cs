@@ -6,11 +6,12 @@ using UnityEngine.UI;
 public class objectiveScript : MonoBehaviour {
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
 
+
     private int second;
     //DIFFICULTY IMPLEMENTATION
     public static int newObjectiveScoreAddition = 10, newSecond = 15;
-    private static int _objectiveScore;
-    public static int objectiveScore {
+    private int _objectiveScore;
+    public int objectiveScore {
         get {
             return _objectiveScore;
         }
@@ -19,6 +20,7 @@ public class objectiveScript : MonoBehaviour {
             Debug.Log("Objective score has been set to " + objectiveScore);
         }
     }
+
 
     bool hasCannonsEntered = false;
     [SerializeField] private Text timerText = null;
@@ -41,12 +43,9 @@ public class objectiveScript : MonoBehaviour {
         //Debug.LogWarning("Remove this line when done testing."); newSecond = 6;
 
         second = newSecond;
-        return;
-    }
-
-    private void Start() {
         generateObjective(true);
         StartCoroutine(countDown());
+        return;
     }
 
     public void generateObjective(bool isFromAwake) {

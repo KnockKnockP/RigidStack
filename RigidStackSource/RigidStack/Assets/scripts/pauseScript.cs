@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 
 public class pauseScript : MonoBehaviour {
-    //Pause menu.
     private bool isPaused;
     [SerializeField] private GameObject pauseMenuPanel = null;
+
+
+    [SerializeField] private endMenuManager _endMenuManager = null;
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Escape) == true) {
@@ -13,8 +15,12 @@ public class pauseScript : MonoBehaviour {
     }
 
     public void pauseOrResume() {
-        pauseMenuPanel.SetActive(!isPaused);
-        isPaused = (!isPaused);
+        if (endMenuManager.isGameEnded == false) {
+            pauseMenuPanel.SetActive(!isPaused);
+            isPaused = (!isPaused);
+        } else {
+            _endMenuManager.toggleEndMenu();
+        }
         return;
     }
 
@@ -24,6 +30,7 @@ public class pauseScript : MonoBehaviour {
     }
 
     public void exit() {
+        //SAVE IMPLEMENTATION.
         Debug.LogWarning("Call the save function here.\r\n" +
                          "Also, put the core of the exit function into the save manager script when we make it.");
         Application.Quit();

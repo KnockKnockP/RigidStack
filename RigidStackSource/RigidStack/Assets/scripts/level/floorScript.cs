@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
 public class floorScript : MonoBehaviour {
+    [SerializeField] private endMenuManager _endMenuManager = null;
+
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("platform") == false) {
-            FindObjectOfType<objectScript>().reset();
+            _endMenuManager.endGame();
+            Destroy(this);
         }
         return;
     }

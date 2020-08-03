@@ -3,6 +3,7 @@
 public class postDragAndDropScript : MonoBehaviour {
     [HideInInspector] public sharedMonobehaviour _sharedMonobehaviour;
 
+
     public static bool isCollisionFishy;
     private objectEditingScript _objectEditingScript;
 

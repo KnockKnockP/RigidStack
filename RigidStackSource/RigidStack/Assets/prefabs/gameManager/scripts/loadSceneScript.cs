@@ -8,7 +8,8 @@ public static class SceneNames {
 
 public class loadSceneScript : MonoBehaviour {
     public void loadScene(string sceneName) {
-        objectiveScript.objectiveScore = 0;
+        Time.timeScale = 1f;
+        heightScript.currentGameMaxHeight = 0;
         SceneManager.LoadScene(sceneName);
         return;
     }
