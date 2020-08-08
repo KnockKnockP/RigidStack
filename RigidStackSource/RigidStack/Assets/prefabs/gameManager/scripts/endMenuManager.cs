@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class endMenuManager : MonoBehaviour {
@@ -19,6 +20,10 @@ public class endMenuManager : MonoBehaviour {
 
 
     public static bool isGameEnded;
+
+
+    private bool isObjectUndimmed;
+    [HideInInspector] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
 
     private void Start() {
         startTime = Time.time;
@@ -61,6 +66,9 @@ public class endMenuManager : MonoBehaviour {
 
     public void explore() {
         disableEndMenu();
+        if (isObjectUndimmed == false) {
+            undimObjects();
+        }
         return;
     }
 
@@ -82,6 +90,14 @@ public class endMenuManager : MonoBehaviour {
     private void disableEndMenu() {
         isEndMenuActive = false;
         endMenu.SetActive(false);
+        return;
+    }
+
+    private void undimObjects() {
+        isObjectUndimmed = true;
+        foreach (SpriteRenderer spriteRenderer in allPlacedObjectsSpriteRenderers) {
+            spriteRenderer.color = new Color32(255, 255, 255, 255);
+        }
         return;
     }
 

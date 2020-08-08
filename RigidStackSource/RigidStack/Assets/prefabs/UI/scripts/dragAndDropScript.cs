@@ -17,6 +17,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     //The placed gameobject.
     [HideInInspector] public GameObject placedGameObject;
+    private endMenuManager _endMenuManager;
 
 
     public static dragAndDropScript _dragAndDropScript;
@@ -24,6 +25,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     private void Awake() {
         _dragAndDropImageScript = dragAndDropImageGameobject.GetComponent<dragAndDropImageScript>();
         _heightScript = FindObjectOfType<heightScript>();
+        _endMenuManager = FindObjectOfType<endMenuManager>();
         return;
     }
 
@@ -79,6 +81,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
         _heightScript.placedObjects.Add(placedGameObject);
         _heightScript.placedObjectsTransforms.Add(placedGameObject.transform);
+        _endMenuManager.allPlacedObjectsSpriteRenderers.Add(placedGameObject.GetComponent<SpriteRenderer>());
         Rigidbody2D rigidbody2D = placedGameObject.GetComponent<Rigidbody2D>();
         _heightScript.placedObjectsRigidbody2D.Add(rigidbody2D);
 
