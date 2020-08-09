@@ -29,7 +29,7 @@ public class preMainMenuScript : MonoBehaviour {
         return;
     }
 
-    //https://stackoverflow.com/a/2031831.
+    //https://stackoverflow.com/a/2031831/
     public bool checkInternetConnection() {
         try {
             WebClient webClient = new WebClient();
