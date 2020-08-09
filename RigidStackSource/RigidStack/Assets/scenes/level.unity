@@ -1350,7 +1350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &627405726
 Transform:
   m_ObjectHideFlags: 0
@@ -1363,7 +1363,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &649945528
 GameObject:
@@ -1768,6 +1768,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 688816207}
   m_CullTransparentMesh: 0
+--- !u!1 &711045073
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 711045074}
+  m_Layer: 0
+  m_Name: winds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &711045074
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711045073}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &723650908
 GameObject:
   m_ObjectHideFlags: 0
@@ -2265,7 +2295,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 32767
+  m_SortingOrder: 32766
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0.012000024, y: 0.012000024, z: 0}
   m_MaxChunkCount: 16
@@ -3802,7 +3832,7 @@ Transform:
   m_Children:
   - {fileID: 1180730671}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832632735
 GameObject:
@@ -7252,7 +7282,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1786818563
 GameObject:
@@ -8488,6 +8518,9 @@ MonoBehaviour:
   textCanvasTemplate: {fileID: 1180730670}
   cannonGrouperObject: {fileID: 627405725}
   cannon: {fileID: 1286257869036953297, guid: 26474ecd5fb611f459907e995ba2c418, type: 3}
+  windPrefab: {fileID: 7810927636929352077, guid: dc0d82924c610ac4f92a7c6873981d09,
+    type: 3}
+  windsEmptyObject: {fileID: 711045073}
 --- !u!114 &7619175099963299234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8538,3 +8571,18 @@ MonoBehaviour:
   _objectiveScript: {fileID: 7619175099963299233}
   dock: {fileID: 1402084107}
   objectEditingPanel: {fileID: 758157996}
+  allPlacedObjectsSpriteRenderers: []
+--- !u!114 &7619175099963299238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619175099963299228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dd674a77bb08494cbcd1c328fc8a05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pauseScript: {fileID: 7619175099963299234}
+  _cameraScript: {fileID: 7619175099963299231}

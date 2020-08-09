@@ -9,7 +9,7 @@ public class objectiveScript : MonoBehaviour {
 
     private int second;
     //DIFFICULTY IMPLEMENTATION
-    public static int newObjectiveScoreAddition = 10, newSecond = 15;
+    public static int newObjectiveScoreAddition = 10, newSecond = 15, windSustainTime = 2;
     private int _objectiveScore;
     public int objectiveScore {
         get {
@@ -39,6 +39,14 @@ public class objectiveScript : MonoBehaviour {
 
     [SerializeField] private GameObject cannonGrouperObject = null, cannon = null;
 
+
+    //DIFFICULTY IMPLEMENTATION
+    public static int minimumDifferenceForEachWinds = 4;
+    [SerializeField] private GameObject windPrefab = null, windsEmptyObject = null;
+    private List<GameObject> winds = new List<GameObject>();
+    private readonly List<GameObject> tempWinds = new List<GameObject>();
+    private IEnumerator toggleWindsFunction;
+
     private void Awake() {
         //Debug.LogWarning("Remove this line when done testing."); newSecond = 6;
 
@@ -53,6 +61,11 @@ public class objectiveScript : MonoBehaviour {
             reset();
             freezeAll();
             removeCannons();
+            removeWinds();
+        }
+
+        if (toggleWindsFunction != null) {
+            StopCoroutine(toggleWindsFunction);
         }
 
         second = newSecond;
@@ -68,6 +81,27 @@ public class objectiveScript : MonoBehaviour {
             generateCannons(i, isFromAwake);
         }
         objectiveScore = newScore;
+
+        generateWinds(isFromAwake);
+        toggleWindsFunction = toggleWinds(isFromAwake);
+        StartCoroutine(toggleWindsFunction);
+        return;
+    }
+
+    private void freezeAll() {
+        heightScript _heightScript = FindObjectOfType<heightScript>();
+        foreach (GameObject placedObject in _heightScript.placedObjects) {
+            placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+            placedObject.GetComponent<SpriteRenderer>().color = new Color32(50, 50, 50, 255);
+        }
+        return;
+    }
+
+    private void reset() {
+        foreach (Canvas _textCanvas in textCanvases) {
+            Destroy(_textCanvas.gameObject);
+        }
+        textCanvases.Clear();
         return;
     }
 
@@ -75,7 +109,7 @@ public class objectiveScript : MonoBehaviour {
         float leftSide = _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
         Vector3 position = new Vector3((leftSide - 1f), height, 0f);
         GameObject generatedCannon = Instantiate(cannon, position, Quaternion.identity, cannonGrouperObject.transform);
-        generatedCannon.name = (height.ToString() + " cannon.");
+        generatedCannon.name = (height.ToString() + " cannon");
 
         cannonInformationHolder generatedCannonInformationHolder = generatedCannon.GetComponent<cannonInformationHolder>();
         Animator generatedCannonAnimator = generatedCannon.GetComponent<Animator>();
@@ -90,34 +124,6 @@ public class objectiveScript : MonoBehaviour {
             tempCannonsAnimator.Add(generatedCannonAnimator);
         }
         return;
-    }
-
-    private IEnumerator countDown() {
-        //DIFFICULTY IMPLEMENTATION
-        bool needsToStopCoroutine = false;
-        IEnumerator shootCannonsFunction = shootCannons(3f);
-        while (true) {
-            yield return new WaitForSeconds(1f);
-            timerText.text = ("Time left : " + second + ".");
-            if (second > -1) {
-                if (needsToStopCoroutine == true) {
-                    needsToStopCoroutine = false;
-                    StopCoroutine(shootCannonsFunction);
-                }
-                if ((second == newSecond) && (hasCannonsEntered == true)) {
-                    exitCannons();
-                } else if ((second < 6) && (hasCannonsEntered == false)) {
-                    enterCannons();
-                }
-            } else {
-                if (needsToStopCoroutine == false) {
-                    needsToStopCoroutine = true;
-                    StartCoroutine(shootCannonsFunction);
-                }
-            }
-            second--;
-            yield return null;
-        }
     }
 
     private void enterCannons() {
@@ -147,23 +153,6 @@ public class objectiveScript : MonoBehaviour {
         }
     }
 
-    private void freezeAll() {
-        heightScript _heightScript = FindObjectOfType<heightScript>();
-        foreach (GameObject placedObject in _heightScript.placedObjects) {
-            placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-            placedObject.GetComponent<SpriteRenderer>().color = new Color32(50, 50, 50, 255);
-        }
-        return;
-    }
-
-    private void reset() {
-        foreach (Canvas _textCanvas in textCanvases) {
-            Destroy(_textCanvas.gameObject);
-        }
-        textCanvases.Clear();
-        return;
-    }
-
     private void removeCannons() {
         foreach (GameObject _cannon in cannonList) {
             if (_cannon != null) {
@@ -186,5 +175,99 @@ public class objectiveScript : MonoBehaviour {
         cannonInformationHolders = tempCannonInformationHolders;
         tempCannonInformationHolders.Clear();
         return;
+    }
+
+    private void generateWinds(bool isFromAwake) {
+        //DIFFICULTY IMPLEMENTATION
+        if (heightScript.currentGameMaxHeight >= 20) {
+            for (int i = (objectiveScore - newObjectiveScoreAddition); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
+                float leftSide = (_sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
+                Vector3 windPosition = new Vector3(leftSide, i, 0);
+                GameObject generatedWind = Instantiate(windPrefab, windPosition, Quaternion.identity, windsEmptyObject.transform);
+
+                generatedWind.SetActive(false);
+                generatedWind.name = (i + " wind");
+
+                BoxCollider2D generatedWindBoxCollider2D = generatedWind.GetComponent<BoxCollider2D>();
+                float width = ((2f * _sharedMonobehaviour.mainCamera.orthographicSize) * _sharedMonobehaviour.mainCamera.aspect);
+                generatedWindBoxCollider2D.size = new Vector2(width, generatedWindBoxCollider2D.size.y);
+                generatedWindBoxCollider2D.offset = new Vector2((generatedWindBoxCollider2D.size.x / 2), generatedWindBoxCollider2D.offset.y);
+
+                if (isFromAwake == true) {
+                    winds.Add(generatedWind);
+                } else {
+                    tempWinds.Add(generatedWind);
+                }
+            }
+        }
+        return;
+    }
+
+    private IEnumerator toggleWinds(bool isFromAwake) {
+        List<GameObject> _winds;
+        if (isFromAwake == true) {
+            _winds = winds;
+        } else {
+            _winds = tempWinds;
+        }
+        while (true) {
+            if (_winds.Count > 0) {
+                GameObject selectedWind = _winds[Random.Range(0, _winds.Count)];
+                int randomDelay = Random.Range(0, (newSecond + 10));
+                StartCoroutine(actuallyToggleWinds(selectedWind, randomDelay));
+                StartCoroutine(actuallyToggleWinds(selectedWind, (randomDelay + windSustainTime)));
+                yield return new WaitForSeconds(Random.Range(newSecond, (newSecond + 10)));
+            }
+        }
+    }
+
+    private IEnumerator actuallyToggleWinds(GameObject _wind, int delay) {
+        yield return new WaitForSeconds(delay);
+        if (_wind.activeInHierarchy == false) {
+            _wind.SetActive(true);
+        } else {
+            _wind.SetActive(false);
+        }
+        yield return null;
+    }
+
+    private void removeWinds() {
+        foreach (GameObject _wind in winds) {
+            if (_wind != null) {
+                Destroy(_wind);
+            }
+        }
+
+        winds = tempWinds;
+        tempWinds.Clear();
+        return;
+    }
+
+    private IEnumerator countDown() {
+        //DIFFICULTY IMPLEMENTATION
+        bool needsToStopCoroutine = false;
+        IEnumerator shootCannonsFunction = shootCannons(3f);
+        while (true) {
+            yield return new WaitForSeconds(1f);
+            timerText.text = ("Time left : " + second + ".");
+            if (second > -1) {
+                if (needsToStopCoroutine == true) {
+                    needsToStopCoroutine = false;
+                    StopCoroutine(shootCannonsFunction);
+                }
+                if ((second == newSecond) && (hasCannonsEntered == true)) {
+                    exitCannons();
+                } else if ((second < 6) && (hasCannonsEntered == false)) {
+                    enterCannons();
+                }
+            } else {
+                if (needsToStopCoroutine == false) {
+                    needsToStopCoroutine = true;
+                    StartCoroutine(shootCannonsFunction);
+                }
+            }
+            second--;
+            yield return null;
+        }
     }
 }

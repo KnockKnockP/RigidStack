@@ -7,17 +7,16 @@ public class pauseScript : MonoBehaviour {
 
     [SerializeField] private endMenuManager _endMenuManager = null;
 
-    private void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape) == true) {
-            pauseOrResume();
-        }
-        return;
-    }
-
     public void pauseOrResume() {
         if (endMenuManager.isGameEnded == false) {
-            pauseMenuPanel.SetActive(!isPaused);
-            isPaused = (!isPaused);
+            if (isPaused == false) {
+                Time.timeScale = 0f;
+                isPaused = true;
+            } else {
+                Time.timeScale = 1f;
+                isPaused = false;
+            }
+            pauseMenuPanel.SetActive(isPaused);
         } else {
             _endMenuManager.toggleEndMenu();
         }
