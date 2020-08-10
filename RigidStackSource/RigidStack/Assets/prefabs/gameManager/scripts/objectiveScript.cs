@@ -218,6 +218,7 @@ public class objectiveScript : MonoBehaviour {
                 StartCoroutine(actuallyToggleWinds(selectedWind, (randomDelay + windSustainTime)));
                 yield return new WaitForSeconds(Random.Range(newSecond, (newSecond + 10)));
             }
+            yield return null;
         }
     }
 
