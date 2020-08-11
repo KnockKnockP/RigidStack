@@ -179,8 +179,8 @@ public class objectiveScript : MonoBehaviour {
 
     private void generateWinds(bool isFromAwake) {
         //DIFFICULTY IMPLEMENTATION
-        if (heightScript.currentGameMaxHeight >= 20) {
-            for (int i = (objectiveScore - newObjectiveScoreAddition); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
+        if (heightScript.currentGameMaxHeight >= 50) {
+            for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
                 float leftSide = (_sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
                 Vector3 windPosition = new Vector3(leftSide, i, 0);
                 GameObject generatedWind = Instantiate(windPrefab, windPosition, Quaternion.identity, windsEmptyObject.transform);
@@ -213,10 +213,12 @@ public class objectiveScript : MonoBehaviour {
         while (true) {
             if (_winds.Count > 0) {
                 GameObject selectedWind = _winds[Random.Range(0, _winds.Count)];
-                int randomDelay = Random.Range(0, (newSecond + 10));
-                StartCoroutine(actuallyToggleWinds(selectedWind, randomDelay));
-                StartCoroutine(actuallyToggleWinds(selectedWind, (randomDelay + windSustainTime)));
-                yield return new WaitForSeconds(Random.Range(newSecond, (newSecond + 10)));
+                if (selectedWind != null) {
+                    int randomDelay = Random.Range(0, newSecond);
+                    StartCoroutine(actuallyToggleWinds(selectedWind, randomDelay));
+                    StartCoroutine(actuallyToggleWinds(selectedWind, (randomDelay + windSustainTime)));
+                }
+                yield return new WaitForSeconds(Random.Range((newSecond - 5), (newSecond + 5)));
             }
             yield return null;
         }

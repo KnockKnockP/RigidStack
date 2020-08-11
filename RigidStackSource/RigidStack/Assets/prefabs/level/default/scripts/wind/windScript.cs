@@ -2,10 +2,9 @@
 
 public class windScript : MonoBehaviour {
     //DIFFICULTY IMPLEMENTATION
-    public static int windStrength = 5;
+    public static float windStrength = 0.1f;
 
-    private void OnCollisionStay2D(Collision2D collision) {
-        Debug.Log("Here 1.");
+    private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.CompareTag("object") == true) {
             Rigidbody2D rigidbody2D = collision.gameObject.GetComponent<Rigidbody2D>();
             Vector3 newVelocity = new Vector3((rigidbody2D.velocity.x + windStrength), rigidbody2D.velocity.y);
