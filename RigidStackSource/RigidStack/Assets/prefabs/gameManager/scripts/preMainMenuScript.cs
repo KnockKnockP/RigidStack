@@ -10,6 +10,7 @@ public class preMainMenuScript : MonoBehaviour {
 
     private void Awake() {
         limitFPS();
+        disableVSync();
         noticeText.text = "Checking internet connection.";
         if (checkInternetConnection() == true) {
             noticeText.text = "Connected to the internet";
@@ -18,7 +19,7 @@ public class preMainMenuScript : MonoBehaviour {
         } else {
             noticeText.color = Color.red;
             noticeText.text = ("Failed to connect to the internet (Two attempts.).\r\n" +
-                               exceptionMessage1 + ",\r\n" + 
+                               exceptionMessage1 + ",\r\n" +
                                exceptionMessage2 + ".");
         }
         return;
@@ -29,7 +30,12 @@ public class preMainMenuScript : MonoBehaviour {
         return;
     }
 
-    //https://stackoverflow.com/a/2031831/
+    private void disableVSync() {
+        QualitySettings.vSyncCount = 0;
+        return;
+    }
+
+    //https://www.stackoverflow.com/a/2031831/
     public bool checkInternetConnection() {
         try {
             WebClient webClient = new WebClient();

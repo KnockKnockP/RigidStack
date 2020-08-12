@@ -7,7 +7,7 @@ public class heightScript : MonoBehaviour {
     //DIFFICULTY IMPLEMENTATION
     [HideInInspector] public float tolerance = -0.01f;
     /*
-        maxHeight is the maximum score for the whole account.
+        maxHeight is the maximum score for the whole account, it is also equal to the old objective score.
         currentGameMaxHeight is the maximum score for this only game.
         When the player dies, currentGameMaxHeight gets resetted.
     */
@@ -48,9 +48,6 @@ public class heightScript : MonoBehaviour {
                 if (yPosition > currentFrameMaxHeight) {
                     currentFrameMaxHeight = yPosition;
                     currentGameMaxHeight = currentFrameMaxHeight;
-                    if (currentGameMaxHeight > maxHeight) {
-                        maxHeight = currentGameMaxHeight;
-                    }
                     heightText.text = ("Score : " + currentFrameMaxHeight.ToString() + " / " + _objectiveScript.objectiveScore.ToString() + ".");
                     if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
                         frameCount++;
@@ -63,6 +60,7 @@ public class heightScript : MonoBehaviour {
                                 _objectiveScript.generateObjective(false);
                                 resetLists();
                                 FindObjectOfType<objectScript>().giveMoreItems();
+                                maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
                             }
                             _ = frameCount;
                             frameCount = 0;
