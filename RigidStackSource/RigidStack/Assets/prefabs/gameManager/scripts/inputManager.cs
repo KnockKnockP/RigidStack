@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class inputManager : MonoBehaviour {
     [SerializeField] private pauseScript _pauseScript = null;
     [SerializeField] private cameraScript _cameraScript = null;
+    [SerializeField] private Button confirmButton = null;
 
     private void Update() {
         manageCameraMovement();
         if ((Input.GetKeyDown(KeyCode.Return) == true) || (Input.GetKeyDown(KeyCode.KeypadEnter) == true)) {
-            if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
+            if ((dragAndDropScript._dragAndDropScript.placedGameObject != null) && (confirmButton.interactable == true)) {
                 dragAndDropScript._dragAndDropScript.placeObject();
             }
         }
