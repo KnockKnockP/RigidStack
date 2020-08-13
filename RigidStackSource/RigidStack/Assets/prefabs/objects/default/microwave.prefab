@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4156847507200861351}
   - component: {fileID: 3143912039278302248}
   - component: {fileID: 2199066637753886674}
+  - component: {fileID: 9063355184277090828}
   m_Layer: 0
   m_Name: microwave
   m_TagString: object
@@ -126,7 +127,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 20
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -149,3 +150,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sharedMonobehaviour: {fileID: 0}
   placedGameObject: {fileID: 0}
+--- !u!114 &9063355184277090828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387137070807326072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0973fa1c82a61544281ba5d6961a7b35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minimumAmount: 1
+  maximumAmount: 5

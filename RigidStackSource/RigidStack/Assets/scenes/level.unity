@@ -8586,3 +8586,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pauseScript: {fileID: 7619175099963299234}
   _cameraScript: {fileID: 7619175099963299231}
+  confirmButton: {fileID: 1081601728}

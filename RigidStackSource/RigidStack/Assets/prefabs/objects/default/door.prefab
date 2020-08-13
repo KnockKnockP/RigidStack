@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1253391948209443662}
   - component: {fileID: 8503802617942512685}
   - component: {fileID: 9017456125093559144}
+  - component: {fileID: -2815789251952858947}
   m_Layer: 0
   m_Name: door
   m_TagString: object
@@ -149,3 +150,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sharedMonobehaviour: {fileID: 0}
   placedGameObject: {fileID: 0}
+--- !u!114 &-2815789251952858947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972910995934178373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0973fa1c82a61544281ba5d6961a7b35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minimumAmount: 1
+  maximumAmount: 3

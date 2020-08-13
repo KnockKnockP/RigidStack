@@ -46,7 +46,8 @@ public class objectScript : MonoBehaviour {
                 dragAndDropImages[i].sprite = randomSprite;
                 sprites[i] = dragAndDropImages[i].sprite;
                 //DIFFICULTY IMPLEMENTATION
-                dragAndDropImageScripts[i].objectCount = (short)(UnityEngine.Random.Range(1, 10));
+                objectInformation selectedObjectsObjectInformation = objects[random].GetComponent<objectInformation>();
+                dragAndDropImageScripts[i].objectCount = (short)(UnityEngine.Random.Range(selectedObjectsObjectInformation.minimumAmount, (selectedObjectsObjectInformation.maximumAmount + 1)));
                 dragAndDropImages[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
             }
         }
