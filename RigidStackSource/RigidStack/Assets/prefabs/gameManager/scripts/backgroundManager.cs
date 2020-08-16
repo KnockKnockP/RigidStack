@@ -9,16 +9,39 @@ public class backgroundManager : MonoBehaviour {
     [SerializeField] private GameObject[] backgrounds = null;
 
     private void Awake() {
-        generateBaseBackground();
+        generateExtendedSkies(generateBaseBackground());
         return;
     }
 
-    private void generateBaseBackground() {
+    private GameObject generateBaseBackground() {
         GameObject generatedBackground = Instantiate(backgrounds[0], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
         //SETTINGS IMPLEMENTATION
         resizeBackground(generatedBackground, false);
         Vector3 baseBackgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
         generatedBackground.transform.position = baseBackgroundPosition;
+        return generatedBackground;
+    }
+
+    //TODO : Fucking rework this function.
+    private void generateExtendedSkies(GameObject baseBackground) {
+        GameObject generatedBackground = null;
+        for (int i = 1; i < backgrounds.Length; i++) {
+            float previousGeneratedBackgroundSize = 0f;
+            if (generatedBackground != null) {
+                previousGeneratedBackgroundSize = generatedBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y;
+            }
+            generatedBackground = Instantiate(backgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+            //SETTINGS IMPLEMENTATION
+            resizeBackground(generatedBackground, false);
+            Vector3 backgroundPosition;
+            Debug.Log(baseBackground.GetComponent<backgroundInformationHolder>().gridOffset);
+            if (i == 1) {
+                backgroundPosition = new Vector3(0f, (baseBackground.transform.position.y + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+            } else {
+                backgroundPosition = new Vector3(0f, (previousGeneratedBackgroundSize + generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
+            }
+            generatedBackground.transform.position = backgroundPosition;
+        }
         return;
     }
 
