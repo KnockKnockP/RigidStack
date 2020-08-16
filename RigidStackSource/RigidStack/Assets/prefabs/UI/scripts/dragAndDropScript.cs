@@ -12,7 +12,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
 
     //The object the player can place using this drag and drop image.
-    private short spriteOrder;
+    private static short spriteOrder = 1;
     [HideInInspector] public GameObject objectToPlace;
 
     //The placed gameobject.
