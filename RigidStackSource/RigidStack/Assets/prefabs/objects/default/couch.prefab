@@ -172,3 +172,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minimumAmount: 1
   maximumAmount: 2
+  _postDragAndDropScript: {fileID: 2199066637753886674}
