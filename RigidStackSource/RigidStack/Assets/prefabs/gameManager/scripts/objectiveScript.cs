@@ -226,7 +226,7 @@ public class objectiveScript : MonoBehaviour {
 
     private IEnumerator actuallyToggleWinds(GameObject _wind, int delay) {
         yield return new WaitForSeconds(delay);
-        if (_wind.activeInHierarchy == false) {
+        if ((_wind != null) && (_wind.activeInHierarchy == false)) {
             _wind.SetActive(true);
         } else {
             _wind.SetActive(false);
