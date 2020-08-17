@@ -6,40 +6,27 @@ public class backgroundManager : MonoBehaviour {
 
 
     [SerializeField] private Transform backgroundHolderEmptyObject = null;
-    [SerializeField] private GameObject[] backgrounds = null;
+    [SerializeField] private GameObject[] staticBackgrounds = null;
+    //[SerializeField] private GameObject[] dynamicBackgrounds = null;
 
     private void Awake() {
-        generateExtendedSkies(generateBaseBackground());
+        generateStaticBackground();
         return;
     }
 
-    private GameObject generateBaseBackground() {
-        GameObject generatedBackground = Instantiate(backgrounds[0], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-        //SETTINGS IMPLEMENTATION
-        resizeBackground(generatedBackground, false);
-        Vector3 baseBackgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
-        generatedBackground.transform.position = baseBackgroundPosition;
-        return generatedBackground;
-    }
-
-    //TODO : Fucking rework this function.
-    private void generateExtendedSkies(GameObject baseBackground) {
-        GameObject generatedBackground = null;
-        for (int i = 1; i < backgrounds.Length; i++) {
-            float previousGeneratedBackgroundSize = 0f;
-            if (generatedBackground != null) {
-                previousGeneratedBackgroundSize = generatedBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y;
-            }
-            generatedBackground = Instantiate(backgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+    private void generateStaticBackground() {
+        GameObject previousBackground = null;
+        for (int i = 0; i < staticBackgrounds.Length; i++) {
+            GameObject generatedBackground = Instantiate(staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
             //SETTINGS IMPLEMENTATION
             resizeBackground(generatedBackground, false);
             Vector3 backgroundPosition;
-            Debug.Log(baseBackground.GetComponent<backgroundInformationHolder>().gridOffset);
-            if (i == 1) {
-                backgroundPosition = new Vector3(0f, (baseBackground.transform.position.y + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+            if (i == 0) {
+                backgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
             } else {
-                backgroundPosition = new Vector3(0f, (previousGeneratedBackgroundSize + generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
+                backgroundPosition = new Vector3(0f, (previousBackground.transform.position.y + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
             }
+            previousBackground = generatedBackground;
             generatedBackground.transform.position = backgroundPosition;
         }
         return;
