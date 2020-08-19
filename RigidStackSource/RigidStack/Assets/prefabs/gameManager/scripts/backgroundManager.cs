@@ -1,20 +1,27 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class backgroundManager : MonoBehaviour {
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
     [SerializeField] private Transform gridTransform = null;
 
 
+    private float maximumHeightOfGeneratedBackgrounds;
     [SerializeField] private Transform backgroundHolderEmptyObject = null;
+    //staticBackgrounds are backgrounds that does not care about the camera's position.
     [SerializeField] private GameObject[] staticBackgrounds = null;
-    //[SerializeField] private GameObject[] dynamicBackgrounds = null;
+    //dynamicBackgrounds are backgrounds that generates as the camera moves.
+    [SerializeField] private GameObject[] dynamicBackgrounds = null;
+    //private readonly List<GameObject> generatedDynamicBackgrounds = new List<GameObject>();
 
-    private void Awake() {
-        generateStaticBackground();
+    private void Start() {
+        generateStaticBackgrounds();
+        StartCoroutine(generateDynamicBackgrounds());
         return;
     }
 
-    private void generateStaticBackground() {
+    private void generateStaticBackgrounds() {
         GameObject previousBackground = null;
         for (int i = 0; i < staticBackgrounds.Length; i++) {
             GameObject generatedBackground = Instantiate(staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
@@ -28,12 +35,27 @@ public class backgroundManager : MonoBehaviour {
             }
             previousBackground = generatedBackground;
             generatedBackground.transform.position = backgroundPosition;
+            maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
         }
         return;
     }
 
+    private IEnumerator generateDynamicBackgrounds() {
+        while (true) {
+            if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
+                int randomNumber = Random.Range(0, dynamicBackgrounds.Length);
+                GameObject generatedBackground = Instantiate(dynamicBackgrounds[randomNumber], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+                resizeBackground(generatedBackground, false);
+                Vector3 backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+                generatedBackground.transform.position = backgroundPosition;
+                maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
+            }
+            yield return null;
+        }
+    }
+
     //https://answers.unity.com/answers/620736/view.html
-    void resizeBackground(GameObject background, bool keepAspectRatio) {
+    private void resizeBackground(GameObject background, bool keepAspectRatio) {
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
         float width = backgroundSpriteRenderer.sprite.bounds.size.x,
               height = backgroundSpriteRenderer.sprite.bounds.size.y,
