@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class backgroundManager : MonoBehaviour {
@@ -43,8 +42,7 @@ public class backgroundManager : MonoBehaviour {
     private IEnumerator generateDynamicBackgrounds() {
         while (true) {
             if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
-                int randomNumber = Random.Range(0, dynamicBackgrounds.Length);
-                GameObject generatedBackground = Instantiate(dynamicBackgrounds[randomNumber], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+                GameObject generatedBackground = Instantiate(dynamicBackgrounds[Random.Range(0, dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
                 resizeBackground(generatedBackground, false);
                 Vector3 backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
                 generatedBackground.transform.position = backgroundPosition;
