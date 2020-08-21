@@ -144,6 +144,7 @@ public class objectiveScript : MonoBehaviour {
 
     private IEnumerator shootCannons(float waitSecond) {
         while (true) {
+            yield return null;
             for (int i = 0; i < cannonList.Count; i++) {
                 Vector2 tipPosition = cannonInformationHolders[i].cannonTip.transform.position;
                 Vector3 position = new Vector3(tipPosition.x, tipPosition.y, 0);
@@ -211,6 +212,7 @@ public class objectiveScript : MonoBehaviour {
             _winds = tempWinds;
         }
         while (true) {
+            yield return null;
             if (_winds.Count > 0) {
                 GameObject selectedWind = _winds[Random.Range(0, _winds.Count)];
                 if (selectedWind != null) {
@@ -220,7 +222,6 @@ public class objectiveScript : MonoBehaviour {
                 }
                 yield return new WaitForSeconds(Random.Range((newSecond - 5), (newSecond + 5)));
             }
-            yield return null;
         }
     }
 

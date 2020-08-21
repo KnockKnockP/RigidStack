@@ -41,6 +41,7 @@ public class backgroundManager : MonoBehaviour {
 
     private IEnumerator generateDynamicBackgrounds() {
         while (true) {
+            yield return null;
             if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
                 GameObject generatedBackground = Instantiate(dynamicBackgrounds[Random.Range(0, dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
                 resizeBackground(generatedBackground, false);
@@ -48,12 +49,11 @@ public class backgroundManager : MonoBehaviour {
                 generatedBackground.transform.position = backgroundPosition;
                 maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
             }
-            yield return null;
         }
     }
 
     //https://answers.unity.com/answers/620736/view.html
-    private void resizeBackground(GameObject background, bool keepAspectRatio) {
+    public void resizeBackground(GameObject background, bool keepAspectRatio) {
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
         float width = backgroundSpriteRenderer.sprite.bounds.size.x,
               height = backgroundSpriteRenderer.sprite.bounds.size.y,
