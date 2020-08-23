@@ -14,7 +14,7 @@ public class randomBackgroundObjectGenerationScript : MonoBehaviour {
         while (true) {
             yield return null;
             int waitSecond = Random.Range(1, 91);
-            Debug.Log("Random object will generate after : " + waitSecond + " second(s).");
+            Debug.Log(gameObject + "'s random object will generate after : " + waitSecond + " second(s).");
             yield return new WaitForSeconds(waitSecond);
             GameObject generatedRandomObject = Instantiate(objects[Random.Range(0, objects.Length)], transform.position, Quaternion.identity, transform);
             //SETTINGS IMPLEMENTATION
