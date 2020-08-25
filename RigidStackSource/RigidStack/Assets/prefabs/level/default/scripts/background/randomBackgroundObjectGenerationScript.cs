@@ -13,9 +13,11 @@ public class randomBackgroundObjectGenerationScript : MonoBehaviour {
         backgroundManager _backgroundManager = FindObjectOfType<backgroundManager>();
         while (true) {
             yield return null;
-            int waitSecond = Random.Range(1, 91);
+            //int waitSecond = Random.Range(1, 91);
+            int waitSecond = Random.Range(1, 5);
             Debug.Log(gameObject + "'s random object will generate after : " + waitSecond + " second(s).");
             yield return new WaitForSeconds(waitSecond);
+            //TODO : Randomize the y coordinate.
             GameObject generatedRandomObject = Instantiate(objects[Random.Range(0, objects.Length)], transform.position, Quaternion.identity, transform);
             //SETTINGS IMPLEMENTATION
             _backgroundManager.resizeBackground(generatedRandomObject, false);
