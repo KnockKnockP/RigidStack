@@ -1,8 +1,29 @@
 ﻿using UnityEngine;
 
 public class windScript : MonoBehaviour {
-    //DIFFICULTY IMPLEMENTATION
-    public static float windStrength = 0.1f;
+    private float windStrength = 0.01f;
+
+    private void Start() {
+        switch (PlayerSettings.difficulty) {
+            case (Difficulty.Easy): {
+                windStrength = 0.01f;
+                break;
+            }
+            case (Difficulty.Moderate): {
+                windStrength = 0.05f;
+                break;
+            }
+            case (Difficulty.Difficult): {
+                windStrength = 0.1f;
+                break;
+            }
+            case (Difficulty.Extreme): {
+                windStrength = 0.2f;
+                break;
+            }
+        }
+        return;
+    }
 
     private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.CompareTag("object") == true) {

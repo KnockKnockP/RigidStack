@@ -3,7 +3,9 @@ using UnityEngine.SceneManagement;
 
 public static class SceneNames {
     public static readonly string MainMenu = "mainMenu";
-    public static readonly string level = "level";
+    public static readonly string GameplaySettingsMenu = "gameplaySettingsMenu";
+    public static readonly string GraphicsSettingsMenu = "graphicsSettingsMenu";
+    public static readonly string Level = "level";
 }
 
 public class loadSceneScript : MonoBehaviour {
@@ -15,7 +17,7 @@ public class loadSceneScript : MonoBehaviour {
     }
 
     public void loadLevel() {
-        loadScene(SceneNames.level);
+        loadScene(SceneNames.Level);
         return;
     }
 }

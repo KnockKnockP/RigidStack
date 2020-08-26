@@ -10,7 +10,7 @@ public class preMainMenuScript : MonoBehaviour {
 
     private void Awake() {
         limitFPS();
-        disableVSync();
+        disableDebugging();
         noticeText.text = "Checking internet connection.";
         if (checkInternetConnection() == true) {
             noticeText.text = "Connected to the internet";
@@ -26,12 +26,16 @@ public class preMainMenuScript : MonoBehaviour {
     }
 
     private void limitFPS() {
-        Application.targetFrameRate = Screen.currentResolution.refreshRate;
+        if (Debug.isDebugBuild == false) {
+            Application.targetFrameRate = Screen.currentResolution.refreshRate;
+        } else {
+            QualitySettings.vSyncCount = 0;
+        }
         return;
     }
 
-    private void disableVSync() {
-        QualitySettings.vSyncCount = 0;
+    private void disableDebugging() {
+        Debug.unityLogger.logEnabled = Debug.isDebugBuild;
         return;
     }
 

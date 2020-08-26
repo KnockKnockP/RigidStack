@@ -4,8 +4,7 @@ using UnityEngine.UI;
 
 public class heightScript : MonoBehaviour {
     private byte frameCount;
-    //DIFFICULTY IMPLEMENTATION
-    [HideInInspector] public float tolerance = -0.01f;
+    [HideInInspector] public float tolerance = 0.01f;
     /*
         maxHeight is the maximum score for the whole account, it is also equal to the old objective score.
         currentGameMaxHeight is the maximum score for this only game.
@@ -29,6 +28,24 @@ public class heightScript : MonoBehaviour {
     }
 
     private void Start() {
+        switch (PlayerSettings.difficulty) {
+            case (Difficulty.Easy) : {
+                tolerance = 0.01f;
+                break;
+            }
+            case (Difficulty.Moderate) : {
+                tolerance = 0.001f;
+                break;
+            }
+            case (Difficulty.Difficult) : {
+                tolerance = 0.0001f;
+                break;
+            }
+            case (Difficulty.Extreme) : {
+                tolerance = 0f;
+                break;
+            }
+        }
         heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore.ToString() + ".");
         return;
     }
@@ -74,7 +91,7 @@ public class heightScript : MonoBehaviour {
     }
 
     private bool checkValues(int i) {
-        return StaticClass.isInBetweenOrEqualToTwoValues(placedObjectsRigidbody2D[i].velocity, -0.01f, 0.01f);
+        return ((StaticClass.isInBetweenOrEqualToTwoValues(placedObjectsRigidbody2D[i].velocity, -tolerance, tolerance)) || (placedObjectsRigidbody2D[i].velocity == Vector2.zero));
     }
 
     private void resetLists() {

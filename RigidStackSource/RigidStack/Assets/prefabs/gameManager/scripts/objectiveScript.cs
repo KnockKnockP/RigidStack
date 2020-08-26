@@ -7,9 +7,8 @@ public class objectiveScript : MonoBehaviour {
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
 
 
-    private int second;
-    //DIFFICULTY IMPLEMENTATION
-    public static int newObjectiveScoreAddition = 10, newSecond = 15, windSustainTime = 2;
+    private int second, newSecond = 15, windSustainTime = 2, windGenerationHeight = 50;
+    public static int newObjectiveScoreAddition = 10;
     private int _objectiveScore;
     public int objectiveScore {
         get {
@@ -23,6 +22,7 @@ public class objectiveScript : MonoBehaviour {
 
 
     bool hasCannonsEntered = false;
+    private float cannonShootingDelay = 3f;
     [SerializeField] private Text timerText = null;
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
@@ -40,8 +40,7 @@ public class objectiveScript : MonoBehaviour {
     [SerializeField] private GameObject cannonGrouperObject = null, cannon = null;
 
 
-    //DIFFICULTY IMPLEMENTATION
-    public static int minimumDifferenceForEachWinds = 4;
+    public static int minimumDifferenceForEachWinds = 5;
     [SerializeField] private GameObject windPrefab = null, windsEmptyObject = null;
     private List<GameObject> winds = new List<GameObject>();
     private readonly List<GameObject> tempWinds = new List<GameObject>();
@@ -49,6 +48,48 @@ public class objectiveScript : MonoBehaviour {
 
     private void Awake() {
         //Debug.LogWarning("Remove this line when done testing."); newSecond = 6;
+        return;
+    }
+
+    private void Start() {
+        switch (PlayerSettings.difficulty) {
+            case (Difficulty.Easy) : {
+                newObjectiveScoreAddition = 10;
+                newSecond = 15;
+                windSustainTime = 2;
+                minimumDifferenceForEachWinds = 5;
+                windGenerationHeight = 50;
+                cannonShootingDelay = 3f;
+                break;
+            }
+            case (Difficulty.Moderate) : {
+                newObjectiveScoreAddition = 15;
+                newSecond = 15;
+                windSustainTime = 3;
+                minimumDifferenceForEachWinds = 3;
+                windGenerationHeight = 40;
+                cannonShootingDelay = 2f;
+                break;
+            }
+            case (Difficulty.Difficult) : {
+                newObjectiveScoreAddition = 20;
+                newSecond = 13;
+                windSustainTime = 3;
+                minimumDifferenceForEachWinds = 3;
+                windGenerationHeight = 30;
+                cannonShootingDelay = 1f;
+                break;
+            }
+            case (Difficulty.Extreme) : {
+                newObjectiveScoreAddition = 20;
+                newSecond = 10;
+                windSustainTime = 3;
+                minimumDifferenceForEachWinds = 2;
+                windGenerationHeight = 25;
+                cannonShootingDelay = 0.5f;
+                break;
+            }
+        }
 
         second = newSecond;
         generateObjective(true);
@@ -179,8 +220,7 @@ public class objectiveScript : MonoBehaviour {
     }
 
     private void generateWinds(bool isFromAwake) {
-        //DIFFICULTY IMPLEMENTATION
-        if (heightScript.currentGameMaxHeight >= 50) {
+        if (heightScript.currentGameMaxHeight >= windGenerationHeight) {
             for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
                 float leftSide = (_sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
                 Vector3 windPosition = new Vector3(leftSide, i, 0);
@@ -248,9 +288,8 @@ public class objectiveScript : MonoBehaviour {
     }
 
     private IEnumerator countDown() {
-        //DIFFICULTY IMPLEMENTATION
         bool needsToStopCoroutine = false;
-        IEnumerator shootCannonsFunction = shootCannons(3f);
+        IEnumerator shootCannonsFunction = shootCannons(cannonShootingDelay);
         while (true) {
             yield return new WaitForSeconds(1f);
             timerText.text = ("Time left : " + second + ".");
