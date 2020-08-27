@@ -4,7 +4,7 @@ public class windScript : MonoBehaviour {
     private float windStrength = 0.01f;
 
     private void Start() {
-        switch (PlayerSettings.difficulty) {
+        switch (PlayerData.difficulty) {
             case (Difficulty.Easy): {
                 windStrength = 0.01f;
                 break;

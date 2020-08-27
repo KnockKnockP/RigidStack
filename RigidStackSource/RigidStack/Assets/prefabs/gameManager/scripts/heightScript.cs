@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,11 +7,11 @@ public class heightScript : MonoBehaviour {
     private byte frameCount;
     [HideInInspector] public float tolerance = 0.01f;
     /*
-        maxHeight is the maximum score for the whole account, it is also equal to the old objective score.
+        PlayerData.maxHeight is the maximum score for the whole account, it is also equal to the old objective score.
         currentGameMaxHeight is the maximum score for this only game.
         When the player dies, currentGameMaxHeight gets resetted.
     */
-    [HideInInspector] public static int maxHeight, currentGameMaxHeight;
+    [HideInInspector] public static int currentGameMaxHeight;
 
 
     private GameObject previousFrameGameObject;
@@ -22,13 +23,16 @@ public class heightScript : MonoBehaviour {
     private objectiveScript _objectiveScript;
     [SerializeField] private Text heightText = null;
 
+
+    [SerializeField] private Button checkHeightButton = null;
+
     private void Awake() {
         _objectiveScript = FindObjectOfType<objectiveScript>();
         return;
     }
 
     private void Start() {
-        switch (PlayerSettings.difficulty) {
+        switch (PlayerData.difficulty) {
             case (Difficulty.Easy) : {
                 tolerance = 0.01f;
                 break;
@@ -47,19 +51,39 @@ public class heightScript : MonoBehaviour {
             }
         }
         heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore.ToString() + ".");
+        checkHeightButton.gameObject.SetActive(PlayerData.isManualCheckingEnabled);
+        if (PlayerData.isManualCheckingEnabled == false) {
+            StartCoroutine(updateHeight());
+        }
         return;
     }
 
+    /*
     private void FixedUpdate() {
         updateHeight();
         return;
     }
+    */
 
-    private void updateHeight() {
+    private IEnumerator updateHeight() {
+        while (true) {
+            checkHeight();
+            yield return null;
+        }
+    }
+
+    public void manuallyCheckHeight() {
+        frameCount = 0;
+        checkHeight();
+        checkHeight();
+        return;
+    }
+
+    public void checkHeight() {
         int currentFrameMaxHeight = -9999;
         GameObject currentFrameGameObject;
         for (short i = 0; i < placedObjectsTransforms.Count; i++) {
-            _ = placedObjectsRigidbody2D[i].velocity;
+            //_ = placedObjectsRigidbody2D[i].velocity;
             if (checkValues(i) == true) {
                 int yPosition = (int)(placedObjectsTransforms[i].position.y);
                 if (yPosition > currentFrameMaxHeight) {
@@ -77,11 +101,11 @@ public class heightScript : MonoBehaviour {
                                 _objectiveScript.generateObjective(false);
                                 resetLists();
                                 FindObjectOfType<objectScript>().giveMoreItems();
-                                maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
+                                PlayerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
                             }
-                            _ = frameCount;
+                            //_ = frameCount;
                             frameCount = 0;
-                            _ = frameCount;
+                            //_ = frameCount;
                         }
                     }
                 }

@@ -15,7 +15,7 @@ public class backgroundManager : MonoBehaviour {
     //private readonly List<GameObject> generatedDynamicBackgrounds = new List<GameObject>();
 
     private void Start() {
-        if (PlayerSettings.isBackgroundEnabled == true) {
+        if (PlayerData.isBackgroundEnabled == true) {
             generateStaticBackgrounds();
             StartCoroutine(generateDynamicBackgrounds());
         }
