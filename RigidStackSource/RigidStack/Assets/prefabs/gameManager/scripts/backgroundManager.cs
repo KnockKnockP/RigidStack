@@ -12,7 +12,7 @@ public class backgroundManager : MonoBehaviour {
     [SerializeField] private GameObject[] staticBackgrounds = null;
     //dynamicBackgrounds are backgrounds that generates as the camera moves.
     [SerializeField] private GameObject[] dynamicBackgrounds = null;
-    //private readonly List<GameObject> generatedDynamicBackgrounds = new List<GameObject>();
+    private GameObject previousBackground;
 
     private void Start() {
         if (PlayerData.isBackgroundEnabled == true) {
@@ -23,16 +23,22 @@ public class backgroundManager : MonoBehaviour {
     }
 
     private void generateStaticBackgrounds() {
-        GameObject previousBackground = null;
         for (int i = 0; i < staticBackgrounds.Length; i++) {
             GameObject generatedBackground = Instantiate(staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-            //SETTINGS IMPLEMENTATION
-            resizeBackground(generatedBackground, false);
+            resizeBackground(generatedBackground, PlayerData.isBackgroundScalingKeepAspectRatio);
             Vector3 backgroundPosition;
             if (i == 0) {
-                backgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
+                if (PlayerData.isBackgroundScalingKeepAspectRatio == true) {
+                    backgroundPosition = new Vector3(0f, gridTransform.position.y + (generatedBackground.GetComponent<backgroundInformationHolder>().aspectRatioGridOffset), 0f);
+                } else {
+                    backgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
+                }
             } else {
-                backgroundPosition = new Vector3(0f, (previousBackground.transform.position.y + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+                if (PlayerData.isBackgroundScalingKeepAspectRatio == true) {
+                    backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
+                } else {
+                    backgroundPosition = new Vector3(0f, (previousBackground.transform.position.y + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+                }
             }
             previousBackground = generatedBackground;
             generatedBackground.transform.position = backgroundPosition;
@@ -46,8 +52,14 @@ public class backgroundManager : MonoBehaviour {
             yield return null;
             if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
                 GameObject generatedBackground = Instantiate(dynamicBackgrounds[Random.Range(0, dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-                resizeBackground(generatedBackground, false);
-                Vector3 backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+                resizeBackground(generatedBackground, PlayerData.isBackgroundScalingKeepAspectRatio);
+                Vector3 backgroundPosition;
+                if (PlayerData.isBackgroundScalingKeepAspectRatio == true) {
+                    backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
+                } else {
+                    backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+                }
+                previousBackground = generatedBackground;
                 generatedBackground.transform.position = backgroundPosition;
                 maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
             }

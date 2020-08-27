@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridOffset: 0.2
+  aspectRatioGridOffset: -1.53
 --- !u!95 &1046212904
 Animator:
   serializedVersion: 3

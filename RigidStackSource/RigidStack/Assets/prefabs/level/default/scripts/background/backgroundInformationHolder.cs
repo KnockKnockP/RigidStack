@@ -7,5 +7,6 @@ public class backgroundInformationHolder : MonoBehaviour {
         Exmaple usage : Vector3 baseBackgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + gridOffset), 0f);
         ..........................................................................................................................................^^^^^^^^^^
     */
-    public float gridOffset = 0f;
+    public float gridOffset = 0f, aspectRatioGridOffset = 0f;
+    //aspectRatioGridOffset might be ((grid position) / 2).
 }

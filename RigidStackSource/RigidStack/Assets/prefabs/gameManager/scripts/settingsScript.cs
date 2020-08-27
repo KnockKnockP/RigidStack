@@ -10,6 +10,7 @@ public enum Difficulty : byte {
 };
 
 public class settingsScript : MonoBehaviour {
+    [Header("Gameplay settings.")]
     [SerializeField] private Text difficultyText = null;
     [SerializeField] private Dropdown difficultyDropdown = null;
 
@@ -17,11 +18,15 @@ public class settingsScript : MonoBehaviour {
     [SerializeField] private Text manualCheckingText = null;
 
 
+    [Header("Graphics settings.")]
     [SerializeField] private Text verticalSyncCountText = null;
     [SerializeField] private Dropdown verticalSyncCountDropdown = null;
 
 
     [SerializeField] private Text backgroundEnabledText = null;
+
+
+    [SerializeField] private Text backgroundScalingText = null;
 
     private void Start() {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -31,6 +36,7 @@ public class settingsScript : MonoBehaviour {
         } else if (sceneName == SceneNames.GraphicsSettingsMenu) {
             updateVerticalSyncCount(PlayerData.verticalSyncCount);
             updateBackgroundEnabled(PlayerData.isBackgroundEnabled);
+            updateBackgroundScaling(PlayerData.isBackgroundScalingKeepAspectRatio);
         }
         return;
     }
@@ -83,6 +89,22 @@ public class settingsScript : MonoBehaviour {
         PlayerData.isBackgroundEnabled = _isBackgroundEnabled;
         backgroundEnabledText.text = ("Is background enabled : " + PlayerData.isBackgroundEnabled + ".");
         Debug.Log("Updated is background enabled to " + PlayerData.isBackgroundEnabled + ".");
+        return;
+    }
+
+    public void toggleBackgroundScaling() {
+        updateBackgroundScaling(!PlayerData.isBackgroundScalingKeepAspectRatio);
+        return;
+    }
+
+    public void updateBackgroundScaling(bool _isBackgroundScalingStretch) {
+        PlayerData.isBackgroundScalingKeepAspectRatio = _isBackgroundScalingStretch;
+        string temp = "Stretch";
+        if (PlayerData.isBackgroundScalingKeepAspectRatio == true) {
+            temp = "Keep aspect ratio";
+        }
+        backgroundScalingText.text = ("Background scaling : " + temp + ".");
+        Debug.Log("Updated background scaling to " + temp + ".");
         return;
     }
 }

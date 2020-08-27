@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridOffset: 0.2
+  aspectRatioGridOffset: -1.53
 --- !u!114 &6430176083562780822
 MonoBehaviour:
   m_ObjectHideFlags: 0

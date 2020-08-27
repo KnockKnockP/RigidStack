@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public static class PlayerData {
-    public static bool isBackgroundEnabled = true, isManualCheckingEnabled = false;
+    public static bool isBackgroundEnabled = true, isManualCheckingEnabled = false, isBackgroundScalingKeepAspectRatio = false;
     public static int verticalSyncCount = 0, maxHeight = 0;
     public static Difficulty difficulty = Difficulty.Easy;
 }
 
 [Serializable]
 public class SerializablePlayerData {
-    public bool isBackgroundEnabled = true, isManualCheckingEnabled = false;
+    public bool isBackgroundEnabled = true, isManualCheckingEnabled = false, isBackgroundScalingKeepAspectRatio = false;
     public int verticalSyncCount = 0, maxHeight = 0;
     public Difficulty difficulty = Difficulty.Easy;
 
@@ -20,6 +20,7 @@ public class SerializablePlayerData {
         if (isSaving == true) {
             isBackgroundEnabled = PlayerData.isBackgroundEnabled;
             isManualCheckingEnabled = PlayerData.isManualCheckingEnabled;
+            isBackgroundScalingKeepAspectRatio = PlayerData.isBackgroundScalingKeepAspectRatio;
             verticalSyncCount = PlayerData.verticalSyncCount;
             maxHeight = PlayerData.maxHeight;
             difficulty = PlayerData.difficulty;
@@ -30,6 +31,7 @@ public class SerializablePlayerData {
 
 public class savingScript : MonoBehaviour {
     [SerializeField] private settingsScript _settingsScript = null;
+    [SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
 
     public void save() {
@@ -46,6 +48,9 @@ public class savingScript : MonoBehaviour {
             SerializablePlayerData serializablePlayerData = new SerializablePlayerData(true);
             binaryFormatter.Serialize(fileStream, serializablePlayerData);
             fileStream.Close();
+        } catch (Exception exception) {
+            savingText.color = Color.red;
+            savingText.text = exception.Message;
         } finally {
             saveButton.interactable = true;
             loadButton.interactable = true;
@@ -63,6 +68,8 @@ public class savingScript : MonoBehaviour {
         #endif
         try {
             if (File.Exists(path) == false) {
+                savingText.color = Color.red;
+                savingText.text = "Save file was not found.";
                 Debug.LogError("Save file was not found in " + path);
                 return;
             }
@@ -72,10 +79,14 @@ public class savingScript : MonoBehaviour {
             fileStream.Close();
             _settingsScript.updateBackgroundEnabled(serializablePlayerData.isBackgroundEnabled);
             _settingsScript.updateManualChecking(serializablePlayerData.isManualCheckingEnabled);
+            _settingsScript.updateBackgroundScaling(serializablePlayerData.isBackgroundScalingKeepAspectRatio);
             _settingsScript.updateVerticalSyncCount(serializablePlayerData.verticalSyncCount);
             PlayerData.maxHeight = serializablePlayerData.maxHeight;
             Debug.Log("Updated max height to " + PlayerData.maxHeight);
             _settingsScript.updateDifficulty(serializablePlayerData.difficulty);
+        } catch (Exception exception) {
+            savingText.color = Color.red;
+            savingText.text = exception.Message;
         } finally {
             saveButton.interactable = true;
             loadButton.interactable = true;

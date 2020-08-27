@@ -83,7 +83,6 @@ public class heightScript : MonoBehaviour {
         int currentFrameMaxHeight = -9999;
         GameObject currentFrameGameObject;
         for (short i = 0; i < placedObjectsTransforms.Count; i++) {
-            //_ = placedObjectsRigidbody2D[i].velocity;
             if (checkValues(i) == true) {
                 int yPosition = (int)(placedObjectsTransforms[i].position.y);
                 if (yPosition > currentFrameMaxHeight) {
@@ -103,9 +102,7 @@ public class heightScript : MonoBehaviour {
                                 FindObjectOfType<objectScript>().giveMoreItems();
                                 PlayerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
                             }
-                            //_ = frameCount;
                             frameCount = 0;
-                            //_ = frameCount;
                         }
                     }
                 }

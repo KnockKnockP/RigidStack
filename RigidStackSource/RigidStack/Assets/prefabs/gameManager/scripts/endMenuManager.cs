@@ -115,7 +115,7 @@ public class endMenuManager : MonoBehaviour {
     public void restart() {
         _objectiveScript.objectiveScore = 0;
         heightScript.currentGameMaxHeight = 0;
-        //SAVE IMPLEMENTATION.
+        FindObjectOfType<savingScript>().save();
         FindObjectOfType<loadSceneScript>().loadLevel();
         return;
     }

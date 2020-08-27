@@ -29,9 +29,7 @@ public class pauseScript : MonoBehaviour {
     }
 
     public void exit() {
-        //SAVE IMPLEMENTATION.
-        Debug.LogWarning("Call the save function here.\r\n" +
-                         "Also, put the core of the exit function into the save manager script when we make it.");
+        FindObjectOfType<savingScript>().save();
         Application.Quit();
         return;
     }

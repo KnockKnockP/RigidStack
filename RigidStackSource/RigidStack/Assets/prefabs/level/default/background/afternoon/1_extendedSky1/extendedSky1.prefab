@@ -199,3 +199,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridOffset: 0.2
+  aspectRatioGridOffset: -1.53
