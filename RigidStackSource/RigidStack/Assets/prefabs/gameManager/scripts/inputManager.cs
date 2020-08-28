@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class inputManager : MonoBehaviour {
@@ -17,35 +18,40 @@ public class inputManager : MonoBehaviour {
     [SerializeField] private Button confirmButton = null;
 
     private void Update() {
-        manageCameraMovement();
-        manageDragAndDrop();
-        if ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true)) {
-            _heightScript.manuallyCheckHeight();
-        }
+        StartCoroutine(manageCameraMovement());
+        StartCoroutine(manageDragAndDrop());
+        StartCoroutine(manageOthers());
         return;
     }
 
-    private void manageCameraMovement() {
+    private IEnumerator manageCameraMovement() {
+        yield return null;
         if ((Input.GetKeyDown(KeyCode.W) == true) || (Input.GetKeyDown(KeyCode.UpArrow) == true)) {
             _cameraScript.toggleCameraUp();
+            yield return null;
         }
         if ((Input.GetKeyUp(KeyCode.W) == true) || (Input.GetKeyUp(KeyCode.UpArrow) == true)) {
             _cameraScript.toggleCameraUp();
+            yield return null;
         }
         if ((Input.GetKeyDown(KeyCode.S) == true) || (Input.GetKeyDown(KeyCode.DownArrow) == true)) {
             _cameraScript.toggleCameraDown();
+            yield return null;
         }
         if ((Input.GetKeyUp(KeyCode.S) == true) || (Input.GetKeyUp(KeyCode.DownArrow) == true)) {
             _cameraScript.toggleCameraDown();
+            yield return null;
         }
-        return;
+        yield return null;
     }
 
-    private void manageDragAndDrop() {
+    private IEnumerator manageDragAndDrop() {
+        yield return null;
         if ((Input.GetKeyDown(KeyCode.LeftShift) == true) || (Input.GetKeyDown(KeyCode.RightShift) == true)) {
             if ((dragAndDropScript._dragAndDropScript.placedGameObject != null) && (confirmButton.interactable == true)) {
                 dragAndDropScript._dragAndDropScript.placeObject();
             }
+            yield return null;
         }
         if (Input.GetKeyDown(KeyCode.Escape) == true) {
             if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
@@ -53,17 +59,29 @@ public class inputManager : MonoBehaviour {
             } else {
                 _pauseScript.pauseOrResume();
             }
+            yield return null;
         }
         if ((Input.GetKeyDown(KeyCode.D) == true) || (Input.GetKeyDown(KeyCode.RightArrow) == true)) {
             if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
                 dragAndDropScript._dragAndDropScript.rotateRight();
             }
+            yield return null;
         }
         if ((Input.GetKeyDown(KeyCode.A) == true) || (Input.GetKeyDown(KeyCode.LeftArrow) == true)) {
             if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
                 dragAndDropScript._dragAndDropScript.rotateLeft();
             }
+            yield return null;
         }
-        return;
+        yield return null;
+    }
+
+    private IEnumerator manageOthers() {
+        yield return null;
+        if ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true)) {
+            _heightScript.manuallyCheckHeight();
+            yield return null;
+        }
+        yield return null;
     }
 }
