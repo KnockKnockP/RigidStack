@@ -31,12 +31,12 @@ public class settingsScript : MonoBehaviour {
     private void Start() {
         string sceneName = SceneManager.GetActiveScene().name;
         if (sceneName == SceneNames.GameplaySettingsMenu) {
-            updateDifficulty(PlayerData.difficulty);
-            updateManualChecking(PlayerData.isManualCheckingEnabled);
+            updateDifficulty(LoadedPlayerData.playerData.difficulty);
+            updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
         } else if (sceneName == SceneNames.GraphicsSettingsMenu) {
-            updateVerticalSyncCount(PlayerData.verticalSyncCount);
-            updateBackgroundEnabled(PlayerData.isBackgroundEnabled);
-            updateBackgroundScaling(PlayerData.isBackgroundScalingKeepAspectRatio);
+            updateVerticalSyncCount(LoadedPlayerData.playerData.verticalSyncCount);
+            updateBackgroundEnabled(LoadedPlayerData.playerData.isBackgroundEnabled);
+            updateBackgroundScaling(LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
         }
         return;
     }
@@ -47,10 +47,10 @@ public class settingsScript : MonoBehaviour {
     }
 
     public void updateDifficulty(Difficulty _difficulty) {
-        PlayerData.difficulty = _difficulty;
-        difficultyText.text = ("Difficulty : " + PlayerData.difficulty + ".");
-        difficultyDropdown.value = (int)(PlayerData.difficulty);
-        Debug.Log("Updated difficulty to " + PlayerData.difficulty + ".");
+        LoadedPlayerData.playerData.difficulty = _difficulty;
+        difficultyText.text = ("Difficulty : " + LoadedPlayerData.playerData.difficulty + ".");
+        difficultyDropdown.value = (int)(LoadedPlayerData.playerData.difficulty);
+        Debug.Log("Updated difficulty to " + LoadedPlayerData.playerData.difficulty + ".");
         return;
     }
 
@@ -61,7 +61,7 @@ public class settingsScript : MonoBehaviour {
 
     public void updateVerticalSyncCount(int _verticalSyncCount) {
         QualitySettings.vSyncCount = _verticalSyncCount;
-        PlayerData.verticalSyncCount = QualitySettings.vSyncCount;
+        LoadedPlayerData.playerData.verticalSyncCount = QualitySettings.vSyncCount;
         verticalSyncCountText.text = ("Vertical sync count : " + QualitySettings.vSyncCount + ".");
         verticalSyncCountDropdown.value = QualitySettings.vSyncCount;
         Debug.Log("Updated vertical sync count to " + QualitySettings.vSyncCount + ".");
@@ -69,38 +69,38 @@ public class settingsScript : MonoBehaviour {
     }
 
     public void toggleManualChecking() {
-        updateManualChecking(!PlayerData.isManualCheckingEnabled);
+        updateManualChecking(!LoadedPlayerData.playerData.isManualCheckingEnabled);
         return;
     }
 
     public void updateManualChecking(bool _isManualCheckingEnabled) {
-        PlayerData.isManualCheckingEnabled = _isManualCheckingEnabled;
-        manualCheckingText.text = ("Is manual height checking enabled : " + PlayerData.isManualCheckingEnabled + ".");
-        Debug.Log("Updated is manual height checking enabled to " + PlayerData.isManualCheckingEnabled + ".");
+        LoadedPlayerData.playerData.isManualCheckingEnabled = _isManualCheckingEnabled;
+        manualCheckingText.text = ("Is manual height checking enabled : " + LoadedPlayerData.playerData.isManualCheckingEnabled + ".");
+        Debug.Log("Updated is manual height checking enabled to " + LoadedPlayerData.playerData.isManualCheckingEnabled + ".");
         return;
     }
 
     public void toggleBackgroundEnabled() {
-        updateBackgroundEnabled(!PlayerData.isBackgroundEnabled);
+        updateBackgroundEnabled(!LoadedPlayerData.playerData.isBackgroundEnabled);
         return;
     }
 
     public void updateBackgroundEnabled(bool _isBackgroundEnabled) {
-        PlayerData.isBackgroundEnabled = _isBackgroundEnabled;
-        backgroundEnabledText.text = ("Is background enabled : " + PlayerData.isBackgroundEnabled + ".");
-        Debug.Log("Updated is background enabled to " + PlayerData.isBackgroundEnabled + ".");
+        LoadedPlayerData.playerData.isBackgroundEnabled = _isBackgroundEnabled;
+        backgroundEnabledText.text = ("Is background enabled : " + LoadedPlayerData.playerData.isBackgroundEnabled + ".");
+        Debug.Log("Updated is background enabled to " + LoadedPlayerData.playerData.isBackgroundEnabled + ".");
         return;
     }
 
     public void toggleBackgroundScaling() {
-        updateBackgroundScaling(!PlayerData.isBackgroundScalingKeepAspectRatio);
+        updateBackgroundScaling(!LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
         return;
     }
 
     public void updateBackgroundScaling(bool _isBackgroundScalingStretch) {
-        PlayerData.isBackgroundScalingKeepAspectRatio = _isBackgroundScalingStretch;
+        LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio = _isBackgroundScalingStretch;
         string temp = "Stretch";
-        if (PlayerData.isBackgroundScalingKeepAspectRatio == true) {
+        if (LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio == true) {
             temp = "Keep aspect ratio";
         }
         backgroundScalingText.text = ("Background scaling : " + temp + ".");

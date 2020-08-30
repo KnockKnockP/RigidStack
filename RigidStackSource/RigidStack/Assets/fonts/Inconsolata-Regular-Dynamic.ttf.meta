@@ -1,16 +1,17 @@
 fileFormatVersion: 2
-guid: a222b8c20e9f1064ebfc4eb58d6f146e
+guid: c7293d446c1d19347b5eda2b166800fb
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
   fontSize: 50
-  forceTextureCase: -1
+  forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
   fontNames:
   - Inconsolata
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a222b8c20e9f1064ebfc4eb58d6f146e, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

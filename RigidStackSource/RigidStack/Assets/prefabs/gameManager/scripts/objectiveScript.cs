@@ -52,7 +52,7 @@ public class objectiveScript : MonoBehaviour {
     }
 
     private void Start() {
-        switch (PlayerData.difficulty) {
+        switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Easy) : {
                 newObjectiveScoreAddition = 10;
                 newSecond = 15;

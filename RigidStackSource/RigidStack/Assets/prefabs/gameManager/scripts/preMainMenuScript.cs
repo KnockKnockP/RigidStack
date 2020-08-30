@@ -11,17 +11,7 @@ public class preMainMenuScript : MonoBehaviour {
     private void Awake() {
         limitFPS();
         disableDebugging();
-        noticeText.text = "Checking internet connection.";
-        if (checkInternetConnection() == true) {
-            noticeText.text = "Connected to the internet";
-            checkForUpdate();
-            checkNoticeText();
-        } else {
-            noticeText.color = Color.red;
-            noticeText.text = ("Failed to connect to the internet (Two attempts.).\r\n" +
-                               exceptionMessage1 + ",\r\n" +
-                               exceptionMessage2 + ".");
-        }
+        checkInternetConnection();
         return;
     }
 
@@ -39,8 +29,23 @@ public class preMainMenuScript : MonoBehaviour {
         return;
     }
 
+    private void checkInternetConnection() {
+        noticeText.text = "Checking internet connection.";
+        if (checkInternetConnectability() == true) {
+            noticeText.text = "Connected to the internet";
+            checkForUpdate();
+            checkNoticeText();
+        } else {
+            noticeText.color = Color.red;
+            noticeText.text = ("Failed to connect to the internet (Two attempts.).\r\n" +
+                               exceptionMessage1 + ",\r\n" +
+                               exceptionMessage2 + ".");
+        }
+        return;
+    }
+
     //https://www.stackoverflow.com/a/2031831/
-    public bool checkInternetConnection() {
+    private bool checkInternetConnectability() {
         try {
             WebClient webClient = new WebClient();
             webClient.OpenRead("https://www.google.com/generate_204");

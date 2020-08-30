@@ -32,7 +32,7 @@ public class heightScript : MonoBehaviour {
     }
 
     private void Start() {
-        switch (PlayerData.difficulty) {
+        switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Easy) : {
                 tolerance = 0.01f;
                 break;
@@ -51,8 +51,8 @@ public class heightScript : MonoBehaviour {
             }
         }
         heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore.ToString() + ".");
-        checkHeightButton.gameObject.SetActive(PlayerData.isManualCheckingEnabled);
-        if (PlayerData.isManualCheckingEnabled == false) {
+        checkHeightButton.gameObject.SetActive(LoadedPlayerData.playerData.isManualCheckingEnabled);
+        if (LoadedPlayerData.playerData.isManualCheckingEnabled == false) {
             StartCoroutine(updateHeight());
         }
         return;
@@ -100,7 +100,7 @@ public class heightScript : MonoBehaviour {
                                 _objectiveScript.generateObjective(false);
                                 resetLists();
                                 FindObjectOfType<objectScript>().giveMoreItems();
-                                PlayerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
+                                LoadedPlayerData.playerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
                             }
                             frameCount = 0;
                         }

@@ -52,7 +52,7 @@ public class endMenuManager : MonoBehaviour {
     public void endGame() {
         isGameEnded = true;
         endMenuScoreText.text = ("Game over!\r\n" +
-                                 "Score : " + heightScript.currentGameMaxHeight + " / " + PlayerData.maxHeight + ".");
+                                 "Score : " + heightScript.currentGameMaxHeight + " / " + LoadedPlayerData.playerData.maxHeight + ".");
         enableEndMenu();
         dock.SetActive(false);
         if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {

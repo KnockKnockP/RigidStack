@@ -2,10 +2,11 @@
 using UnityEngine.SceneManagement;
 
 public static class SceneNames {
-    public static readonly string MainMenu = "mainMenu";
-    public static readonly string GameplaySettingsMenu = "gameplaySettingsMenu";
-    public static readonly string GraphicsSettingsMenu = "graphicsSettingsMenu";
-    public static readonly string Level = "level";
+    public static readonly string preMainMenu = "preMainMenu",
+                                  MainMenu = "mainMenu",
+                                  GameplaySettingsMenu = "gameplaySettingsMenu",
+                                  GraphicsSettingsMenu = "graphicsSettingsMenu",
+                                  Level = "level";
 }
 
 public class loadSceneScript : MonoBehaviour {
