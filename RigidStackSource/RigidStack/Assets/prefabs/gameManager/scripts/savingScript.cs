@@ -34,7 +34,7 @@ public class savingScript : MonoBehaviour {
 
     private static bool hasLoadedProfileListOnStart;
     private readonly string defaultProfileName = "Default";
-    [SerializeField] private Text profileNameText = null;
+    [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
 
@@ -43,19 +43,64 @@ public class savingScript : MonoBehaviour {
         if (Directory.Exists(savesFolderPath) == false) {
             Directory.CreateDirectory(savesFolderPath);
         }
-        if ((SceneManager.GetActiveScene().name == SceneNames.preMainMenu) && (hasLoadedProfileListOnStart == false)) {
+        if (SceneManager.GetActiveScene().name == SceneNames.preMainMenu) {
             if (File.Exists(getPath(true)) == false) {
                 makeNewProfile(defaultProfileName);
-                return;
+            } else if (hasLoadedProfileListOnStart == false) {
+                loadProfiles();
+                hasLoadedProfileListOnStart = true;
+            } else {
+                selectProfile(LoadedPlayerData.playerData.name);
             }
-            loadProfiles();
-            hasLoadedProfileListOnStart = true;
         }
         return;
     }
 
+    public void checkNameNoReturn(InputField inputField) {
+        checkName(inputField);
+        return;
+    }
+
+    private bool checkName(InputField inputField) {
+        return checkName(inputField.text);
+    }
+
+    private bool checkName(string inputText) {
+        newProfileExceptionText.color = Color.red;
+        if (inputText.Length == 0) {
+            newProfileExceptionText.text = "Profile name can not be empty.";
+            newProfileExceptionText.gameObject.SetActive(true);
+            return false;
+        }
+        for (int i = 0; i < inputText.Length; i++) {
+            if ((inputText[i] == '\\') ||
+                (inputText[i] == '\"') ||
+                (inputText[i] == '*') ||
+                (inputText[i] == '|') ||
+                (inputText[i] == '<') ||
+                (inputText[i] == '>') ||
+                (inputText[i] == ':') ||
+                (inputText[i] == '?')) {
+                newProfileExceptionText.text = "Profile name can not contain \"" + inputText[i] + "\".";
+                newProfileExceptionText.gameObject.SetActive(true);
+                return false;
+            }
+        }
+        foreach (PlayerData playerData in LoadedPlayerData.profiles) {
+            if (playerData.name == inputText) {
+                newProfileExceptionText.text = "Duplicate profile name found.";
+                newProfileExceptionText.gameObject.SetActive(true);
+                return false;
+            }
+        }
+        newProfileExceptionText.gameObject.SetActive(false);
+        return true;
+    }
+
     public void makeNewProfile(InputField inputField) {
-        makeNewProfile(inputField.text);
+        if (checkName(inputField) == true) {
+            makeNewProfile(inputField.text);
+        }
         return;
     }
 
@@ -148,8 +193,9 @@ public class savingScript : MonoBehaviour {
             while (true) {
                 string readLine = streamReader.ReadLine();
                 if (readLine == "b4072cc4df126417585770a45b3e06de26625044b0ccbfeabc439038c879b4afd0007e8ec6f09b5c5bfca4405b2b566f42da55a4086d3c75c60cdcb5213024df") {
-                    streamReader.Close();
                     break;
+                } else if (checkName(readLine) == false) {
+                    continue;
                 }
                 PlayerData loadedPlayerData = load(readLine);
                 LoadedPlayerData.profiles.Add(loadedPlayerData);
