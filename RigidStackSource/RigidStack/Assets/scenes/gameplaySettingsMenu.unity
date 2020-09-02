@@ -331,6 +331,8 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
+    - m_Text: Sandbox.
+      m_Image: {fileID: 0}
     - m_Text: Easy.
       m_Image: {fileID: 0}
     - m_Text: Moderate.
@@ -3284,7 +3286,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Easy.
+  m_Text: Sandbox.
 --- !u!222 &1947605076
 CanvasRenderer:
   m_ObjectHideFlags: 0

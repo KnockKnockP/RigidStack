@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class heightScript : MonoBehaviour {
     private byte frameCount;
-    [HideInInspector] public float tolerance = 0.01f;
+    [HideInInspector] public float tolerance = 0.1f;
     /*
         PlayerData.maxHeight is the maximum score for the whole account, it is also equal to the old objective score.
         currentGameMaxHeight is the maximum score for this only game.
@@ -33,6 +33,10 @@ public class heightScript : MonoBehaviour {
 
     private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
+            case (Difficulty.Sandbox) : {
+                tolerance = 0.1f;
+                break;
+            }
             case (Difficulty.Easy) : {
                 tolerance = 0.01f;
                 break;

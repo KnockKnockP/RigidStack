@@ -3,10 +3,11 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public enum Difficulty : byte {
-    Easy = 0,
-    Moderate = 1,
-    Difficult = 2,
-    Extreme = 3
+    Sandbox = 0,
+    Easy = 1,
+    Moderate = 2,
+    Difficult = 3,
+    Extreme = 4
 };
 
 public class settingsScript : MonoBehaviour {

@@ -7,7 +7,7 @@ public class objectiveScript : MonoBehaviour {
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
 
 
-    private int second, newSecond = 15, windSustainTime = 2, windGenerationHeight = 50;
+    private int second, newSecond = 60, windSustainTime = 1, windGenerationHeight = 50;
     public static int newObjectiveScoreAddition = 10;
     private int _objectiveScore;
     public int objectiveScore {
@@ -22,7 +22,7 @@ public class objectiveScript : MonoBehaviour {
 
 
     bool hasCannonsEntered = false;
-    private float cannonShootingDelay = 3f;
+    private float cannonShootingDelay = 5f;
     [SerializeField] private Text timerText = null;
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
@@ -53,6 +53,15 @@ public class objectiveScript : MonoBehaviour {
 
     private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
+            case (Difficulty.Sandbox) : {
+                newObjectiveScoreAddition = 10;
+                newSecond = 60;
+                windSustainTime = 1;
+                minimumDifferenceForEachWinds = 5;
+                windGenerationHeight = 50;
+                cannonShootingDelay = 5f;
+                break;
+            }
             case (Difficulty.Easy) : {
                 newObjectiveScoreAddition = 10;
                 newSecond = 15;
