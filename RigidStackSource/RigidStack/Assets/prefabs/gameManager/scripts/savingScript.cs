@@ -37,6 +37,7 @@ public class PlayerGraphics {
 
 public class savingScript : MonoBehaviour {
     /*
+        TODO : Replace this system with something else.
         Sha512("___END_OF_FILE___") == "b4072cc4df126417585770a45b3e06de26625044b0ccbfeabc439038c879b4afd0007e8ec6f09b5c5bfca4405b2b566f42da55a4086d3c75c60cdcb5213024df".
         I hope no one ever decides to make a profile named "b4072cc4df126417585770a45b3e06de26625044b0ccbfeabc439038c879b4afd0007e8ec6f09b5c5bfca4405b2b566f42da55a4086d3c75c60cdcb5213024df".
     */
@@ -234,11 +235,6 @@ public class savingScript : MonoBehaviour {
         saveButton.interactable = false;
         loadButton.interactable = false;
         try {
-            /*
-                Make variables.
-                Make an array of strings that contains the name of the variables.
-                Use reflector to find the variable and save it.
-            */
             FileStream fileStream = File.Create(getPath(false, false, false, profileName));
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(fileStream, LoadedPlayerData.playerData);
