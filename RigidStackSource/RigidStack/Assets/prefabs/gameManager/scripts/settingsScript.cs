@@ -10,6 +10,20 @@ public enum Difficulty : byte {
     Extreme = 4
 };
 
+public static class GraphicsLevel {
+    private static readonly string[] graphicsLevels = {
+        "Potato.",
+        "Low.",
+        "Medium.",
+        "High.",
+        "Very high.",
+    };
+
+    public static string getGraphicsLevelString(int graphicsLevel) {
+        return graphicsLevels[graphicsLevel];
+    }
+}
+
 public class settingsScript : MonoBehaviour {
     [Header("Gameplay settings.")]
     [SerializeField] private Text difficultyText = null;
@@ -20,6 +34,10 @@ public class settingsScript : MonoBehaviour {
 
 
     [Header("Graphics settings.")]
+    [SerializeField] private Text graphicsText = null;
+    [SerializeField] private Dropdown graphicsDropdown = null;
+
+
     [SerializeField] private Text verticalSyncCountText = null;
     [SerializeField] private Dropdown verticalSyncCountDropdown = null;
 
@@ -35,9 +53,10 @@ public class settingsScript : MonoBehaviour {
             updateDifficulty(LoadedPlayerData.playerData.difficulty);
             updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
         } else if (sceneName == SceneNames.GraphicsSettingsMenu) {
-            updateVerticalSyncCount(LoadedPlayerData.playerData.verticalSyncCount);
-            updateBackgroundEnabled(LoadedPlayerData.playerData.isBackgroundEnabled);
-            updateBackgroundScaling(LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
+            updateGraphics(LoadedPlayerData.playerGraphics.graphics);
+            updateVerticalSyncCount(LoadedPlayerData.playerGraphics.verticalSyncCount);
+            updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
+            updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
         }
         return;
     }
@@ -49,9 +68,24 @@ public class settingsScript : MonoBehaviour {
 
     public void updateDifficulty(Difficulty _difficulty) {
         LoadedPlayerData.playerData.difficulty = _difficulty;
-        difficultyText.text = ("Difficulty : " + LoadedPlayerData.playerData.difficulty + ".");
-        difficultyDropdown.value = (int)(LoadedPlayerData.playerData.difficulty);
-        Debug.Log("Updated difficulty to " + LoadedPlayerData.playerData.difficulty + ".");
+        difficultyText.text = ("Difficulty : " + _difficulty + ".");
+        difficultyDropdown.value = (int)(_difficulty);
+        Debug.Log("Updated difficulty to " + _difficulty + ".");
+        return;
+    }
+
+    public void changeGraphics() {
+        updateGraphics(graphicsDropdown.value);
+        return;
+    }
+
+    public void updateGraphics(int graphicsLevel) {
+        QualitySettings.SetQualityLevel(graphicsLevel, true);
+        LoadedPlayerData.playerGraphics.graphics = graphicsLevel;
+        string graphicsLevelString = GraphicsLevel.getGraphicsLevelString(graphicsLevel);
+        graphicsText.text = ("Graphics : " + graphicsLevelString);
+        graphicsDropdown.value = graphicsLevel;
+        Debug.Log("Updated graphics to " + graphicsLevelString);
         return;
     }
 
@@ -62,10 +96,10 @@ public class settingsScript : MonoBehaviour {
 
     public void updateVerticalSyncCount(int _verticalSyncCount) {
         QualitySettings.vSyncCount = _verticalSyncCount;
-        LoadedPlayerData.playerData.verticalSyncCount = QualitySettings.vSyncCount;
-        verticalSyncCountText.text = ("Vertical sync count : " + QualitySettings.vSyncCount + ".");
-        verticalSyncCountDropdown.value = QualitySettings.vSyncCount;
-        Debug.Log("Updated vertical sync count to " + QualitySettings.vSyncCount + ".");
+        LoadedPlayerData.playerGraphics.verticalSyncCount = _verticalSyncCount;
+        verticalSyncCountText.text = ("Vertical sync count : " + _verticalSyncCount + ".");
+        verticalSyncCountDropdown.value = _verticalSyncCount;
+        Debug.Log("Updated vertical sync count to " + _verticalSyncCount + ".");
         return;
     }
 
@@ -76,32 +110,32 @@ public class settingsScript : MonoBehaviour {
 
     public void updateManualChecking(bool _isManualCheckingEnabled) {
         LoadedPlayerData.playerData.isManualCheckingEnabled = _isManualCheckingEnabled;
-        manualCheckingText.text = ("Is manual height checking enabled : " + LoadedPlayerData.playerData.isManualCheckingEnabled + ".");
-        Debug.Log("Updated is manual height checking enabled to " + LoadedPlayerData.playerData.isManualCheckingEnabled + ".");
+        manualCheckingText.text = ("Is manual height checking enabled : " + _isManualCheckingEnabled + ".");
+        Debug.Log("Updated is manual height checking enabled to " + _isManualCheckingEnabled + ".");
         return;
     }
 
     public void toggleBackgroundEnabled() {
-        updateBackgroundEnabled(!LoadedPlayerData.playerData.isBackgroundEnabled);
+        updateBackgroundEnabled(!LoadedPlayerData.playerGraphics.isBackgroundEnabled);
         return;
     }
 
     public void updateBackgroundEnabled(bool _isBackgroundEnabled) {
-        LoadedPlayerData.playerData.isBackgroundEnabled = _isBackgroundEnabled;
-        backgroundEnabledText.text = ("Is background enabled : " + LoadedPlayerData.playerData.isBackgroundEnabled + ".");
-        Debug.Log("Updated is background enabled to " + LoadedPlayerData.playerData.isBackgroundEnabled + ".");
+        LoadedPlayerData.playerGraphics.isBackgroundEnabled = _isBackgroundEnabled;
+        backgroundEnabledText.text = ("Is background enabled : " + _isBackgroundEnabled + ".");
+        Debug.Log("Updated is background enabled to " + _isBackgroundEnabled + ".");
         return;
     }
 
     public void toggleBackgroundScaling() {
-        updateBackgroundScaling(!LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
+        updateBackgroundScaling(!LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
         return;
     }
 
     public void updateBackgroundScaling(bool _isBackgroundScalingStretch) {
-        LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio = _isBackgroundScalingStretch;
+        LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio = _isBackgroundScalingStretch;
         string temp = "Stretch";
-        if (LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio == true) {
+        if (_isBackgroundScalingStretch == true) {
             temp = "Keep aspect ratio";
         }
         backgroundScalingText.text = ("Background scaling : " + temp + ".");

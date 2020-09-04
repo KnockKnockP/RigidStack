@@ -15,7 +15,7 @@ public class backgroundManager : MonoBehaviour {
     private GameObject previousBackground;
 
     private void Start() {
-        if (LoadedPlayerData.playerData.isBackgroundEnabled == false) {
+        if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
             Destroy(this);
             return;
         }
@@ -27,16 +27,16 @@ public class backgroundManager : MonoBehaviour {
     private void generateStaticBackgrounds() {
         for (int i = 0; i < staticBackgrounds.Length; i++) {
             GameObject generatedBackground = Instantiate(staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-            resizeBackground(generatedBackground, LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
+            resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
             Vector3 backgroundPosition;
             if (i == 0) {
-                if (LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio == true) {
+                if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
                     backgroundPosition = new Vector3(0f, gridTransform.position.y + (generatedBackground.GetComponent<backgroundInformationHolder>().aspectRatioGridOffset), 0f);
                 } else {
                     backgroundPosition = new Vector3(0f, (generatedBackground.transform.localScale.y + gridTransform.position.y + generatedBackground.GetComponent<backgroundInformationHolder>().gridOffset), 0f);
                 }
             } else {
-                if (LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio == true) {
+                if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
                     backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
                 } else {
                     backgroundPosition = new Vector3(0f, (previousBackground.transform.position.y + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
@@ -54,9 +54,9 @@ public class backgroundManager : MonoBehaviour {
             yield return null;
             if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
                 GameObject generatedBackground = Instantiate(dynamicBackgrounds[Random.Range(0, dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-                resizeBackground(generatedBackground, LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
+                resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
                 Vector3 backgroundPosition;
-                if (LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio == true) {
+                if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
                     backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
                 } else {
                     backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (_sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);

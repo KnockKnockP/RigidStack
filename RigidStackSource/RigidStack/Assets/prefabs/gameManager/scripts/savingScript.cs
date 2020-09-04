@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,15 +11,28 @@ using UnityEngine.UI;
 
 public static class LoadedPlayerData {
     public static PlayerData playerData = null;
+    public static PlayerGraphics playerGraphics = new PlayerGraphics();
     public static List<PlayerData> profiles = new List<PlayerData>();
 }
 
 [Serializable]
 public class PlayerData {
-    public bool isBackgroundEnabled = true, isManualCheckingEnabled = false, isBackgroundScalingKeepAspectRatio = false;
-    public int verticalSyncCount = 0, maxHeight = 0;
+    public bool isManualCheckingEnabled = false;
+    public int maxHeight = 0;
     public string name = "";
     public Difficulty difficulty = Difficulty.Easy;
+}
+
+[Serializable]
+public class PlayerGraphics {
+    public bool isBackgroundEnabled = true, isBackgroundScalingKeepAspectRatio = false;
+    public int graphics = 0, verticalSyncCount = 0;
+    public string[] graphicsVariablesNames = new string[4] {
+        nameof(isBackgroundEnabled),
+        nameof(isBackgroundScalingKeepAspectRatio),
+        nameof(graphics),
+        nameof(verticalSyncCount)
+    };
 }
 
 public class savingScript : MonoBehaviour {
@@ -39,12 +53,12 @@ public class savingScript : MonoBehaviour {
     [SerializeField] private Button deleteButton = null;
 
     private void Start() {
-        string savesFolderPath = getPath(false, null, true);
+        string savesFolderPath = getPath(true, false, false, null);
         if (Directory.Exists(savesFolderPath) == false) {
             Directory.CreateDirectory(savesFolderPath);
         }
         if (SceneManager.GetActiveScene().name == SceneNames.preMainMenu) {
-            if (File.Exists(getPath(true)) == false) {
+            if (File.Exists(getPath(false, true, false, null)) == false) {
                 makeNewProfile(defaultProfileName);
             } else if (hasLoadedProfileListOnStart == false) {
                 loadProfiles();
@@ -123,7 +137,7 @@ public class savingScript : MonoBehaviour {
 
     public void deleteProfile() {
         try {
-            File.Delete(getPath(false, LoadedPlayerData.profiles[profilesDropdown.value].name));
+            File.Delete(getPath(false, false, false, LoadedPlayerData.profiles[profilesDropdown.value].name));
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -167,7 +181,7 @@ public class savingScript : MonoBehaviour {
     }
 
     public void saveProfiles() {
-        string path = getPath(true);
+        string path = getPath(false, true, false, null);
         try {
             StreamWriter streamWriter = new StreamWriter(path);
             for (int i = 0; i < LoadedPlayerData.profiles.Count; i++) {
@@ -182,7 +196,7 @@ public class savingScript : MonoBehaviour {
     }
 
     private void loadProfiles() {
-        string path = getPath(true);
+        string path = getPath(false, true, false, null);
         try {
             if (checkIfFileExists(path) == false) {
                 return;
@@ -219,12 +233,17 @@ public class savingScript : MonoBehaviour {
     private void save(string profileName) {
         saveButton.interactable = false;
         loadButton.interactable = false;
-        string path = getPath(false, profileName);
         try {
-            FileStream fileStream = File.Create(path);
+            /*
+                Make variables.
+                Make an array of strings that contains the name of the variables.
+                Use reflector to find the variable and save it.
+            */
+            FileStream fileStream = File.Create(getPath(false, false, false, profileName));
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(fileStream, LoadedPlayerData.playerData);
             fileStream.Close();
+            saveGraphicsSettings(profileName);
         } catch (Exception exception) {
             catchException(exception);
         } finally {
@@ -234,10 +253,28 @@ public class savingScript : MonoBehaviour {
         return;
     }
 
+    private void saveGraphicsSettings(string profileName) {
+        try {
+            StreamWriter streamWriter = new StreamWriter(getPath(false, false, true, profileName));
+            for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
+                streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i] + " = ");
+                streamWriter.Write(LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]).GetValue(LoadedPlayerData.playerGraphics));
+                if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
+                    streamWriter.Write("\r\n");
+                }
+            }
+            streamWriter.Flush();
+            streamWriter.Close();
+        } catch (Exception exception) {
+            catchException(exception);
+        }
+        return;
+    }
+
     public PlayerData load(string profileName) {
         saveButton.interactable = false;
         loadButton.interactable = false;
-        string path = getPath(false, profileName);
+        string path = getPath(false, false, false, profileName);
         PlayerData playerData = null;
         try {
             if (checkIfFileExists(path) == false) {
@@ -247,6 +284,7 @@ public class savingScript : MonoBehaviour {
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             playerData = (PlayerData)(binaryFormatter.Deserialize(fileStream));
             fileStream.Close();
+            loadGraphicsSettings(profileName);
             if (SceneManager.GetActiveScene().name != "preMainMenu") {
                 updateAll();
             }
@@ -260,34 +298,59 @@ public class savingScript : MonoBehaviour {
         return playerData;
     }
 
-    private void updateAll() {
-        _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerData.isBackgroundEnabled);
-        _settingsScript.updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        _settingsScript.updateBackgroundScaling(LoadedPlayerData.playerData.isBackgroundScalingKeepAspectRatio);
-        _settingsScript.updateVerticalSyncCount(LoadedPlayerData.playerData.verticalSyncCount);
-        Debug.Log("Updated max height to " + LoadedPlayerData.playerData.maxHeight);
-        _settingsScript.updateDifficulty(LoadedPlayerData.playerData.difficulty);
+    private void loadGraphicsSettings(string profileName) {
+        try {
+            StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
+            while (streamReader.EndOfStream == false) {
+                string readLine = streamReader.ReadLine();
+                if (readLine.Contains(";") == true) {
+                    continue;
+                }
+                string[] splitLine = readLine.Split('=');
+                splitLine[0] = splitLine[0].Trim(' ');
+                splitLine[1] = splitLine[1].Trim(' ');
+                int i;
+                for (i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
+                    if (splitLine[0] == LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]) {
+                        break;
+                    }
+                }
+                FieldInfo fieldInfo = LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                object valueToSet = Convert.ChangeType(splitLine[1], fieldInfo.FieldType);
+                fieldInfo.SetValue(LoadedPlayerData.playerGraphics, valueToSet);
+            }
+        } catch (Exception exception) {
+            catchException(exception);
+        }
         return;
     }
 
-    private string getPath(bool isProfileList, string playerName = "", bool getSavesFolder = false) {
+    private void updateAll() {
+        _settingsScript.updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
+        Debug.Log("Updated max height to " + LoadedPlayerData.playerData.maxHeight);
+        _settingsScript.updateDifficulty(LoadedPlayerData.playerData.difficulty);
+        _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
+        _settingsScript.updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
+        _settingsScript.updateVerticalSyncCount(LoadedPlayerData.playerGraphics.verticalSyncCount);
+        return;
+    }
+
+    private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, string playerName) {
         #if (UNITY_EDITOR_WIN || UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX)
-            if (isProfileList == true) {
-                return (Application.dataPath + "/Saves/Profiles.txt");
-            }
-            if (getSavesFolder == true) {
-                return (Application.dataPath + "/Saves/");
-            }
-            return (Application.dataPath + "/Saves/" + playerName + ".RS");
+            string dataPath = Application.dataPath;
         #else
-            if (isProfileList == true) {
-                return (Application.persistentDataPath + "/Saves/Profiles.txt");
-            }
-            if (getSavesFolder == true) {
-                return (Application.persistentDataPath + "/Saves/");
-            }
-            return (Application.persistentDataPath + "/Saves/" + playerName + ".RS");
+            string dataPath = Application.persistentDataPath
         #endif
+        if (getSavesFolder == true) {
+            return (dataPath + "/Saves/");
+        }
+        if (getProfileList == true) {
+            return (dataPath + "/Saves/Profiles.txt");
+        }
+        if (getGraphicsSettings == true) {
+            return (dataPath + "/Saves/" + playerName + "Graphics.txt");
+        }
+        return (dataPath + "/Saves/" + playerName + ".RS");
     }
 
     private bool checkIfFileExists(string path) {
