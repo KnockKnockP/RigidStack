@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿#region Using tags.
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+#endregion
 
+#region "Difficulty" byte enum.
 public enum Difficulty : byte {
     Sandbox = 0,
     Easy = 1,
@@ -9,8 +12,11 @@ public enum Difficulty : byte {
     Difficult = 3,
     Extreme = 4
 };
+#endregion
 
+#region Static "GraphicsLevel" class.
 public static class GraphicsLevel {
+    #region Variables.
     private static readonly string[] graphicsLevels = {
         "Potato.",
         "Low.",
@@ -22,9 +28,13 @@ public static class GraphicsLevel {
     public static string getGraphicsLevelString(int graphicsLevel) {
         return graphicsLevels[graphicsLevel];
     }
+    #endregion
 }
+#endregion
 
+#region MonoBehaviour inherited "settingsScript" class.
 public class settingsScript : MonoBehaviour {
+    #region Variables.
     [Header("Gameplay settings.")]
     [SerializeField] private Text difficultyText = null;
     [SerializeField] private Dropdown difficultyDropdown = null;
@@ -46,7 +56,9 @@ public class settingsScript : MonoBehaviour {
 
 
     [SerializeField] private Text backgroundScalingText = null;
+    #endregion
 
+    #region Start.
     private void Start() {
         string sceneName = SceneManager.GetActiveScene().name;
         if (sceneName == SceneNames.GameplaySettingsMenu) {
@@ -60,7 +72,9 @@ public class settingsScript : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
+    #region Difficulty.
     public void changeDifficulty() {
         updateDifficulty((Difficulty)(difficultyDropdown.value));
         return;
@@ -68,12 +82,32 @@ public class settingsScript : MonoBehaviour {
 
     public void updateDifficulty(Difficulty _difficulty) {
         LoadedPlayerData.playerData.difficulty = _difficulty;
-        difficultyText.text = ("Difficulty : " + _difficulty + ".");
-        difficultyDropdown.value = (int)(_difficulty);
+        if ((difficultyText != null) && (difficultyDropdown != null)) {
+            difficultyText.text = ("Difficulty : " + _difficulty + ".");
+            difficultyDropdown.value = (int)(_difficulty);
+        }
         Debug.Log("Updated difficulty to " + _difficulty + ".");
         return;
     }
+    #endregion
 
+    #region Manual checking
+    public void toggleManualChecking() {
+        updateManualChecking(!LoadedPlayerData.playerData.isManualCheckingEnabled);
+        return;
+    }
+
+    public void updateManualChecking(bool _isManualCheckingEnabled) {
+        LoadedPlayerData.playerData.isManualCheckingEnabled = _isManualCheckingEnabled;
+        if (manualCheckingText != null) {
+            manualCheckingText.text = ("Is manual height checking enabled : " + _isManualCheckingEnabled + ".");
+        }
+        Debug.Log("Updated is manual height checking enabled to " + _isManualCheckingEnabled + ".");
+        return;
+    }
+    #endregion
+
+    #region Graphics.
     public void changeGraphics() {
         updateGraphics(graphicsDropdown.value);
         return;
@@ -83,12 +117,16 @@ public class settingsScript : MonoBehaviour {
         QualitySettings.SetQualityLevel(graphicsLevel, true);
         LoadedPlayerData.playerGraphics.graphics = graphicsLevel;
         string graphicsLevelString = GraphicsLevel.getGraphicsLevelString(graphicsLevel);
-        graphicsText.text = ("Graphics : " + graphicsLevelString);
-        graphicsDropdown.value = graphicsLevel;
+        if ((graphicsText != null) && (graphicsDropdown != null)) {
+            graphicsText.text = ("Graphics : " + graphicsLevelString);
+            graphicsDropdown.value = graphicsLevel;
+        }
         Debug.Log("Updated graphics to " + graphicsLevelString);
         return;
     }
+    #endregion
 
+    #region Vertical sync count.
     public void changeVerticalSyncCount() {
         updateVerticalSyncCount(verticalSyncCountDropdown.value);
         return;
@@ -97,24 +135,16 @@ public class settingsScript : MonoBehaviour {
     public void updateVerticalSyncCount(int _verticalSyncCount) {
         QualitySettings.vSyncCount = _verticalSyncCount;
         LoadedPlayerData.playerGraphics.verticalSyncCount = _verticalSyncCount;
-        verticalSyncCountText.text = ("Vertical sync count : " + _verticalSyncCount + ".");
-        verticalSyncCountDropdown.value = _verticalSyncCount;
+        if ((verticalSyncCountText != null) && (verticalSyncCountDropdown != null)) {
+            verticalSyncCountText.text = ("Vertical sync count : " + _verticalSyncCount + ".");
+            verticalSyncCountDropdown.value = _verticalSyncCount;
+        }
         Debug.Log("Updated vertical sync count to " + _verticalSyncCount + ".");
         return;
     }
+    #endregion
 
-    public void toggleManualChecking() {
-        updateManualChecking(!LoadedPlayerData.playerData.isManualCheckingEnabled);
-        return;
-    }
-
-    public void updateManualChecking(bool _isManualCheckingEnabled) {
-        LoadedPlayerData.playerData.isManualCheckingEnabled = _isManualCheckingEnabled;
-        manualCheckingText.text = ("Is manual height checking enabled : " + _isManualCheckingEnabled + ".");
-        Debug.Log("Updated is manual height checking enabled to " + _isManualCheckingEnabled + ".");
-        return;
-    }
-
+    #region Background enabled.
     public void toggleBackgroundEnabled() {
         updateBackgroundEnabled(!LoadedPlayerData.playerGraphics.isBackgroundEnabled);
         return;
@@ -122,11 +152,15 @@ public class settingsScript : MonoBehaviour {
 
     public void updateBackgroundEnabled(bool _isBackgroundEnabled) {
         LoadedPlayerData.playerGraphics.isBackgroundEnabled = _isBackgroundEnabled;
-        backgroundEnabledText.text = ("Is background enabled : " + _isBackgroundEnabled + ".");
+        if (backgroundEnabledText != null) {
+            backgroundEnabledText.text = ("Is background enabled : " + _isBackgroundEnabled + ".");
+        }
         Debug.Log("Updated is background enabled to " + _isBackgroundEnabled + ".");
         return;
     }
+    #endregion
 
+    #region Background scaling.
     public void toggleBackgroundScaling() {
         updateBackgroundScaling(!LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
         return;
@@ -138,8 +172,12 @@ public class settingsScript : MonoBehaviour {
         if (_isBackgroundScalingStretch == true) {
             temp = "Keep aspect ratio";
         }
-        backgroundScalingText.text = ("Background scaling : " + temp + ".");
+        if (backgroundScalingText != null) {
+            backgroundScalingText.text = ("Background scaling : " + temp + ".");
+        }
         Debug.Log("Updated background scaling to " + temp + ".");
         return;
     }
+    #endregion
 }
+#endregion
