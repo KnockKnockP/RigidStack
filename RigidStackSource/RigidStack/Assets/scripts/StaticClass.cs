@@ -1,6 +1,10 @@
-﻿using UnityEngine;
+﻿#region A using tag.
+using UnityEngine;
+#endregion
 
-static class StaticClass {
+#region Static "StaticClass" class.
+public static class StaticClass {
+    #region Checking values.
     public static bool isInBetweenOfTwoValues(byte value, byte least, byte max) {
         return ((value > least) && (value < max));
     }
@@ -32,4 +36,6 @@ static class StaticClass {
     public static bool isInBetweenOrEqualToTwoValues(Vector2 value, float least, float max) {
         return ((value.x >= least) && (value.x <= max) && (value.y >= least) && (value.y <= max));
     }
+    #endregion
 }
+#endregion

@@ -1,17 +1,20 @@
-﻿using System;
+﻿#region Using tags.
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+#endregion
 
+#region "MonoBehaviour" inherited "objectScript" class.
 public class objectScript : MonoBehaviour {
-    private dragAndDropImageScript[] dragAndDropImageScripts = new dragAndDropImageScript[5];
+    #region Variables for drag and dropping objects.
+    private readonly dragAndDropImageScript[] dragAndDropImageScripts = new dragAndDropImageScript[5];
     [SerializeField] private Image[] dragAndDropImages = null;
-
     //We are going to use this array to check for duplicates.
-    private Sprite[] sprites = new Sprite[5];
-
-
+    private readonly Sprite[] sprites = new Sprite[5];
     [SerializeField] private GameObject[] objects = null;
+    #endregion
 
+    #region Awake function.
     private void Awake() {
         for (short i = 0; i < dragAndDropImages.Length; i++) {
             dragAndDropImageScripts[i] = dragAndDropImages[i].GetComponent<dragAndDropImageScript>();
@@ -20,7 +23,9 @@ public class objectScript : MonoBehaviour {
         shuffleItems();
         return;
     }
+    #endregion
 
+    #region Shuffling items.
     private void resetRandomization() {
         UnityEngine.Random.InitState(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second * DateTime.Now.Millisecond);
         return;
@@ -52,7 +57,9 @@ public class objectScript : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
+    #region Giving player more items.
     public void giveMoreItems() {
         foreach (Image image in dragAndDropImages) {
             image.sprite = null;
@@ -63,4 +70,6 @@ public class objectScript : MonoBehaviour {
         shuffleItems();
         return;
     }
+    #endregion
 }
+#endregion

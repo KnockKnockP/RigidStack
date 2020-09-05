@@ -1,8 +1,12 @@
-﻿using System.Collections;
+﻿#region Using tags.
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+#endregion
 
+#region "MonoBehaviour" inherited "inputManager" class.
 public class inputManager : MonoBehaviour {
+    #region Controls comment.
     /*
         W, up arrow key : Move camera up,
         S, down arrow key : Move camera down,
@@ -12,18 +16,25 @@ public class inputManager : MonoBehaviour {
         Escape : Cancel object editing, pause,
         Left control, right control : Manually check height.
     */
+    #endregion
+
+    #region Variables for input management.
     [SerializeField] private pauseScript _pauseScript = null;
     [SerializeField] private cameraScript _cameraScript = null;
     [SerializeField] private heightScript _heightScript = null;
     [SerializeField] private Button confirmButton = null;
+    #endregion
 
+    #region Update function.
     private void Update() {
         StartCoroutine(manageCameraMovement());
         StartCoroutine(manageDragAndDrop());
         StartCoroutine(manageOthers());
         return;
     }
+    #endregion
 
+    #region Managing the camera movement inputs.
     private IEnumerator manageCameraMovement() {
         yield return null;
         if ((Input.GetKeyDown(KeyCode.W) == true) || (Input.GetKeyDown(KeyCode.UpArrow) == true)) {
@@ -44,7 +55,9 @@ public class inputManager : MonoBehaviour {
         }
         yield return null;
     }
+    #endregion
 
+    #region Managing drag and drop inputs.
     private IEnumerator manageDragAndDrop() {
         yield return null;
         if ((Input.GetKeyDown(KeyCode.LeftShift) == true) || (Input.GetKeyDown(KeyCode.RightShift) == true)) {
@@ -75,7 +88,9 @@ public class inputManager : MonoBehaviour {
         }
         yield return null;
     }
+    #endregion
 
+    #region Managing other inputs.
     private IEnumerator manageOthers() {
         yield return null;
         if ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true)) {
@@ -84,4 +99,6 @@ public class inputManager : MonoBehaviour {
         }
         yield return null;
     }
+    #endregion
 }
+#endregion

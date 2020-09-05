@@ -32,9 +32,9 @@ public static class GraphicsLevel {
 }
 #endregion
 
-#region MonoBehaviour inherited "settingsScript" class.
+#region "MonoBehaviour" inherited "settingsScript" class.
 public class settingsScript : MonoBehaviour {
-    #region Variables.
+    #region Variables for setting up the scene.
     [Header("Gameplay settings.")]
     [SerializeField] private Text difficultyText = null;
     [SerializeField] private Dropdown difficultyDropdown = null;

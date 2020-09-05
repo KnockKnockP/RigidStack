@@ -1,34 +1,47 @@
-﻿using System.Collections.Generic;
+﻿#region Using tags.
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#endregion
 
+#region "MonoBehaviour" inherited "endMenuManager" class.
 public class endMenuManager : MonoBehaviour {
+    #region Variables.
+    #region Variables for slowing down time.
     private bool shouldSlowDownTime;
     [HideInInspector] public bool shouldMoveTheCamera;
     private float startTime, originalYPosition;
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
     [SerializeField] private cameraScript _cameraScript = null;
+    #endregion
 
-
-    private bool isEndMenuActive;
-    [SerializeField] private GameObject endMenu = null;
+    #region Variables for the end menu.
     [SerializeField] private Text endMenuScoreText = null;
     [SerializeField] private objectiveScript _objectiveScript = null;
+    [SerializeField] private GameObject endMenu = null;
+    #endregion
 
-
+    #region Variables for gameplay panels.
     [SerializeField] private GameObject dock = null, objectEditingPanel = null;
+    #endregion
 
-
+    #region A variable for determining if the game has ended.
     public static bool isGameEnded;
+    #endregion
 
-
+    #region Variables for dimming and undimming objects
     private bool isObjectUndimmed;
     [HideInInspector] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
+    #endregion
+    #endregion
 
+    #region Start function.
     private void Start() {
         startTime = Time.time;
     }
+    #endregion
 
+    #region Update function.
     private void Update() {
         if (shouldMoveTheCamera == true) {
             float time = ((Time.time - startTime) / Mathf.Abs(originalYPosition * 10));
@@ -48,12 +61,14 @@ public class endMenuManager : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
+    #region Ending the game.
     public void endGame() {
         isGameEnded = true;
         endMenuScoreText.text = ("Game over!\r\n" +
                                  "Score : " + heightScript.currentGameMaxHeight + " / " + LoadedPlayerData.playerData.maxHeight + ".");
-        enableEndMenu();
+        enableOrDisableEndMenu(true);
         dock.SetActive(false);
         if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
             Destroy(dragAndDropScript._dragAndDropScript.placedGameObject);
@@ -63,36 +78,30 @@ public class endMenuManager : MonoBehaviour {
         slowMotion();
         return;
     }
+    #endregion
 
+    #region Exploring the game world.
     public void explore() {
-        disableEndMenu();
+        enableOrDisableEndMenu(false);
         if (isObjectUndimmed == false) {
             undimObjects();
         }
         return;
     }
+    #endregion
 
+    #region Toggling the end menu.
     public void toggleEndMenu() {
-        if (isEndMenuActive == false) {
-            enableEndMenu();
-        } else {
-            disableEndMenu();
-        }
+        enableOrDisableEndMenu(!endMenu.activeSelf);
         return;
     }
 
-    private void enableEndMenu() {
-        isEndMenuActive = true;
-        endMenu.SetActive(true);
-        return;
+    private void enableOrDisableEndMenu(bool status) {
+        endMenu.SetActive(status);
     }
+    #endregion
 
-    private void disableEndMenu() {
-        isEndMenuActive = false;
-        endMenu.SetActive(false);
-        return;
-    }
-
+    #region Undimming objects.
     private void undimObjects() {
         isObjectUndimmed = true;
         foreach (SpriteRenderer spriteRenderer in allPlacedObjectsSpriteRenderers) {
@@ -100,18 +109,24 @@ public class endMenuManager : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
+    #region Moving the camera.
     private void moveCamera() {
         originalYPosition = _sharedMonobehaviour.mainCamera.transform.position.y;
         shouldMoveTheCamera = true;
         return;
     }
+    #endregion
 
+    #region Activating the slow motion effect.
     private void slowMotion() {
         shouldSlowDownTime = true;
         return;
     }
+    #endregion
 
+    #region Restarting the game.
     public void restart() {
         _objectiveScript.objectiveScore = 0;
         heightScript.currentGameMaxHeight = 0;
@@ -119,4 +134,6 @@ public class endMenuManager : MonoBehaviour {
         FindObjectOfType<loadSceneScript>().loadLevel();
         return;
     }
+    #endregion
 }
+#endregion

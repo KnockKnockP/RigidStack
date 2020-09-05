@@ -1,7 +1,11 @@
-﻿using UnityEngine;
+﻿#region Using tags.
+using UnityEngine;
 using UnityEngine.UI;
+#endregion
 
+#region "MonoBehaviour" inherited "dragAndDropImageScript" class.
 public class dragAndDropImageScript : MonoBehaviour {
+    #region Variables for tracking the object count.
     private short _objectCount = 0;
     [HideInInspector] public short objectCount {
         get {
@@ -16,4 +20,6 @@ public class dragAndDropImageScript : MonoBehaviour {
         }
     }
     [SerializeField] private Text objectCounterText = null;
+    #endregion
 }
+#endregion

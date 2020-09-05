@@ -1,20 +1,28 @@
-﻿using System;
+﻿#region Using tags.
+using System;
 using System.IO;
 using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
+#endregion
 
+#region "MonoBehaviour" inherited "preMainMenuScript" class.
 public class preMainMenuScript : MonoBehaviour {
+    #region Variables for preparing the pre main menu scene.
     private string exceptionMessage1, exceptionMessage2;
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
+    #endregion
 
+    #region Awake function.
     private void Awake() {
         limitFPS();
         disableDebugging();
         checkInternetConnection();
         return;
     }
+    #endregion
 
+    #region Preparation functions.
     private void limitFPS() {
         #if UNITY_EDITOR
             QualitySettings.vSyncCount = 0;
@@ -89,4 +97,6 @@ public class preMainMenuScript : MonoBehaviour {
         streamReader.Close();
         return;
     }
+    #endregion
 }
+#endregion

@@ -12,9 +12,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #endregion
 
-#region LoadedPlayerData static class.
+#region Static LoadedPlayerData class.
 public static class LoadedPlayerData {
-    #region Variables.
+    #region Variables for accessing player datas.
     public static PlayerData playerData = null;
     public static PlayerGraphics playerGraphics = new PlayerGraphics();
     public static List<PlayerData> profiles = new List<PlayerData>();
@@ -22,10 +22,10 @@ public static class LoadedPlayerData {
 }
 #endregion
 
-#region PlayerData serializable class.
+#region Serializable PlayerData class.
 [Serializable]
 public class PlayerData {
-    #region Variables.
+    #region Generic player variables.
     public bool isManualCheckingEnabled = false;
     public int maxHeight = 0;
     public string name = "";
@@ -34,10 +34,10 @@ public class PlayerData {
 }
 #endregion
 
-#region PlayerGraphics serializable class.
+#region Serializable PlayerGraphics class.
 [Serializable]
 public class PlayerGraphics {
-    #region Variables.
+    #region Graphics variables.
     public bool isBackgroundEnabled = true, isBackgroundScalingKeepAspectRatio = false;
     public int graphics = 0, verticalSyncCount = 0;
     public string[] graphicsVariablesNames = new string[4] {
@@ -50,16 +50,16 @@ public class PlayerGraphics {
 }
 #endregion
 
-#region savingScript MonoBehaviour inherited class.
+#region "MonoBehaviour" inherited "savingScript" class.
 public class savingScript : MonoBehaviour {
     #region Varibales.
-    #region Settings menu variables.
+    #region Variables for the settings menu.
     [SerializeField] private settingsScript _settingsScript = null;
     [SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
     #endregion
 
-    #region Profiles menu variables.
+    #region Variables for the profiles menu.
     private static bool hasLoadedProfileListOnStart;
     private readonly string defaultProfileName = "Default";
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;

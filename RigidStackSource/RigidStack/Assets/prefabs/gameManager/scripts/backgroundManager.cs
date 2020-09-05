@@ -1,19 +1,29 @@
-﻿using System.Collections;
+﻿#region Using tags.
+using System.Collections;
 using UnityEngine;
+#endregion
 
+#region "MonoBehaviour" inherited "backgroundManager" class.
 public class backgroundManager : MonoBehaviour {
+    #region Variables.
+
+    #region A variable for accessing the main camera.
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
-    [SerializeField] private Transform gridTransform = null;
+    #endregion
 
-
+    #region Variables for generating backgrounds.
     private float maximumHeightOfGeneratedBackgrounds;
-    [SerializeField] private Transform backgroundHolderEmptyObject = null;
-    //staticBackgrounds are backgrounds that does not care about the camera's position.
-    [SerializeField] private GameObject[] staticBackgrounds = null;
-    //dynamicBackgrounds are backgrounds that generates as the camera moves.
-    [SerializeField] private GameObject[] dynamicBackgrounds = null;
+    [SerializeField] private Transform gridTransform = null, backgroundHolderEmptyObject = null;
+    /*
+        staticBackgrounds are backgrounds that does not care about the camera's position.
+        dynamicBackgrounds are backgrounds that generates as the camera moves.
+    */
     private GameObject previousBackground;
+    [SerializeField] private GameObject[] staticBackgrounds = null, dynamicBackgrounds = null;
+    #endregion
+    #endregion
 
+    #region Start function.
     private void Start() {
         if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
             Destroy(this);
@@ -23,7 +33,9 @@ public class backgroundManager : MonoBehaviour {
         StartCoroutine(generateDynamicBackgrounds());
         return;
     }
+    #endregion
 
+    #region Generating static backgrounds.
     private void generateStaticBackgrounds() {
         for (int i = 0; i < staticBackgrounds.Length; i++) {
             GameObject generatedBackground = Instantiate(staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
@@ -48,7 +60,9 @@ public class backgroundManager : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
+    #region Generating dynamic backgrounds.
     private IEnumerator generateDynamicBackgrounds() {
         while (true) {
             yield return null;
@@ -67,7 +81,9 @@ public class backgroundManager : MonoBehaviour {
             }
         }
     }
+    #endregion
 
+    #region Resizing backgrounds.
     //https://answers.unity.com/answers/620736/view.html
     public void resizeBackground(GameObject background, bool keepAspectRatio) {
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
@@ -91,4 +107,6 @@ public class backgroundManager : MonoBehaviour {
         }
         background.transform.localScale = imageScale;
     }
+    #endregion
 }
+#endregion

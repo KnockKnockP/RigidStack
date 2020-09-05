@@ -1,14 +1,22 @@
-﻿using System.Collections;
+﻿#region Using tags.
+using System.Collections;
 using UnityEngine;
+#endregion
 
+#region "MonoBehaviour" inherited "randomBackgroundObjectGenerationScript" class.
 public class randomBackgroundObjectGenerationScript : MonoBehaviour {
+    #region A variable for sotring random background objects.
     [SerializeField] private GameObject[] objects = null;
+    #endregion
 
+    #region Start function.
     private void Start() {
         StartCoroutine(generateRandomObjects());
         return;
     }
+    #endregion
 
+    #region Generating random objects.
     private IEnumerator generateRandomObjects() {
         backgroundManager _backgroundManager = FindObjectOfType<backgroundManager>();
         while (true) {
@@ -23,4 +31,6 @@ public class randomBackgroundObjectGenerationScript : MonoBehaviour {
             Destroy(generatedRandomObject);
         }
     }
+    #endregion
 }
+#endregion

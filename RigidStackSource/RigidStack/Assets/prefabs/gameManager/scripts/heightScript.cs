@@ -1,9 +1,14 @@
-﻿using System.Collections;
+﻿#region Using tags.
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#endregion
 
+#region "MonoBehaviour" inherited "heightScript" class.
 public class heightScript : MonoBehaviour {
+    #region Variables.
+    #region Variables for height counting.
     private byte frameCount;
     [HideInInspector] public float tolerance = 0.1f;
     /*
@@ -12,25 +17,33 @@ public class heightScript : MonoBehaviour {
         When the player dies, currentGameMaxHeight gets resetted.
     */
     [HideInInspector] public static int currentGameMaxHeight;
+    #endregion
 
-
+    #region Variables for tracking placed objects.
     private GameObject previousFrameGameObject;
     [HideInInspector] public List<Transform> placedObjectsTransforms = new List<Transform>();
     [HideInInspector] public List<Rigidbody2D> placedObjectsRigidbody2D = new List<Rigidbody2D>();
     [HideInInspector] public List<GameObject> placedObjects = new List<GameObject>();
+    #endregion
 
-
+    #region Variables for showing the height.
     private objectiveScript _objectiveScript;
     [SerializeField] private Text heightText = null;
+    #endregion
 
-
+    #region A variable for manual height checking.
     [SerializeField] private Button checkHeightButton = null;
+    #endregion
+    #endregion
 
+    #region Awake function.
     private void Awake() {
         _objectiveScript = FindObjectOfType<objectiveScript>();
         return;
     }
+    #endregion
 
+    #region Start function.
     private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Sandbox) : {
@@ -61,28 +74,27 @@ public class heightScript : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
-    /*
-    private void FixedUpdate() {
-        updateHeight();
-        return;
-    }
-    */
-
+    #region Automatically checking height.
     private IEnumerator updateHeight() {
         while (true) {
             checkHeight();
             yield return null;
         }
     }
+    #endregion
 
+    #region Manually checking height.
     public void manuallyCheckHeight() {
         frameCount = 0;
         checkHeight();
         checkHeight();
         return;
     }
+    #endregion
 
+    #region Checking height.
     public void checkHeight() {
         int currentFrameMaxHeight = -9999;
         GameObject currentFrameGameObject;
@@ -114,11 +126,15 @@ public class heightScript : MonoBehaviour {
         }
         return;
     }
+    #endregion
 
+    #region Checking velocity values.
     private bool checkValues(int i) {
         return ((StaticClass.isInBetweenOrEqualToTwoValues(placedObjectsRigidbody2D[i].velocity, -tolerance, tolerance)) || (placedObjectsRigidbody2D[i].velocity == Vector2.zero));
     }
+    #endregion
 
+    #region Resetting all lists.
     private void resetLists() {
         Rigidbody2D tempRigidbody2D = placedObjectsRigidbody2D[(placedObjectsRigidbody2D.Count - 1)];
         tempRigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -143,4 +159,6 @@ public class heightScript : MonoBehaviour {
         placedObjects = tempGameObjects;
         return;
     }
+    #endregion
 }
+#endregion
