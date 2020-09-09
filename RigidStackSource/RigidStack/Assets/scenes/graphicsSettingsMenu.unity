@@ -4358,6 +4358,7 @@ MonoBehaviour:
   manualCheckingText: {fileID: 0}
   graphicsText: {fileID: 690282988}
   graphicsDropdown: {fileID: 1102785023}
+  _savingScript: {fileID: 7619175099963299231}
   verticalSyncCountText: {fileID: 85265827}
   verticalSyncCountDropdown: {fileID: 136542622}
   backgroundEnabledText: {fileID: 1747147330}

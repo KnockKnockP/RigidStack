@@ -38,13 +38,92 @@ public class PlayerData {
 [Serializable]
 public class PlayerGraphics {
     #region Graphics variables.
-    public bool isBackgroundEnabled = true, isBackgroundScalingKeepAspectRatio = false;
-    public int graphics = 0, verticalSyncCount = 0;
-    public string[] graphicsVariablesNames = new string[4] {
-        nameof(isBackgroundEnabled),
-        nameof(isBackgroundScalingKeepAspectRatio),
+    /*
+    public bool isBackgroundEnabled = true,
+                isBackgroundScalingKeepAspectRatio = false,
+                softParticles = false,
+                realtimeReflectionProbes = false,
+                billboardsFaceCameraPosition = false,
+                streamingMipmapsActive = false,
+                streamingMipmapsAddAllCameras = false,
+                asyncUploadPersistentBuffer = false;
+    public int graphics = 0,
+               verticalSyncCount = 0,
+               pixelLightCount = 0,
+               masterTextureLimit = 0,
+               antiAliasing = 0,
+               streamingMipmapsRenderersPerFrame = 0,
+               streamingMipmapsMaxLevelReduction = 0,
+               streamingMipmapsMaxFileIORequests = 0,
+               shadowCascades = 0,
+               maximumLODLevel = 0,
+               particleRaycastBudget = 0,
+               asyncUploadTimeSlice = 0,
+               asyncUploadBufferSize = 0,
+               targetFramesPerSecond = 60;
+    public float resolutionScalingFixedDPIFactor = 0f,
+                 streamingMipmapsMemoryBudget = 0f,
+                 shadowDistance = 0f,
+                 shadowNearPlaneOffset = 0f,
+                 shadowCascade2Split = 0f,
+                 lodBias = 0f;
+    public Vector3 shadowCascade4Split = Vector3.zero;
+    public AnisotropicFiltering anisotropicFiltering = AnisotropicFiltering.Disable;
+    public ShadowmaskMode shadowmaskMode = ShadowmaskMode.DistanceShadowmask;
+    public ShadowQuality shadows = ShadowQuality.Disable;
+    public ShadowResolution shadowResolution = ShadowResolution.Low;
+    public ShadowProjection shadowProjection = ShadowProjection.CloseFit;
+    public SkinWeights skinWeights = SkinWeights.OneBone;
+    */
+    public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
+    public int graphics = 0, verticalSyncCount = 0, targetFramesPerSecond = 60;
+    public string[] graphicsVariablesNames = new string[] {
+        ";https://docs.unity3d.com/ScriptReference/QualitySettings.html",
+        ";Graphics settings menu values.",
+        ";",
+        ";graphics = [0 (\"Potato.\"), 1 (\"Low.\"), 2 (\"Medium.\"), 3 (\"High.\"), 4 (\"Very high.\")].",
+        ";The game will set the graphics value first and then overwrite all other values.",
         nameof(graphics),
-        nameof(verticalSyncCount)
+        nameof(verticalSyncCount),
+        ";isBackgroundScalingKeepAspectRatio = [False, True].",
+        ";When isBackgroundScalingKeepAspectRatio is set to false, the game will stretch background objects to fit the screen.",
+        nameof(isBackgroundScalingKeepAspectRatio),
+        ";isBackgroundEnabled = [False, True].",
+        ";When isBackgroundEnabled is set to false, the game will not generate any background objects.",
+        nameof(isBackgroundEnabled),
+        ";",
+        ";QualitySettings values.",
+        ";",
+        nameof(QualitySettings.pixelLightCount),
+        nameof(QualitySettings.masterTextureLimit),
+        nameof(QualitySettings.anisotropicFiltering),
+        nameof(QualitySettings.antiAliasing),
+        nameof(QualitySettings.softParticles),
+        nameof(QualitySettings.realtimeReflectionProbes),
+        nameof(QualitySettings.billboardsFaceCameraPosition),
+        nameof(QualitySettings.resolutionScalingFixedDPIFactor),
+        nameof(QualitySettings.streamingMipmapsActive),
+        nameof(QualitySettings.streamingMipmapsAddAllCameras),
+        nameof(QualitySettings.streamingMipmapsMemoryBudget),
+        nameof(QualitySettings.streamingMipmapsMaxLevelReduction),
+        nameof(QualitySettings.streamingMipmapsMaxFileIORequests),
+        nameof(QualitySettings.shadowmaskMode),
+        nameof(QualitySettings.shadows),
+        nameof(QualitySettings.shadowResolution),
+        nameof(QualitySettings.shadowProjection),
+        nameof(QualitySettings.shadowDistance),
+        nameof(QualitySettings.shadowNearPlaneOffset),
+        nameof(QualitySettings.shadowCascades),
+        nameof(QualitySettings.shadowCascade2Split),
+        nameof(QualitySettings.shadowCascade4Split),
+        nameof(QualitySettings.skinWeights),
+        nameof(QualitySettings.lodBias),
+        nameof(QualitySettings.maximumLODLevel),
+        nameof(QualitySettings.particleRaycastBudget),
+        nameof(QualitySettings.asyncUploadTimeSlice),
+        nameof(QualitySettings.asyncUploadBufferSize),
+        nameof(QualitySettings.asyncUploadPersistentBuffer),
+        nameof(targetFramesPerSecond)
     };
     #endregion
 }
@@ -60,7 +139,7 @@ public class savingScript : MonoBehaviour {
     #endregion
 
     #region Variables for the profiles menu.
-    private static bool hasLoadedProfileListOnStart;
+    private bool hasLoadedProfileListOnStart;
     private readonly string defaultProfileName = "Default";
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
@@ -118,6 +197,7 @@ public class savingScript : MonoBehaviour {
     public void deleteProfile() {
         try {
             File.Delete(getPath(false, false, false, LoadedPlayerData.profiles[profilesDropdown.value].name));
+            File.Delete(getPath(false, false, true, LoadedPlayerData.profiles[profilesDropdown.value].name));
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -139,10 +219,12 @@ public class savingScript : MonoBehaviour {
     public void selectProfile() {
         LoadedPlayerData.playerData = LoadedPlayerData.profiles[profilesDropdown.value];
         profileNameText.text = (LoadedPlayerData.playerData.name + ".");
-        deleteButton.interactable = true;
         if (LoadedPlayerData.playerData.name == defaultProfileName) {
             deleteButton.interactable = false;
+        } else {
+            deleteButton.interactable = true;
         }
+        loadGraphicsSettings(LoadedPlayerData.playerData.name);
         return;
     }
 
@@ -271,8 +353,24 @@ public class savingScript : MonoBehaviour {
         try {
             StreamWriter streamWriter = new StreamWriter(getPath(false, false, true, profileName));
             for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
+                if (LoadedPlayerData.playerGraphics.graphicsVariablesNames[i].Contains(';') == true) {
+                    streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                    if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
+                        streamWriter.Write("\r\n");
+                    }
+                    continue;
+                }
                 streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i] + " = ");
-                streamWriter.Write(LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]).GetValue(LoadedPlayerData.playerGraphics));
+                FieldInfo fieldInfo = LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                if (fieldInfo == null) {
+                    PropertyInfo propertyInfo = typeof(QualitySettings).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                    if (propertyInfo == null) {
+                        continue;
+                    }
+                    streamWriter.Write(propertyInfo.GetValue(typeof(QualitySettings)));
+                } else {
+                    streamWriter.Write(fieldInfo.GetValue(LoadedPlayerData.playerGraphics));
+                }
                 if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
                     streamWriter.Write("\r\n");
                 }
@@ -287,7 +385,7 @@ public class savingScript : MonoBehaviour {
     #endregion
 
     #region Loading a profile's graphics settings.
-    private void loadGraphicsSettings(string profileName) {
+    public void loadGraphicsSettings(string profileName) {
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
             while (streamReader.EndOfStream == false) {
@@ -319,11 +417,33 @@ public class savingScript : MonoBehaviour {
                     continue;
                 }
                 FieldInfo fieldInfo = LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                if (fieldInfo == null) {
+                    PropertyInfo propertyInfo = typeof(QualitySettings).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                    if (propertyInfo == null) {
+                        continue;
+                    }
+                    Type type = propertyInfo.PropertyType;
+                    try {
+                        propertyInfo.SetValue(typeof(QualitySettings), Convert.ChangeType(splitLine[1], type));
+                    } catch (Exception exception) {
+                        if (exception.GetType() == typeof(InvalidCastException)) {
+                            if (type != typeof(Vector3)) {
+                                propertyInfo.SetValue(typeof(QualitySettings), Enum.Parse(type, splitLine[1]));
+                            } else {
+                                string vector3Line = splitLine[1].Trim('(', ')');
+                                string[] splitVector3Line = vector3Line.Split(',');
+                                propertyInfo.SetValue(typeof(QualitySettings), new Vector3(float.Parse(splitVector3Line[0]), float.Parse(splitVector3Line[1]), float.Parse(splitVector3Line[2])));
+                            }
+                        } else {
+                            catchException(exception);
+                        }
+                    }
+                    continue;
+                }
                 try {
-                    object valueToSet = Convert.ChangeType(splitLine[1], fieldInfo.FieldType);
-                    fieldInfo.SetValue(LoadedPlayerData.playerGraphics, valueToSet);
+                    fieldInfo.SetValue(LoadedPlayerData.playerGraphics, Convert.ChangeType(splitLine[1], fieldInfo.FieldType));
                 } catch (Exception exception) {
-                    Debug.LogWarning(exception);
+                    catchException(exception);
                     continue;
                 }
             }

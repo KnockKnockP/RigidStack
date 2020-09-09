@@ -1176,6 +1176,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1191,6 +1192,26 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a160d838ff8b4b4693ac20007e008c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AssetsPPU: 100
+  m_RefResolutionX: 320
+  m_RefResolutionY: 180
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -11758,9 +11779,9 @@ MonoBehaviour:
   shouldMoveTheCamera: 0
   _sharedMonobehaviour: {fileID: 7619175099963299235}
   _cameraScript: {fileID: 7619175099963299231}
-  endMenu: {fileID: 1786818563}
   endMenuScoreText: {fileID: 1096650041}
   _objectiveScript: {fileID: 7619175099963299233}
+  endMenu: {fileID: 1786818563}
   dock: {fileID: 1402084107}
   objectEditingPanel: {fileID: 758157996}
   allPlacedObjectsSpriteRenderers: []

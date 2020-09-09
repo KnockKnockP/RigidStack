@@ -46,6 +46,7 @@ public class settingsScript : MonoBehaviour {
     [Header("Graphics settings.")]
     [SerializeField] private Text graphicsText = null;
     [SerializeField] private Dropdown graphicsDropdown = null;
+    [SerializeField] private savingScript _savingScript = null;
 
 
     [SerializeField] private Text verticalSyncCountText = null;
@@ -121,6 +122,7 @@ public class settingsScript : MonoBehaviour {
             graphicsText.text = ("Graphics : " + graphicsLevelString);
             graphicsDropdown.value = graphicsLevel;
         }
+        _savingScript.loadGraphicsSettings(LoadedPlayerData.playerData.name);
         Debug.Log("Updated graphics to " + graphicsLevelString);
         return;
     }
