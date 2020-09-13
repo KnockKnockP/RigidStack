@@ -150,9 +150,15 @@ public class objectiveScript : MonoBehaviour {
     #region Freezing all objects.
     private void freezeAll() {
         heightScript _heightScript = FindObjectOfType<heightScript>();
+        Color32 dimmedColor = new Color32(50, 50, 50, 255);
         foreach (GameObject placedObject in _heightScript.placedObjects) {
             placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-            placedObject.GetComponent<SpriteRenderer>().color = new Color32(50, 50, 50, 255);
+            placedObject.GetComponent<SpriteRenderer>().color = dimmedColor;
+            if (placedObject.name.Contains("television") == true) {
+                televisionScript _televisionScript = placedObject.GetComponent<televisionScript>();
+                _televisionScript.videoPlayerSpriteRenderer.color = dimmedColor;
+                _televisionScript.videoPlayer.Pause();
+            }
         }
         return;
     }
