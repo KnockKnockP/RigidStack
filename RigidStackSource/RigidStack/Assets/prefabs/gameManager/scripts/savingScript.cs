@@ -472,7 +472,7 @@ public class savingScript : MonoBehaviour {
         #if (UNITY_EDITOR_WIN || UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX)
             string dataPath = Application.dataPath;
         #else
-            string dataPath = Application.persistentDataPath
+            string dataPath = Application.persistentDataPath;
         #endif
         if (getSavesFolder == true) {
             return (dataPath + "/Saves/");
