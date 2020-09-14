@@ -63,7 +63,6 @@ public class objectEditingScript : MonoBehaviour {
         makeText();
         updateAngleValue();
         inputText.text = "";
-        Debug.Log(angle);
         return;
     }
 

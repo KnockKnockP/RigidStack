@@ -8,7 +8,6 @@ public class televisionScript : MonoBehaviour {
     #region Variables to control the video.
     [HideInInspector] public VideoPlayer videoPlayer;
     [HideInInspector] public SpriteRenderer videoPlayerSpriteRenderer;
-    //[HideInInspector] public GameObject videoPlayerGameObject;
     #endregion
 
     #region Awake function.

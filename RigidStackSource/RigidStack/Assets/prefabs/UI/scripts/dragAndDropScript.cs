@@ -49,6 +49,9 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
                 placedGameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
                 placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
                 placedGameObject.GetComponent<SpriteRenderer>().sortingOrder = spriteOrder;
+                if (placedGameObject.name.Contains("television") == true) {
+                    placedGameObject.GetComponent<televisionScript>().videoPlayerSpriteRenderer.sortingOrder = spriteOrder;
+                }
                 if (spriteOrder != 32766) {
                     spriteOrder++;
                 }
@@ -60,6 +63,9 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
 
     #region Dragging the object.
     public virtual void OnDrag(PointerEventData pointerEventData) {
+        if (placedGameObject == null) {
+            return;
+        }
         if (_dragAndDropImageScript.objectCount != 0) {
             if (isDragging == true) {
                 placedGameObject.transform.position = _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
@@ -73,6 +79,10 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
         if (_dragAndDropImageScript.objectCount != 0) {
             if (isDragging == true) {
+                if (placedGameObject == null) {
+                    isDragging = false;
+                    return;
+                }
                 postDragAndDropScript placedObjectPostDragAndDropScript = placedGameObject.GetComponent<postDragAndDropScript>();
                 placedObjectPostDragAndDropScript._sharedMonobehaviour = _sharedMonobehaviour;
                 placedObjectPostDragAndDropScript.placedGameObject = placedGameObject;

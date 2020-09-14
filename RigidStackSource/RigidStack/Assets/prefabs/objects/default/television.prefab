@@ -103,7 +103,7 @@ VideoPlayer:
   m_AspectRatio: 2
   m_DataSource: 0
   m_PlaybackSpeed: 1
-  m_AudioOutputMode: 2
+  m_AudioOutputMode: 0
   m_TargetAudioSources: []
   m_DirectAudioVolumes: []
   m_Url: 
@@ -112,8 +112,8 @@ VideoPlayer:
   m_ControlledAudioTrackCount: 0
   m_PlayOnAwake: 1
   m_SkipOnDrop: 1
-  m_Looping: 0
-  m_WaitForFirstFrame: 1
+  m_Looping: 1
+  m_WaitForFirstFrame: 0
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
 --- !u!1 &2387137070807326072
@@ -232,7 +232,7 @@ PolygonCollider2D:
     - - {x: 0.79679507, y: -1.625798}
       - {x: 4.951239, y: -1.6075844}
       - {x: 5.1295424, y: -1.6067964}
-      - {x: 5.075469, y: 3.0330024}
+      - {x: 5.1492333, y: 3.0330024}
       - {x: -5.12, y: 3.04}
       - {x: -5.105661, y: -1.6018877}
       - {x: -4.8327875, y: -1.5957266}
@@ -247,8 +247,7 @@ PolygonCollider2D:
       - {x: 1.9162992, y: -2.5558715}
       - {x: 0.8193924, y: -2.5381439}
       - {x: 0.84, y: -1.64}
-    - - {x: 5.134014, y: 2.9937346}
-      - {x: 5.12592, y: -1.6142462}
+    - - {x: -0.88466454, y: 1.3312322}
 --- !u!50 &3143912039278302248
 Rigidbody2D:
   serializedVersion: 4
