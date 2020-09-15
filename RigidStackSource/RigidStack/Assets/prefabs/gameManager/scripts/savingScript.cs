@@ -15,7 +15,7 @@ using UnityEngine.UI;
 #region Static LoadedPlayerData class.
 public static class LoadedPlayerData {
     #region Variables for accessing player datas.
-    public static PlayerData playerData = null;
+    public static PlayerData playerData = new PlayerData();
     public static PlayerGraphics playerGraphics = new PlayerGraphics();
     public static List<PlayerData> profiles = new List<PlayerData>();
     #endregion
@@ -38,45 +38,18 @@ public class PlayerData {
 [Serializable]
 public class PlayerGraphics {
     #region Graphics variables.
-    /*
-    public bool isBackgroundEnabled = true,
-                isBackgroundScalingKeepAspectRatio = false,
-                softParticles = false,
-                realtimeReflectionProbes = false,
-                billboardsFaceCameraPosition = false,
-                streamingMipmapsActive = false,
-                streamingMipmapsAddAllCameras = false,
-                asyncUploadPersistentBuffer = false;
-    public int graphics = 0,
-               verticalSyncCount = 0,
-               pixelLightCount = 0,
-               masterTextureLimit = 0,
-               antiAliasing = 0,
-               streamingMipmapsRenderersPerFrame = 0,
-               streamingMipmapsMaxLevelReduction = 0,
-               streamingMipmapsMaxFileIORequests = 0,
-               shadowCascades = 0,
-               maximumLODLevel = 0,
-               particleRaycastBudget = 0,
-               asyncUploadTimeSlice = 0,
-               asyncUploadBufferSize = 0,
-               targetFramesPerSecond = 60;
-    public float resolutionScalingFixedDPIFactor = 0f,
-                 streamingMipmapsMemoryBudget = 0f,
-                 shadowDistance = 0f,
-                 shadowNearPlaneOffset = 0f,
-                 shadowCascade2Split = 0f,
-                 lodBias = 0f;
-    public Vector3 shadowCascade4Split = Vector3.zero;
-    public AnisotropicFiltering anisotropicFiltering = AnisotropicFiltering.Disable;
-    public ShadowmaskMode shadowmaskMode = ShadowmaskMode.DistanceShadowmask;
-    public ShadowQuality shadows = ShadowQuality.Disable;
-    public ShadowResolution shadowResolution = ShadowResolution.Low;
-    public ShadowProjection shadowProjection = ShadowProjection.CloseFit;
-    public SkinWeights skinWeights = SkinWeights.OneBone;
-    */
     public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
-    public int graphics = 0, verticalSyncCount = 0, targetFramesPerSecond = 60;
+    public int graphics = 0, verticalSyncCount = 0;
+    private static int _targetFramesPerSecond = 60;
+    public static int targetFramesPerSecond {
+        get {
+            return _targetFramesPerSecond;
+        }
+        set {
+            _targetFramesPerSecond = value;
+            Application.targetFrameRate = value;
+        }
+    }
     public string[] graphicsVariablesNames = new string[] {
         ";https://docs.unity3d.com/ScriptReference/QualitySettings.html",
         ";Graphics settings menu values.",
@@ -234,6 +207,7 @@ public class savingScript : MonoBehaviour {
                 LoadedPlayerData.playerData = LoadedPlayerData.profiles[i];
                 profilesDropdown.value = i;
                 profileNameText.text = (LoadedPlayerData.playerData.name + ".");
+                load();
                 break;
             }
         }
@@ -355,24 +329,36 @@ public class savingScript : MonoBehaviour {
             for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
                 if (LoadedPlayerData.playerGraphics.graphicsVariablesNames[i].Contains(';') == true) {
                     streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                    streamWriter.Flush();
                     if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
                         streamWriter.Write("\r\n");
+                        streamWriter.Flush();
                     }
                     continue;
                 }
                 streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i] + " = ");
-                FieldInfo fieldInfo = LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                streamWriter.Flush();
+                FieldInfo fieldInfo = typeof(PlayerGraphics).GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                object objectToWrite;
                 if (fieldInfo == null) {
                     PropertyInfo propertyInfo = typeof(QualitySettings).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
                     if (propertyInfo == null) {
-                        continue;
+                        propertyInfo = typeof(PlayerGraphics).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                        if (propertyInfo == null) {
+                            continue;
+                        }
+                        objectToWrite = propertyInfo.GetValue(LoadedPlayerData.playerGraphics);
+                    } else {
+                        objectToWrite = propertyInfo.GetValue(typeof(QualitySettings));
                     }
-                    streamWriter.Write(propertyInfo.GetValue(typeof(QualitySettings)));
                 } else {
-                    streamWriter.Write(fieldInfo.GetValue(LoadedPlayerData.playerGraphics));
+                    objectToWrite = fieldInfo.GetValue(LoadedPlayerData.playerGraphics);
                 }
+                streamWriter.Write(objectToWrite);
+                streamWriter.Flush();
                 if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
                     streamWriter.Write("\r\n");
+                    streamWriter.Flush();
                 }
             }
             streamWriter.Flush();
@@ -416,23 +402,28 @@ public class savingScript : MonoBehaviour {
                     Debug.LogWarning("\"" + splitLine[0] + "\" is not a valid variable name.");
                     continue;
                 }
-                FieldInfo fieldInfo = LoadedPlayerData.playerGraphics.GetType().GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                Type infoType = typeof(PlayerGraphics);
+                FieldInfo fieldInfo = infoType.GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
                 if (fieldInfo == null) {
-                    PropertyInfo propertyInfo = typeof(QualitySettings).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                    PropertyInfo propertyInfo = infoType.GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
                     if (propertyInfo == null) {
-                        continue;
+                        infoType = typeof(QualitySettings);
+                        propertyInfo = infoType.GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
+                        if (propertyInfo == null) {
+                            continue;
+                        }
                     }
-                    Type type = propertyInfo.PropertyType;
+                    Type variableType = propertyInfo.PropertyType;
                     try {
-                        propertyInfo.SetValue(typeof(QualitySettings), Convert.ChangeType(splitLine[1], type));
+                        propertyInfo.SetValue(infoType, Convert.ChangeType(splitLine[1], variableType));
                     } catch (Exception exception) {
                         if (exception.GetType() == typeof(InvalidCastException)) {
-                            if (type != typeof(Vector3)) {
-                                propertyInfo.SetValue(typeof(QualitySettings), Enum.Parse(type, splitLine[1]));
-                            } else {
+                            if (variableType == typeof(Vector3)) {
                                 string vector3Line = splitLine[1].Trim('(', ')');
                                 string[] splitVector3Line = vector3Line.Split(',');
                                 propertyInfo.SetValue(typeof(QualitySettings), new Vector3(float.Parse(splitVector3Line[0]), float.Parse(splitVector3Line[1]), float.Parse(splitVector3Line[2])));
+                            } else {
+                                propertyInfo.SetValue(typeof(QualitySettings), Enum.Parse(variableType, splitLine[1]));
                             }
                         } else {
                             catchException(exception);

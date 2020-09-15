@@ -6,7 +6,7 @@ using UnityEngine.UI;
 #region "MonoBehaviour" inherited "fpsCounterScript" class.
 public class fpsCounterScript : MonoBehaviour {
     #region A variable for shwoing the fps.
-    private Text fpsCounterText = null;
+    private Text fpsCounterText;
     #endregion
 
     #region Awake function.
