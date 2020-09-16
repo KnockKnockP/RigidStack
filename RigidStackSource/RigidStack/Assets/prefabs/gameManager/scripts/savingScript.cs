@@ -105,6 +105,10 @@ public class PlayerGraphics {
 #region "MonoBehaviour" inherited "savingScript" class.
 public class savingScript : MonoBehaviour {
     #region Varibales.
+    #region Variables for the pre main menu.
+    [SerializeField] private Text noticeText = null;
+    #endregion
+
     #region Variables for the settings menu.
     [SerializeField] private settingsScript _settingsScript = null;
     [SerializeField] private Text savingText = null;
@@ -324,6 +328,10 @@ public class savingScript : MonoBehaviour {
 
     #region Saving a profile's graphics settings.
     private void saveGraphicsSettings(string profileName) {
+        #if ENABLE_IL2CPP
+            IL2CPPWarning("Saving");
+            return;
+        #endif
         try {
             StreamWriter streamWriter = new StreamWriter(getPath(false, false, true, profileName));
             for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
@@ -372,6 +380,10 @@ public class savingScript : MonoBehaviour {
 
     #region Loading a profile's graphics settings.
     public void loadGraphicsSettings(string profileName) {
+        #if ENABLE_IL2CPP
+            IL2CPPWarning("Loading");
+            return;
+        #endif
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
             while (streamReader.EndOfStream == false) {
@@ -539,6 +551,24 @@ public class savingScript : MonoBehaviour {
         if ((saveButton != null) && (loadButton != null)) {
             saveButton.interactable = status;
             loadButton.interactable = status;
+        }
+        return;
+    }
+    #endregion
+
+    #region IL2CPP warning.
+    private void IL2CPPWarning(string loadingOrSaving) {
+        string text = (loadingOrSaving + " graphics settings file is not supported in IL2CPP build.");
+        Color32 warningColor = new Color32(255, 200, 0, 255);
+        if (savingText != null) {
+            savingText.color = warningColor;
+            savingText.text = text;
+            savingText.gameObject.SetActive(true);
+        }
+        if (noticeText != null) {
+            noticeText.color = warningColor;
+            noticeText.text = text;
+            noticeText.gameObject.SetActive(true);
         }
         return;
     }
