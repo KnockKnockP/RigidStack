@@ -10,12 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 3074633628067471241}
   - component: {fileID: 4066143604225231544}
-  - component: {fileID: 9037739961868858462}
+  - component: {fileID: -4488514248446877321}
   - component: {fileID: 3143912039278302248}
   - component: {fileID: 2199066637753886674}
   - component: {fileID: -6643549051880076239}
   m_Layer: 0
-  m_Name: desk
+  m_Name: refrigerator
   m_TagString: object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,18 +75,18 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: c67059c9536fb2949924ccaf5a898ed8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c7b604ef6ed9f4b408efe227bd99db5f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.24, y: 3.52}
+  m_Size: {x: 2.88, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &9037739961868858462
+--- !u!60 &-4488514248446877321
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,22 +103,18 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.24, y: 3.52}
-    newSize: {x: 10.24, y: 3.52}
+    oldSize: {x: 2.88, y: 5.12}
+    newSize: {x: 2.88, y: 5.12}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -5.12, y: 1.76}
-      - {x: -5.12, y: -1.76}
-      - {x: -2.7116847, y: -1.7638133}
-      - {x: -2.7008274, y: 1.1140932}
-      - {x: 4.331744, y: 1.1138732}
-      - {x: 4.3213634, y: -1.7515336}
-      - {x: 5.12, y: -1.76}
-      - {x: 5.12, y: 1.76}
+    - - {x: -1.4399999, y: 2.56}
+      - {x: -1.4399999, y: -2.56}
+      - {x: 1.4399999, y: -2.56}
+      - {x: 1.4399999, y: 2.56}
 --- !u!50 &3143912039278302248
 Rigidbody2D:
   serializedVersion: 4
@@ -131,7 +127,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 20
+  m_Mass: 30
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
