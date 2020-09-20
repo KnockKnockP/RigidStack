@@ -135,6 +135,7 @@ public class savingScript : MonoBehaviour {
                 makeNewProfile(defaultProfileName);
             } else if (hasLoadedProfileListOnStart == false) {
                 loadProfiles();
+                selectProfile(LoadedPlayerData.playerData.name);
                 hasLoadedProfileListOnStart = true;
             } else {
                 selectProfile(LoadedPlayerData.playerData.name);
@@ -206,6 +207,7 @@ public class savingScript : MonoBehaviour {
     }
 
     private void selectProfile(string profileName) {
+        Debug.Log("Profile name before selecting profile : " + LoadedPlayerData.playerData.name + ".");
         for (int i = 0; i < LoadedPlayerData.profiles.Count; i++) {
             if (LoadedPlayerData.profiles[i].name == profileName) {
                 LoadedPlayerData.playerData = LoadedPlayerData.profiles[i];
@@ -219,6 +221,7 @@ public class savingScript : MonoBehaviour {
         if (LoadedPlayerData.playerData.name == defaultProfileName) {
             deleteButton.interactable = false;
         }
+        Debug.Log("Profile name after selecting profile : " + LoadedPlayerData.playerData.name + ".");
         return;
     }
     #endregion
@@ -264,7 +267,7 @@ public class savingScript : MonoBehaviour {
             streamReader.Close();
             profilesDropdown.ClearOptions();
             profilesDropdown.AddOptions(profileNames);
-            selectProfile(LoadedPlayerData.profiles[0].name);
+            selectProfile(LoadedPlayerData.playerData.name);
         } catch (Exception exception) {
             catchException(exception);
         }

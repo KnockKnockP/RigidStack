@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c7a66a5564b3e4cbb8b418fec65d3f, type: 3}
+  m_Name: defaultAfternoonBackground
+  m_EditorClassIdentifier: 
+  staticBackgrounds:
+  - {fileID: 5714698094591055321, guid: dae0b833d22b09d428d0dd48cdd8f53f, type: 3}
+  - {fileID: 5714698094591055321, guid: 47fb8d46492903c46b4291e381f0579d, type: 3}
+  - {fileID: 5714698094591055321, guid: a20a13d004b71b843aa98c317e5d911d, type: 3}
+  - {fileID: 5714698094591055321, guid: a5e8fbc64393f1246b48c383e36c6a7d, type: 3}
+  - {fileID: 4938026437076813649, guid: d34c206b976b6e94f8dbf2d5a885a462, type: 3}
+  dynamicBackgrounds:
+  - {fileID: 4938026437076813649, guid: 46be84cea3977154aaafdfe3c64ffb74, type: 3}
+  - {fileID: 4938026437076813649, guid: bba2802be1e975a409d57de8ce18257d, type: 3}

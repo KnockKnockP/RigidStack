@@ -1,4 +1,5 @@
 ﻿#region Using tags.
+using System;
 using System.Collections;
 using UnityEngine;
 #endregion
@@ -14,12 +15,9 @@ public class backgroundManager : MonoBehaviour {
     #region Variables for generating backgrounds.
     private float maximumHeightOfGeneratedBackgrounds;
     [SerializeField] private Transform gridTransform = null, backgroundHolderEmptyObject = null;
-    /*
-        staticBackgrounds are backgrounds that does not care about the camera's position.
-        dynamicBackgrounds are backgrounds that generates as the camera moves.
-    */
     private GameObject previousBackground;
-    [SerializeField] private GameObject[] staticBackgrounds = null, dynamicBackgrounds = null;
+    private Background background;
+    [SerializeField] private DayBackgrounds dayBackgrounds = null;
     #endregion
     #endregion
 
@@ -29,16 +27,32 @@ public class backgroundManager : MonoBehaviour {
             Destroy(this);
             return;
         }
+        setBackground();
         generateStaticBackgrounds();
         StartCoroutine(generateDynamicBackgrounds());
         return;
     }
     #endregion
 
+    #region Setting up backgrounds.
+    private void setBackground() {
+        int hour = DateTime.Now.Hour;
+        if ((hour >= 4) && (hour < 9)) {
+            background = dayBackgrounds.morningBackground;
+        } else if (hour >= 9 && hour < 20) {
+            background = dayBackgrounds.afternoonBackground;
+        } else {
+            //background = dayBackgrounds.nightBackground;
+            background = dayBackgrounds.morningBackground;
+        }
+        return;
+    }
+    #endregion
+
     #region Generating static backgrounds.
     private void generateStaticBackgrounds() {
-        for (int i = 0; i < staticBackgrounds.Length; i++) {
-            GameObject generatedBackground = Instantiate(staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+        for (int i = 0; i < background.staticBackgrounds.Length; i++) {
+            GameObject generatedBackground = Instantiate(background.staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
             resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
             Vector3 backgroundPosition;
             if (i == 0) {
@@ -67,7 +81,7 @@ public class backgroundManager : MonoBehaviour {
         while (true) {
             yield return null;
             if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
-                GameObject generatedBackground = Instantiate(dynamicBackgrounds[Random.Range(0, dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+                GameObject generatedBackground = Instantiate(background.dynamicBackgrounds[UnityEngine.Random.Range(0, background.dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
                 resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
                 Vector3 backgroundPosition;
                 if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
