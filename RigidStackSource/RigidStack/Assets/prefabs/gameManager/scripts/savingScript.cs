@@ -117,7 +117,8 @@ public class savingScript : MonoBehaviour {
 
     #region Variables for the profiles menu.
     private bool hasLoadedProfileListOnStart;
-    private readonly string defaultProfileName = "Default";
+    private static readonly string defaultProfileName = "Default";
+    private static string lastlySelectedProfileName = defaultProfileName;
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
@@ -135,10 +136,10 @@ public class savingScript : MonoBehaviour {
                 makeNewProfile(defaultProfileName);
             } else if (hasLoadedProfileListOnStart == false) {
                 loadProfiles();
-                selectProfile(LoadedPlayerData.playerData.name);
+                selectProfile(lastlySelectedProfileName);
                 hasLoadedProfileListOnStart = true;
             } else {
-                selectProfile(LoadedPlayerData.playerData.name);
+                selectProfile(lastlySelectedProfileName);
             }
         }
         return;
@@ -195,25 +196,19 @@ public class savingScript : MonoBehaviour {
 
     #region Selecting a profile.
     public void selectProfile() {
-        LoadedPlayerData.playerData = LoadedPlayerData.profiles[profilesDropdown.value];
-        profileNameText.text = (LoadedPlayerData.playerData.name + ".");
-        if (LoadedPlayerData.playerData.name == defaultProfileName) {
-            deleteButton.interactable = false;
-        } else {
-            deleteButton.interactable = true;
-        }
-        loadGraphicsSettings(LoadedPlayerData.playerData.name);
+        selectProfile(LoadedPlayerData.profiles[profilesDropdown.value].name);
         return;
     }
 
     private void selectProfile(string profileName) {
-        Debug.Log("Profile name before selecting profile : " + LoadedPlayerData.playerData.name + ".");
         for (int i = 0; i < LoadedPlayerData.profiles.Count; i++) {
             if (LoadedPlayerData.profiles[i].name == profileName) {
                 LoadedPlayerData.playerData = LoadedPlayerData.profiles[i];
+                lastlySelectedProfileName = LoadedPlayerData.playerData.name;
                 profilesDropdown.value = i;
                 profileNameText.text = (LoadedPlayerData.playerData.name + ".");
                 load();
+                saveProfiles();
                 break;
             }
         }
@@ -221,7 +216,6 @@ public class savingScript : MonoBehaviour {
         if (LoadedPlayerData.playerData.name == defaultProfileName) {
             deleteButton.interactable = false;
         }
-        Debug.Log("Profile name after selecting profile : " + LoadedPlayerData.playerData.name + ".");
         return;
     }
     #endregion
@@ -232,11 +226,9 @@ public class savingScript : MonoBehaviour {
         try {
             StreamWriter streamWriter = new StreamWriter(path);
             for (int i = 0; i < LoadedPlayerData.profiles.Count; i++) {
-                streamWriter.Write(LoadedPlayerData.profiles[i].name);
-                if (i != (LoadedPlayerData.profiles.Count - 1)) {
-                    streamWriter.Write("\r\n");
-                }
+                streamWriter.Write(LoadedPlayerData.profiles[i].name + "\r\n");
             }
+            streamWriter.Write("Lastly selected profile name : " + lastlySelectedProfileName);
             streamWriter.Close();
         } catch (Exception exception) {
             catchException(exception);
@@ -255,8 +247,14 @@ public class savingScript : MonoBehaviour {
             StreamReader streamReader = new StreamReader(path);
             List<string> profileNames = new List<string>();
             LoadedPlayerData.profiles.Clear();
+            string profileToLoad = defaultProfileName;
             while (streamReader.EndOfStream == false) {
                 string readLine = streamReader.ReadLine();
+                string[] splitLine = readLine.Split(':');
+                if (splitLine.Length == 2) {
+                    profileToLoad = splitLine[1].Trim(' ');
+                    continue;
+                }
                 if (checkName(readLine) == false) {
                     continue;
                 }
@@ -267,7 +265,7 @@ public class savingScript : MonoBehaviour {
             streamReader.Close();
             profilesDropdown.ClearOptions();
             profilesDropdown.AddOptions(profileNames);
-            selectProfile(LoadedPlayerData.playerData.name);
+            selectProfile(profileToLoad);
         } catch (Exception exception) {
             catchException(exception);
         }
