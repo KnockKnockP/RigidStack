@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   staticBackgrounds:
   - {fileID: 5714698094591055321, guid: fd208a950d078b745b215d2836cb0927, type: 3}
+  - {fileID: 5714698094591055321, guid: c8d8111eea407cd4eabbbb1244b4e38d, type: 3}
+  - {fileID: 5714698094591055321, guid: 0aa75eb3c75c66b47aff6e18f6815f4b, type: 3}
+  - {fileID: 5714698094591055321, guid: ad7ca08e7f3b59143a9fdcba0944db14, type: 3}
+  - {fileID: 4938026437076813649, guid: 52c6edc59ff1cc6459fbfe9086dab0c7, type: 3}
   dynamicBackgrounds:
   - {fileID: 4938026437076813649, guid: 46be84cea3977154aaafdfe3c64ffb74, type: 3}
   - {fileID: 4938026437076813649, guid: bba2802be1e975a409d57de8ce18257d, type: 3}

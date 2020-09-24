@@ -114,7 +114,7 @@ GameObject:
   - component: {fileID: -1549892536029741816}
   - component: {fileID: 5714698094591055322}
   m_Layer: 0
-  m_Name: extendedSky1
+  m_Name: default_afternoon_extendedSky1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

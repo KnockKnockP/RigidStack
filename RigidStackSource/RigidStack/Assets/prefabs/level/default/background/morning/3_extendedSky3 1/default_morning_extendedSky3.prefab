@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 8546564082124198997}
   - component: {fileID: -1549892536029741816}
   - component: {fileID: 5714698094591055322}
-  - component: {fileID: 1046212904}
   - component: {fileID: 6430176083562780822}
   m_Layer: 0
-  m_Name: extendedSky2
+  m_Name: default_morning_extendedSky3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -32768
-  m_Sprite: {fileID: 21300000, guid: 0f1318aabc20e1144a7f746c9ea041ca, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fd67f2b39ae042e47905bccef1c98c4b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,25 +98,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridOffset: 0.2
   aspectRatioGridOffset: -1.53
---- !u!95 &1046212904
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5714698094591055321}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3c92607eb8ab6284e9415beefc8c2a57, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &6430176083562780822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,4 +111,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objects:
-  - {fileID: 7162052918383000832, guid: af5b222e8f764df429ec9b47535faef9, type: 3}
+  - {fileID: 5236293078823763295, guid: 26907dc3342792e47b77a4669d2ef313, type: 3}
