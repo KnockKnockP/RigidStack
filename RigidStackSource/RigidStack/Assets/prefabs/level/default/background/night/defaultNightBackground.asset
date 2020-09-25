@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c7a66a5564b3e4cbb8b418fec65d3f, type: 3}
+  m_Name: defaultNightBackground
+  m_EditorClassIdentifier: 
+  staticBackgrounds:
+  - {fileID: 5714698094591055321, guid: 374d3aa6631e9b640b5d301bd0224808, type: 3}
+  - {fileID: 5714698094591055321, guid: 8615b98af8f265b4a8caeb0f935079a3, type: 3}
+  - {fileID: 5714698094591055321, guid: 414c097290a43fe48be5430add5fbfd2, type: 3}
+  dynamicBackgrounds:
+  - {fileID: 4938026437076813649, guid: 46be84cea3977154aaafdfe3c64ffb74, type: 3}
+  - {fileID: 4938026437076813649, guid: bba2802be1e975a409d57de8ce18257d, type: 3}

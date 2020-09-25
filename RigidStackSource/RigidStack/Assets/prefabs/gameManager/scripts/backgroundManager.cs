@@ -42,8 +42,7 @@ public class backgroundManager : MonoBehaviour {
         } else if (hour >= 9 && hour < 20) {
             background = dayBackgrounds.afternoonBackground;
         } else {
-            //background = dayBackgrounds.nightBackground;
-            background = dayBackgrounds.morningBackground;
+            background = dayBackgrounds.nightBackground;
         }
         return;
     }

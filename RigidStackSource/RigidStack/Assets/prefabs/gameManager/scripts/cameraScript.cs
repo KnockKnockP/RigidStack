@@ -10,7 +10,7 @@ public class cameraScript : MonoBehaviour {
     #endregion
 
     #region Variables for moving the camera.
-    private bool shouldMoveCameraUp, shouldMoveCameraDown;
+    public static bool shouldMoveCameraUp, shouldMoveCameraDown;
     public static float cameraMovementSpeed = 10f;
     [SerializeField] private endMenuManager _endMenuManager = null;
     [HideInInspector] public Vector3 originalCameraPosition;
@@ -36,18 +36,6 @@ public class cameraScript : MonoBehaviour {
         } else if (shouldMoveCameraDown == true) {
             moveCameraDown();
         }
-        return;
-    }
-    #endregion
-
-    #region Toggling camera movements.
-    public void toggleCameraUp() {
-        shouldMoveCameraUp = (!shouldMoveCameraUp);
-        return;
-    }
-
-    public void toggleCameraDown() {
-        shouldMoveCameraDown = (!shouldMoveCameraDown);
         return;
     }
     #endregion

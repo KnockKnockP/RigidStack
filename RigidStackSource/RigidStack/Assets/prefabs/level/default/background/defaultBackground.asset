@@ -15,3 +15,4 @@ MonoBehaviour:
   morningBackground: {fileID: 11400000, guid: 61b1a112cf311b3488ce28b74cc3fcba, type: 2}
   afternoonBackground: {fileID: 11400000, guid: b12531a143aa96446a60e2b00c5aba8e,
     type: 2}
+  nightBackground: {fileID: 11400000, guid: 3a1cc9ce1448f5e45a233d72dead5d07, type: 2}

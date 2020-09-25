@@ -20,7 +20,6 @@ public class inputManager : MonoBehaviour {
 
     #region Variables for input management.
     [SerializeField] private pauseScript _pauseScript = null;
-    [SerializeField] private cameraScript _cameraScript = null;
     [SerializeField] private heightScript _heightScript = null;
     [SerializeField] private Button confirmButton = null;
     #endregion
@@ -38,19 +37,21 @@ public class inputManager : MonoBehaviour {
     private IEnumerator manageCameraMovement() {
         yield return null;
         if ((Input.GetKeyDown(KeyCode.W) == true) || (Input.GetKeyDown(KeyCode.UpArrow) == true)) {
-            _cameraScript.toggleCameraUp();
+            cameraScript.shouldMoveCameraUp = true;
+            cameraScript.shouldMoveCameraDown = false;
             yield return null;
         }
         if ((Input.GetKeyUp(KeyCode.W) == true) || (Input.GetKeyUp(KeyCode.UpArrow) == true)) {
-            _cameraScript.toggleCameraUp();
+            cameraScript.shouldMoveCameraUp = false;
             yield return null;
         }
         if ((Input.GetKeyDown(KeyCode.S) == true) || (Input.GetKeyDown(KeyCode.DownArrow) == true)) {
-            _cameraScript.toggleCameraDown();
+            cameraScript.shouldMoveCameraDown = true;
+            cameraScript.shouldMoveCameraUp = false;
             yield return null;
         }
         if ((Input.GetKeyUp(KeyCode.S) == true) || (Input.GetKeyUp(KeyCode.DownArrow) == true)) {
-            _cameraScript.toggleCameraDown();
+            cameraScript.shouldMoveCameraDown = false;
             yield return null;
         }
         yield return null;
@@ -60,11 +61,23 @@ public class inputManager : MonoBehaviour {
     #region Managing drag and drop inputs.
     private IEnumerator manageDragAndDrop() {
         yield return null;
-        if ((Input.GetKeyDown(KeyCode.LeftShift) == true) || (Input.GetKeyDown(KeyCode.RightShift) == true)) {
-            if ((dragAndDropScript._dragAndDropScript.placedGameObject != null) && (confirmButton.interactable == true)) {
-                dragAndDropScript._dragAndDropScript.placeObject();
+        if ((confirmButton.interactable == true) && (confirmButton.gameObject.activeInHierarchy == true)) {
+            if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
+                if ((Input.GetKeyDown(KeyCode.LeftShift) == true) || (Input.GetKeyDown(KeyCode.RightShift) == true)) {
+                    if (confirmButton.interactable == true) {
+                        dragAndDropScript._dragAndDropScript.placeObject();
+                    }
+                    yield return null;
+                }
+                if ((Input.GetKeyDown(KeyCode.D) == true) || (Input.GetKeyDown(KeyCode.RightArrow) == true)) {
+                    dragAndDropScript._dragAndDropScript.rotateRight();
+                    yield return null;
+                }
+                if ((Input.GetKeyDown(KeyCode.A) == true) || (Input.GetKeyDown(KeyCode.LeftArrow) == true)) {
+                    dragAndDropScript._dragAndDropScript.rotateLeft();
+                    yield return null;
+                }
             }
-            yield return null;
         }
         if (Input.GetKeyDown(KeyCode.Escape) == true) {
             if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
@@ -72,19 +85,6 @@ public class inputManager : MonoBehaviour {
             } else {
                 _pauseScript.pauseOrResume();
             }
-            yield return null;
-        }
-        if ((Input.GetKeyDown(KeyCode.D) == true) || (Input.GetKeyDown(KeyCode.RightArrow) == true)) {
-            if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
-                dragAndDropScript._dragAndDropScript.rotateRight();
-            }
-            yield return null;
-        }
-        if ((Input.GetKeyDown(KeyCode.A) == true) || (Input.GetKeyDown(KeyCode.LeftArrow) == true)) {
-            if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
-                dragAndDropScript._dragAndDropScript.rotateLeft();
-            }
-            yield return null;
         }
         yield return null;
     }
