@@ -16,6 +16,8 @@ MonoBehaviour:
   - {fileID: 5714698094591055321, guid: 374d3aa6631e9b640b5d301bd0224808, type: 3}
   - {fileID: 5714698094591055321, guid: 8615b98af8f265b4a8caeb0f935079a3, type: 3}
   - {fileID: 5714698094591055321, guid: 414c097290a43fe48be5430add5fbfd2, type: 3}
+  - {fileID: 5714698094591055321, guid: 22a2169c24f48bf418d7cd4175828ff4, type: 3}
+  - {fileID: 4938026437076813649, guid: 3baed7b079eb7b84bb5c1f76270db7ca, type: 3}
   dynamicBackgrounds:
   - {fileID: 4938026437076813649, guid: 46be84cea3977154aaafdfe3c64ffb74, type: 3}
   - {fileID: 4938026437076813649, guid: bba2802be1e975a409d57de8ce18257d, type: 3}

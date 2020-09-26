@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3408318369340415321}
   - component: {fileID: 8156396815131367304}
   m_Layer: 0
-  m_Name: default_afternoon_extendedSky4
+  m_Name: default_night_extendedSky4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -32768
-  m_Sprite: {fileID: 21300000, guid: 65aa847247063aa4fab31cad9e02c29e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: feaba0819e069874d8a8588b157674e6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
