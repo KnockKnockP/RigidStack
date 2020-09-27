@@ -671,7 +671,7 @@ RectTransform:
   m_Children:
   - {fileID: 948360702}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -696,25 +696,25 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 7619175099963299231}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: toggleCameraUp
-          m_Mode: 1
+          m_TargetAssemblyTypeName: cameraScript, Assembly-CSharp
+          m_MethodName: setBooleanToMoveTheCameraUp
+          m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
-            m_BoolArgument: 0
+            m_BoolArgument: 1
           m_CallState: 2
   - eventID: 3
     callback:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 7619175099963299231}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: toggleCameraUp
-          m_Mode: 1
+          m_TargetAssemblyTypeName: cameraScript, Assembly-CSharp
+          m_MethodName: setBooleanToMoveTheCameraUp
+          m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1576,7 +1576,7 @@ RectTransform:
   m_Children:
   - {fileID: 1030255033}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1601,25 +1601,25 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 7619175099963299231}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: toggleCameraDown
-          m_Mode: 1
+          m_TargetAssemblyTypeName: cameraScript, Assembly-CSharp
+          m_MethodName: setBooleanToMoveTheCameraDown
+          m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
-            m_BoolArgument: 0
+            m_BoolArgument: 1
           m_CallState: 2
   - eventID: 3
     callback:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 7619175099963299231}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: toggleCameraDown
-          m_Mode: 1
+          m_TargetAssemblyTypeName: cameraScript, Assembly-CSharp
+          m_MethodName: setBooleanToMoveTheCameraDown
+          m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7951,8 +7951,8 @@ RectTransform:
   - {fileID: 1402084108}
   - {fileID: 758157997}
   - {fileID: 1452800245}
-  - {fileID: 649945529}
   - {fileID: 374139995}
+  - {fileID: 649945529}
   - {fileID: 2019807158}
   - {fileID: 1786818564}
   - {fileID: 2129427823}

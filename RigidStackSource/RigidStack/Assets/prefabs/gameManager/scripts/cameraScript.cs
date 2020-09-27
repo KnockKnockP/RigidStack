@@ -40,6 +40,18 @@ public class cameraScript : MonoBehaviour {
     }
     #endregion
 
+    #region Toggling the camera.
+    public void setBooleanToMoveTheCameraUp(bool _value) {
+        shouldMoveCameraUp = _value;
+        return;
+    }
+
+    public void setBooleanToMoveTheCameraDown(bool _value) {
+        shouldMoveCameraDown = _value;
+        return;
+    }
+    #endregion
+
     #region Moving the camera.
     private void moveCameraUp() {
         _endMenuManager.shouldMoveTheCamera = false;
