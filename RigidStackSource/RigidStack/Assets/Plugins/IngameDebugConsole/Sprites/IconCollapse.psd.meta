@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a97ca0b99ece2d94aaaf59653feb45dd
+guid: d1546f8db185caf4dafcfa58efa3ba2c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -23,15 +23,16 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: -3
-  maxTextureSize: 64
+  textureFormat: 5
+  maxTextureSize: 32
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
+    filterMode: 1
     aniso: 16
     mipBias: -100
     wrapU: 1
@@ -57,11 +58,12 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
   applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 64
+    maxTextureSize: 32
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -84,7 +86,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-  spritePackingTag: 
+  spritePackingTag: DebugLogUI
   pSDRemoveMatte: 1
   pSDShowRemoveMatteOption: 1
   userData: 

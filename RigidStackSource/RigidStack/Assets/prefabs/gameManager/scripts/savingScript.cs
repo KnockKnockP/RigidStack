@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 #endregion
@@ -38,6 +40,7 @@ public class PlayerData {
 [Serializable]
 public class PlayerGraphics {
     #region Graphics variables.
+    #region Actual graphics variables.
     public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
     public int graphics = 0, verticalSyncCount = 0;
     private static int _targetFramesPerSecond = 60;
@@ -50,10 +53,15 @@ public class PlayerGraphics {
             Application.targetFrameRate = value;
         }
     }
+    #endregion
+
+    #region Graphics variables' names.
     public string[] graphicsVariablesNames = new string[] {
-        ";https://docs.unity3d.com/ScriptReference/QualitySettings.html",
+        ";Please take a time to read",
+        ";https://docs.unity3d.com/ScriptReference/QualitySettings.html,",
+        ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@8.2/manual/universalrp-asset.html",
+        ";to know what each value does.",
         ";Graphics settings menu values.",
-        ";",
         ";graphics = [0 (\"Potato.\"), 1 (\"Low.\"), 2 (\"Medium.\"), 3 (\"High.\"), 4 (\"Very high.\")].",
         ";The game will set the graphics value first and then overwrite all other values.",
         nameof(graphics),
@@ -64,14 +72,25 @@ public class PlayerGraphics {
         ";isBackgroundEnabled = [False, True].",
         ";When isBackgroundEnabled is set to false, the game will not generate any background objects.",
         nameof(isBackgroundEnabled),
-        ";",
-        ";QualitySettings values.",
-        ";",
-        nameof(QualitySettings.pixelLightCount),
+        ";Universal render pipeline asset values.",
+        nameof(UniversalRenderPipelineAsset.supportsCameraDepthTexture),
+        nameof(UniversalRenderPipelineAsset.supportsCameraOpaqueTexture),
+        nameof(UniversalRenderPipelineAsset.supportsHDR),
+        nameof(UniversalRenderPipelineAsset.msaaSampleCount),
+        nameof(UniversalRenderPipelineAsset.renderScale),
+        //";Per Object Limit settings should be here but, I could not find it anywhere on the UniversalRenderPipelineAsset class.",
+        nameof(UniversalRenderPipelineAsset.shadowDistance),
+        nameof(UniversalRenderPipelineAsset.shadowCascadeOption),
+        nameof(UniversalRenderPipelineAsset.shadowDepthBias),
+        nameof(UniversalRenderPipelineAsset.shadowNormalBias),
+        nameof(UniversalRenderPipelineAsset.colorGradingMode),
+        nameof(UniversalRenderPipelineAsset.colorGradingLutSize),
+        nameof(UniversalRenderPipelineAsset.useSRPBatcher),
+        nameof(UniversalRenderPipelineAsset.supportsDynamicBatching),
+        nameof(UniversalRenderPipelineAsset.shaderVariantLogLevel),
+        ";Quality settings values.",
         nameof(QualitySettings.masterTextureLimit),
         nameof(QualitySettings.anisotropicFiltering),
-        nameof(QualitySettings.antiAliasing),
-        nameof(QualitySettings.softParticles),
         nameof(QualitySettings.realtimeReflectionProbes),
         nameof(QualitySettings.billboardsFaceCameraPosition),
         nameof(QualitySettings.resolutionScalingFixedDPIFactor),
@@ -80,15 +99,6 @@ public class PlayerGraphics {
         nameof(QualitySettings.streamingMipmapsMemoryBudget),
         nameof(QualitySettings.streamingMipmapsMaxLevelReduction),
         nameof(QualitySettings.streamingMipmapsMaxFileIORequests),
-        nameof(QualitySettings.shadowmaskMode),
-        nameof(QualitySettings.shadows),
-        nameof(QualitySettings.shadowResolution),
-        nameof(QualitySettings.shadowProjection),
-        nameof(QualitySettings.shadowDistance),
-        nameof(QualitySettings.shadowNearPlaneOffset),
-        nameof(QualitySettings.shadowCascades),
-        nameof(QualitySettings.shadowCascade2Split),
-        nameof(QualitySettings.shadowCascade4Split),
         nameof(QualitySettings.skinWeights),
         nameof(QualitySettings.lodBias),
         nameof(QualitySettings.maximumLODLevel),
@@ -96,8 +106,10 @@ public class PlayerGraphics {
         nameof(QualitySettings.asyncUploadTimeSlice),
         nameof(QualitySettings.asyncUploadBufferSize),
         nameof(QualitySettings.asyncUploadPersistentBuffer),
+        ";If targetFramesPerSecond is set to -1, the game will render at the platform's default frame rate.",
         nameof(targetFramesPerSecond)
     };
+    #endregion
     #endregion
 }
 #endregion
@@ -125,8 +137,30 @@ public class savingScript : MonoBehaviour {
     #endregion
     #endregion
 
+    #region Classes.
+    #region "TypesAndObjects" class.
+    private class TypeAndObject {
+        #region Variables for reflections.
+        public Type type;
+        public object _object;
+        #endregion
+
+        #region The constructor.
+        public TypeAndObject(Type _type, object __object) {
+            type = _type;
+            _object = __object;
+        }
+        #endregion
+    };
+    #endregion
+    #endregion
+
     #region Start function.
     private void Start() {
+        //Doing this useless operation to remove the unused variable warning.
+        if (noticeText != null) {
+            noticeText.text = noticeText.text;
+        }
         string savesFolderPath = getPath(true, false, false, null);
         if (Directory.Exists(savesFolderPath) == false) {
             Directory.CreateDirectory(savesFolderPath);
@@ -258,14 +292,13 @@ public class savingScript : MonoBehaviour {
                 if (checkName(readLine) == false) {
                     continue;
                 }
-                PlayerData loadedPlayerData = load(readLine);
+                PlayerData loadedPlayerData = load(readLine, false);
                 LoadedPlayerData.profiles.Add(loadedPlayerData);
                 profileNames.Add(loadedPlayerData.name);
             }
             streamReader.Close();
             profilesDropdown.ClearOptions();
             profilesDropdown.AddOptions(profileNames);
-            selectProfile(profileToLoad);
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -298,11 +331,11 @@ public class savingScript : MonoBehaviour {
 
     #region Loading a profile data.
     public void load() {
-        load(LoadedPlayerData.playerData.name);
+        load(LoadedPlayerData.playerData.name, true);
         return;
     }
 
-    private PlayerData load(string profileName) {
+    private PlayerData load(string profileName, bool _loadGraphicsSettings) {
         disableOrEnabledButtons(false);
         string path = getPath(false, false, false, profileName);
         PlayerData playerData = null;
@@ -314,7 +347,9 @@ public class savingScript : MonoBehaviour {
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             playerData = (PlayerData)(binaryFormatter.Deserialize(fileStream));
             fileStream.Close();
-            loadGraphicsSettings(profileName);
+            if (_loadGraphicsSettings == true) {
+                loadGraphicsSettings(profileName);
+            }
             if (SceneManager.GetActiveScene().name != "preMainMenu") {
                 updateAll();
             }
@@ -338,39 +373,44 @@ public class savingScript : MonoBehaviour {
             for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
                 if (LoadedPlayerData.playerGraphics.graphicsVariablesNames[i].Contains(';') == true) {
                     streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                    streamWriter.Flush();
                     if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
                         streamWriter.Write("\r\n");
-                        streamWriter.Flush();
                     }
                     continue;
                 }
                 streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i] + " = ");
-                streamWriter.Flush();
-                FieldInfo fieldInfo = typeof(PlayerGraphics).GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                object objectToWrite;
-                if (fieldInfo == null) {
-                    PropertyInfo propertyInfo = typeof(QualitySettings).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                    if (propertyInfo == null) {
-                        propertyInfo = typeof(PlayerGraphics).GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                        if (propertyInfo == null) {
-                            continue;
+                string variableName = LoadedPlayerData.playerGraphics.graphicsVariablesNames[i];
+                object objectToWrite = "Something went wrong.";
+                TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
+                    new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
+                    new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
+                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), GraphicsSettings.currentRenderPipeline),
+                };
+                bool foundValue = false;
+                foreach (TypeAndObject typeAndObject in typesAndObjects) {
+                    FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
+                    if (fieldInfo == null) {
+                        PropertyInfo propertyInfo = typeAndObject.type.GetProperty(variableName);
+                        if (propertyInfo != null) {
+                            objectToWrite = propertyInfo.GetValue(typeAndObject._object);
+                            foundValue = true;
+                            break;
                         }
-                        objectToWrite = propertyInfo.GetValue(LoadedPlayerData.playerGraphics);
                     } else {
-                        objectToWrite = propertyInfo.GetValue(typeof(QualitySettings));
+                        objectToWrite = fieldInfo.GetValue(typeAndObject._object);
+                        foundValue = true;
+                        break;
                     }
-                } else {
-                    objectToWrite = fieldInfo.GetValue(LoadedPlayerData.playerGraphics);
+                }
+                if (foundValue == false) {
+                    Debug.LogWarning("\"" + variableName + "\"" + " is not a valid variable name.");
+                    continue;
                 }
                 streamWriter.Write(objectToWrite);
-                streamWriter.Flush();
                 if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
                     streamWriter.Write("\r\n");
-                    streamWriter.Flush();
                 }
             }
-            streamWriter.Flush();
             streamWriter.Close();
         } catch (Exception exception) {
             catchException(exception);
@@ -385,6 +425,7 @@ public class savingScript : MonoBehaviour {
             IL2CPPWarning("Loading");
             return;
         #endif
+        Debug.Log("Here.");
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
             while (streamReader.EndOfStream == false) {
@@ -404,9 +445,10 @@ public class savingScript : MonoBehaviour {
                     continue;
                 }
                 bool hasFoundTheVariableName = false;
-                int i;
-                for (i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
+                string variableName = null;
+                for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
                     if (splitLine[0] == LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]) {
+                        variableName = LoadedPlayerData.playerGraphics.graphicsVariablesNames[i];
                         hasFoundTheVariableName = true;
                         break;
                     }
@@ -415,45 +457,59 @@ public class savingScript : MonoBehaviour {
                     Debug.LogWarning("\"" + splitLine[0] + "\" is not a valid variable name.");
                     continue;
                 }
-                Type infoType = typeof(PlayerGraphics);
-                FieldInfo fieldInfo = infoType.GetField(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                if (fieldInfo == null) {
-                    PropertyInfo propertyInfo = infoType.GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                    if (propertyInfo == null) {
-                        infoType = typeof(QualitySettings);
-                        propertyInfo = infoType.GetProperty(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                        if (propertyInfo == null) {
-                            continue;
+                TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
+                    new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
+                    new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
+                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), GraphicsSettings.currentRenderPipeline),
+                };
+                foreach (TypeAndObject typeAndObject in typesAndObjects) {
+                    FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
+                    if (fieldInfo == null) {
+                        PropertyInfo propertyInfo = typeAndObject.type.GetProperty(variableName);
+                        if (propertyInfo != null) {
+                            setValues(null, propertyInfo, splitLine[1], typeAndObject);
+                            break;
                         }
+                    } else {
+                        setValues(fieldInfo, null, splitLine[1], typeAndObject);
+                        break;
                     }
-                    Type variableType = propertyInfo.PropertyType;
-                    try {
-                        propertyInfo.SetValue(infoType, Convert.ChangeType(splitLine[1], variableType));
-                    } catch (Exception exception) {
-                        if (exception.GetType() == typeof(InvalidCastException)) {
-                            if (variableType == typeof(Vector3)) {
-                                string vector3Line = splitLine[1].Trim('(', ')');
-                                string[] splitVector3Line = vector3Line.Split(',');
-                                propertyInfo.SetValue(typeof(QualitySettings), new Vector3(float.Parse(splitVector3Line[0]), float.Parse(splitVector3Line[1]), float.Parse(splitVector3Line[2])));
-                            } else {
-                                propertyInfo.SetValue(typeof(QualitySettings), Enum.Parse(variableType, splitLine[1]));
-                            }
-                        } else {
-                            catchException(exception);
-                        }
-                    }
-                    continue;
-                }
-                try {
-                    fieldInfo.SetValue(LoadedPlayerData.playerGraphics, Convert.ChangeType(splitLine[1], fieldInfo.FieldType));
-                } catch (Exception exception) {
-                    catchException(exception);
-                    continue;
                 }
             }
             streamReader.Close();
         } catch (Exception exception) {
             catchException(exception);
+        }
+        return;
+    }
+    #endregion
+
+    #region Shitty reflections.
+    private void setValues(FieldInfo fieldInfo, PropertyInfo propertyInfo, string variableInString, TypeAndObject typeAndObject) {
+        if ((fieldInfo == null && propertyInfo == null)) {
+            Debug.LogError("Both fieldInfo and propertyInfo can not be null");
+            return;
+        }
+        Type variableType;
+        if (fieldInfo != null) {
+            variableType = fieldInfo.FieldType;
+        } else {
+            variableType = propertyInfo.PropertyType;
+        }
+        object objectToWriteAs;
+        if (variableType == typeof(Vector3)) {
+            string vector3Line = variableInString.Trim('(', ')');
+            string[] splitVector3Line = vector3Line.Split(',');
+            objectToWriteAs = new Vector3(float.Parse(splitVector3Line[0]), float.Parse(splitVector3Line[1]), float.Parse(splitVector3Line[2]));
+        } else if (variableType.IsEnum == true) {
+            objectToWriteAs = Enum.Parse(variableType, variableInString);
+        } else {
+            objectToWriteAs = Convert.ChangeType(variableInString, variableType);
+        }
+        if (fieldInfo != null) {
+            fieldInfo.SetValue(typeAndObject._object, objectToWriteAs);
+        } else {
+            propertyInfo.SetValue(typeAndObject._object, objectToWriteAs);
         }
         return;
     }
@@ -558,21 +614,23 @@ public class savingScript : MonoBehaviour {
     #endregion
 
     #region IL2CPP warning.
-    private void IL2CPPWarning(string loadingOrSaving) {
-        string text = (loadingOrSaving + " graphics settings file is not supported in IL2CPP build.");
-        Color32 warningColor = new Color32(255, 200, 0, 255);
-        if (savingText != null) {
-            savingText.color = warningColor;
-            savingText.text = text;
-            savingText.gameObject.SetActive(true);
+    #if ENABLE_IL2CPP
+        private void IL2CPPWarning(string loadingOrSaving) {
+            string text = (loadingOrSaving + " graphics settings file is not supported in IL2CPP build.");
+            Color32 warningColor = new Color32(255, 200, 0, 255);
+            if (savingText != null) {
+                savingText.color = warningColor;
+                savingText.text = text;
+                savingText.gameObject.SetActive(true);
+            }
+            if (noticeText != null) {
+                noticeText.color = warningColor;
+                noticeText.text = text;
+                noticeText.gameObject.SetActive(true);
+            }
+            return;
         }
-        if (noticeText != null) {
-            noticeText.color = warningColor;
-            noticeText.text = text;
-            noticeText.gameObject.SetActive(true);
-        }
-        return;
-    }
+    #endif
     #endregion
 
     #region Catching an exception.
