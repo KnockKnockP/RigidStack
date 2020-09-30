@@ -425,7 +425,6 @@ public class savingScript : MonoBehaviour {
             IL2CPPWarning("Loading");
             return;
         #endif
-        Debug.Log("Here.");
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
             while (streamReader.EndOfStream == false) {
@@ -529,7 +528,7 @@ public class savingScript : MonoBehaviour {
 
     #region Getting a path.
     private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, string playerName) {
-        #if (UNITY_EDITOR_WIN || UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX)
+        #if UNITY_EDITOR
             string dataPath = Application.dataPath;
         #else
             string dataPath = Application.persistentDataPath;

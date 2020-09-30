@@ -44,6 +44,7 @@ public class pauseScript : MonoBehaviour {
     public void exit() {
         FindObjectOfType<savingScript>().save();
         Application.Quit();
+        Debug.Log("Exited the game.");
         return;
     }
     #endregion

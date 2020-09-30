@@ -7,6 +7,9 @@ using UnityEngine;
 #region "MonoBehaviour" inherited "backgroundManager" class.
 public class backgroundManager : MonoBehaviour {
     #region Variables.
+    #region Variables for testing backgrounds.
+    [SerializeField] private bool forceMorning = false, forceAfternoon = false, forceNight = false;
+    #endregion
 
     #region A variable for accessing the main camera.
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
@@ -23,11 +26,22 @@ public class backgroundManager : MonoBehaviour {
 
     #region Start function.
     private void Start() {
-        if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
-            Destroy(this);
-            return;
-        }
+        #if !UNITY_EDITOR
+            if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
+                Destroy(this);
+                return;
+            }
+        #endif
         setBackground();
+        #if UNITY_EDITOR
+            if (forceMorning == true) {
+                background = dayBackgrounds.morningBackground;
+            } else if (forceAfternoon == true) {
+                background = dayBackgrounds.afternoonBackground;
+            } else if (forceNight == true) {
+                background = dayBackgrounds.nightBackground;
+            }
+        #endif
         generateStaticBackgrounds();
         StartCoroutine(generateDynamicBackgrounds());
         return;
