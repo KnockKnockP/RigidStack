@@ -37,12 +37,11 @@ public class PlayerData {
 #endregion
 
 #region Serializable PlayerGraphics class.
-[Serializable]
 public class PlayerGraphics {
     #region Graphics variables.
     #region Actual graphics variables.
     public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
-    public int graphics = 0, verticalSyncCount = 0;
+    public int graphics = QualitySettings.GetQualityLevel(), verticalSyncCount = QualitySettings.vSyncCount;
     private static int _targetFramesPerSecond = 60;
     public static int targetFramesPerSecond {
         get {
@@ -459,7 +458,7 @@ public class savingScript : MonoBehaviour {
                 TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
                     new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
                     new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
-                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), GraphicsSettings.currentRenderPipeline),
+                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), GraphicsSettings.renderPipelineAsset),
                 };
                 foreach (TypeAndObject typeAndObject in typesAndObjects) {
                     FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
