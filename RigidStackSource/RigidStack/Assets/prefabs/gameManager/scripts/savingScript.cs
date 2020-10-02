@@ -115,7 +115,7 @@ public class PlayerGraphics {
 
 #region "MonoBehaviour" inherited "savingScript" class.
 public class savingScript : MonoBehaviour {
-    #region Varibales.
+    #region Variables.
     #region Variables for the pre main menu.
     [SerializeField] private Text noticeText = null;
     #endregion
@@ -475,6 +475,9 @@ public class savingScript : MonoBehaviour {
                 }
             }
             streamReader.Close();
+            _settingsScript.updateGraphics(LoadedPlayerData.playerGraphics.graphics);
+            _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
+            _settingsScript.updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
         } catch (Exception exception) {
             catchException(exception);
         }

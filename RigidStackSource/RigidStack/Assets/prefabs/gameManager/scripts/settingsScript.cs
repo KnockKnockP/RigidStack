@@ -87,7 +87,6 @@ public class settingsScript : MonoBehaviour {
             difficultyText.text = ("Difficulty : " + _difficulty + ".");
             difficultyDropdown.value = (int)(_difficulty);
         }
-        Debug.Log("Updated difficulty to " + _difficulty + ".");
         return;
     }
     #endregion
@@ -103,7 +102,6 @@ public class settingsScript : MonoBehaviour {
         if (manualCheckingText != null) {
             manualCheckingText.text = ("Is manual height checking enabled : " + _isManualCheckingEnabled + ".");
         }
-        Debug.Log("Updated is manual height checking enabled to " + _isManualCheckingEnabled + ".");
         return;
     }
     #endregion
@@ -122,8 +120,7 @@ public class settingsScript : MonoBehaviour {
             graphicsText.text = ("Graphics : " + graphicsLevelString);
             graphicsDropdown.value = graphicsLevel;
         }
-        _savingScript.loadGraphicsSettings(LoadedPlayerData.playerData.name);
-        Debug.Log("Updated graphics to " + graphicsLevelString);
+        _savingScript.save();
         return;
     }
     #endregion
@@ -141,7 +138,6 @@ public class settingsScript : MonoBehaviour {
             verticalSyncCountText.text = ("Vertical sync count : " + _verticalSyncCount + ".");
             verticalSyncCountDropdown.value = _verticalSyncCount;
         }
-        Debug.Log("Updated vertical sync count to " + _verticalSyncCount + ".");
         return;
     }
     #endregion
@@ -157,7 +153,6 @@ public class settingsScript : MonoBehaviour {
         if (backgroundEnabledText != null) {
             backgroundEnabledText.text = ("Is background enabled : " + _isBackgroundEnabled + ".");
         }
-        Debug.Log("Updated is background enabled to " + _isBackgroundEnabled + ".");
         return;
     }
     #endregion
@@ -177,7 +172,6 @@ public class settingsScript : MonoBehaviour {
         if (backgroundScalingText != null) {
             backgroundScalingText.text = ("Background scaling : " + temp + ".");
         }
-        Debug.Log("Updated background scaling to " + temp + ".");
         return;
     }
     #endregion

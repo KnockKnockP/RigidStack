@@ -2885,6 +2885,7 @@ MonoBehaviour:
   manualCheckingText: {fileID: 1672780906}
   graphicsText: {fileID: 0}
   graphicsDropdown: {fileID: 0}
+  _savingScript: {fileID: 7619175099963299231}
   verticalSyncCountText: {fileID: 0}
   verticalSyncCountDropdown: {fileID: 0}
   backgroundEnabledText: {fileID: 0}
@@ -2913,6 +2914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c8ccff3bae5b5d4480660418f83bda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noticeText: {fileID: 0}
   _settingsScript: {fileID: 7619175099963299229}
   savingText: {fileID: 2089190224}
   saveButton: {fileID: 1228938623}
