@@ -2584,8 +2584,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c8ccff3bae5b5d4480660418f83bda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noticeText: {fileID: 304239060}
+  _universalRenderPipelineAssets:
+  - {fileID: 11400000, guid: 29bfd2113450fa14ba9c85fb2bec5e94, type: 2}
+  - {fileID: 11400000, guid: 07ec8a17f3a72fc4a877b5e2a88db325, type: 2}
+  - {fileID: 11400000, guid: a1f596667a23a4c4f9045bdfffae65c9, type: 2}
+  - {fileID: 11400000, guid: a9c0e705dac9876489e7bd32a2b6f915, type: 2}
+  - {fileID: 11400000, guid: 89b97ddb8b36d7a428680b3b46b6530d, type: 2}
   _settingsScript: {fileID: 1067815829}
+  noticeText: {fileID: 304239060}
   savingText: {fileID: 1119445102}
   saveButton: {fileID: 0}
   loadButton: {fileID: 0}

@@ -58,7 +58,7 @@ public class PlayerGraphics {
     public string[] graphicsVariablesNames = new string[] {
         ";Please take a time to read",
         ";https://docs.unity3d.com/ScriptReference/QualitySettings.html,",
-        ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@8.2/manual/universalrp-asset.html",
+        ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/manual/universalrp-asset.html",
         ";to know what each value does.",
         ";Graphics settings menu values.",
         ";graphics = [0 (\"Potato.\"), 1 (\"Low.\"), 2 (\"Medium.\"), 3 (\"High.\"), 4 (\"Very high.\")].",
@@ -116,12 +116,21 @@ public class PlayerGraphics {
 #region "MonoBehaviour" inherited "savingScript" class.
 public class savingScript : MonoBehaviour {
     #region Variables.
+    #region Common variables.
+    private static byte count = 0;
+    [Header("Common.")]
+    [SerializeField] private UniversalRenderPipelineAsset[] _universalRenderPipelineAssets = null;
+    public static UniversalRenderPipelineAsset[] universalRenderPipelineAssets;
+    [SerializeField] private settingsScript _settingsScript = null;
+    #endregion
+
     #region Variables for the pre main menu.
+    [Header("Pre main menu.")]
     [SerializeField] private Text noticeText = null;
     #endregion
 
     #region Variables for the settings menu.
-    [SerializeField] private settingsScript _settingsScript = null;
+    [Header("Settings menu.")]
     [SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
     #endregion
@@ -130,6 +139,7 @@ public class savingScript : MonoBehaviour {
     private bool hasLoadedProfileListOnStart;
     private static readonly string defaultProfileName = "Default";
     private static string lastlySelectedProfileName = defaultProfileName;
+    [Header("Profiles menu.")]
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
@@ -159,6 +169,9 @@ public class savingScript : MonoBehaviour {
         //Doing this useless operation to remove the unused variable warning.
         if (noticeText != null) {
             noticeText.text = noticeText.text;
+        }
+        if ((_universalRenderPipelineAssets != null) && (universalRenderPipelineAssets == null)) {
+            universalRenderPipelineAssets = _universalRenderPipelineAssets;
         }
         string savesFolderPath = getPath(true, false, false, null);
         if (Directory.Exists(savesFolderPath) == false) {
@@ -383,7 +396,7 @@ public class savingScript : MonoBehaviour {
                 TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
                     new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
                     new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
-                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), GraphicsSettings.currentRenderPipeline),
+                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), QualitySettings.renderPipeline),
                 };
                 bool foundValue = false;
                 foreach (TypeAndObject typeAndObject in typesAndObjects) {
@@ -424,8 +437,15 @@ public class savingScript : MonoBehaviour {
             IL2CPPWarning("Loading");
             return;
         #endif
+        if (count == 2) {
+            count = 0;
+            return;
+        }
+        count++;
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
+            UniversalRenderPipelineAsset universalRenderPipelineAsset = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
+            StaticClass.CopyAllTo(universalRenderPipelineAssets[QualitySettings.GetQualityLevel()], universalRenderPipelineAsset);
             while (streamReader.EndOfStream == false) {
                 string readLine = streamReader.ReadLine();
                 if (readLine.Contains(";") == true) {
@@ -458,7 +478,7 @@ public class savingScript : MonoBehaviour {
                 TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
                     new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
                     new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
-                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), GraphicsSettings.renderPipelineAsset),
+                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), universalRenderPipelineAsset),
                 };
                 foreach (TypeAndObject typeAndObject in typesAndObjects) {
                     FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
@@ -474,6 +494,7 @@ public class savingScript : MonoBehaviour {
                     }
                 }
             }
+            QualitySettings.renderPipeline = universalRenderPipelineAsset;
             streamReader.Close();
             _settingsScript.updateGraphics(LoadedPlayerData.playerGraphics.graphics);
             _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
@@ -519,7 +540,6 @@ public class savingScript : MonoBehaviour {
     #region Updating player datas.
     private void updateAll() {
         _settingsScript.updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        Debug.Log("Updated max height to " + LoadedPlayerData.playerData.maxHeight);
         _settingsScript.updateDifficulty(LoadedPlayerData.playerData.difficulty);
         _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
         _settingsScript.updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);

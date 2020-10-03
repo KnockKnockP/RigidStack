@@ -11740,7 +11740,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forceMorning: 0
   forceAfternoon: 0
-  forceNight: 1
+  forceNight: 0
   _sharedMonobehaviour: {fileID: 7619175099963299235}
   gridTransform: {fileID: 378434609}
   backgroundHolderEmptyObject: {fileID: 1342161716}
@@ -11772,8 +11772,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c8ccff3bae5b5d4480660418f83bda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noticeText: {fileID: 0}
+  _universalRenderPipelineAssets: []
   _settingsScript: {fileID: 7619175099963299240}
+  noticeText: {fileID: 0}
   savingText: {fileID: 0}
   saveButton: {fileID: 0}
   loadButton: {fileID: 0}
