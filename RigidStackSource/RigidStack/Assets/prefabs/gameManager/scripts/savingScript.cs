@@ -56,7 +56,7 @@ public class PlayerGraphics {
 
     #region Graphics variables' names.
     public string[] graphicsVariablesNames = new string[] {
-        ";Please take a time to read",
+        ";Please take some time to read",
         ";https://docs.unity3d.com/ScriptReference/QualitySettings.html,",
         ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/index.html",
         ";to know what each value does.",
