@@ -2,6 +2,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
+#if !UNITY_EDITOR
+    using UnityEngine.Experimental.Rendering.Universal;
+#endif
 #endregion
 
 #region "MonoBehaviour" inherited "backgroundManager" class.
@@ -28,6 +31,10 @@ public class backgroundManager : MonoBehaviour {
     private void Start() {
         #if !UNITY_EDITOR
             if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
+                GameObject globalLight = new GameObject("Global light.");
+                Light2D light2D = globalLight.AddComponent<Light2D>();
+                light2D.lightType = Light2D.LightType.Global;
+                light2D.blendStyleIndex = 1;
                 Destroy(this);
                 return;
             }

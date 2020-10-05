@@ -120,7 +120,6 @@ public class settingsScript : MonoBehaviour {
             graphicsText.text = ("Graphics : " + graphicsLevelString);
             graphicsDropdown.value = graphicsLevel;
         }
-        _savingScript.loadGraphicsSettings(LoadedPlayerData.playerData.name);
         _savingScript.save();
         return;
     }

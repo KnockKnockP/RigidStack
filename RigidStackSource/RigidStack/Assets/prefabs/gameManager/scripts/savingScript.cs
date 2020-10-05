@@ -58,7 +58,7 @@ public class PlayerGraphics {
     public string[] graphicsVariablesNames = new string[] {
         ";Please take a time to read",
         ";https://docs.unity3d.com/ScriptReference/QualitySettings.html,",
-        ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/manual/universalrp-asset.html",
+        ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/index.html",
         ";to know what each value does.",
         ";Graphics settings menu values.",
         ";graphics = [0 (\"Potato.\"), 1 (\"Low.\"), 2 (\"Medium.\"), 3 (\"High.\"), 4 (\"Very high.\")].",
@@ -444,8 +444,8 @@ public class savingScript : MonoBehaviour {
         count++;
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
-            UniversalRenderPipelineAsset universalRenderPipelineAsset = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
-            StaticClass.CopyAllTo(universalRenderPipelineAssets[QualitySettings.GetQualityLevel()], universalRenderPipelineAsset);
+            //UniversalRenderPipelineAsset universalRenderPipelineAsset = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
+            //StaticClass.CopyAllTo(universalRenderPipelineAssets[QualitySettings.GetQualityLevel()], universalRenderPipelineAsset);
             while (streamReader.EndOfStream == false) {
                 string readLine = streamReader.ReadLine();
                 if (readLine.Contains(";") == true) {
@@ -478,7 +478,8 @@ public class savingScript : MonoBehaviour {
                 TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
                     new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
                     new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
-                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), universalRenderPipelineAsset),
+                    //new TypeAndObject(typeof(UniversalRenderPipelineAsset), universalRenderPipelineAsset),
+                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), QualitySettings.renderPipeline),
                 };
                 foreach (TypeAndObject typeAndObject in typesAndObjects) {
                     FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
@@ -494,7 +495,7 @@ public class savingScript : MonoBehaviour {
                     }
                 }
             }
-            QualitySettings.renderPipeline = universalRenderPipelineAsset;
+            //QualitySettings.renderPipeline = universalRenderPipelineAsset;
             streamReader.Close();
             _settingsScript.updateGraphics(LoadedPlayerData.playerGraphics.graphics);
             _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
