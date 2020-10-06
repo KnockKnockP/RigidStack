@@ -221,7 +221,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &368477578
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1568,8 +1568,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c8ccff3bae5b5d4480660418f83bda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noticeText: {fileID: 0}
+  _universalRenderPipelineAssets: []
   _settingsScript: {fileID: 0}
+  noticeText: {fileID: 0}
   savingText: {fileID: 0}
   saveButton: {fileID: 0}
   loadButton: {fileID: 0}
