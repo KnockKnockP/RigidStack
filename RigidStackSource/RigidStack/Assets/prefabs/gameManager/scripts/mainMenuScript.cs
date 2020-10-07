@@ -1,28 +1,31 @@
-﻿#region Using tags.
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-#endregion
 
-#region "MonoBehaviour" inherited "preMainMenuScript" class.
-public class preMainMenuScript : MonoBehaviour {
-    #region Variables for preparing the pre main menu scene.
+public class mainMenuScript : MonoBehaviour {
+    //Variables for preparing the pre main menu scene.
     private string exceptionMessage1, exceptionMessage2;
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
-    #endregion
+    [SerializeField] private GameObject inGameConsole = null;
 
-    #region Awake function.
     private void Awake() {
-        limitFPS();
-        disableDebugging();
-        checkInternetConnection();
+        currentVersionText.text = ("v" + Application.version + ".");
+        if (SceneManager.GetActiveScene().name == SceneNames.preMainMenu) {
+            limitFPS();
+            disableDebugging();
+            checkInternetConnection();
+            if (Debug.isDebugBuild) {
+                inGameConsole.SetActive(true);
+            } else {
+                inGameConsole.SetActive(false);
+            }
+        }
         return;
     }
-    #endregion
 
-    #region Preparation functions.
     private void limitFPS() {
         #if UNITY_EDITOR
             QualitySettings.vSyncCount = 0;
@@ -104,6 +107,4 @@ public class preMainMenuScript : MonoBehaviour {
         streamReader.Close();
         return;
     }
-    #endregion
 }
-#endregion

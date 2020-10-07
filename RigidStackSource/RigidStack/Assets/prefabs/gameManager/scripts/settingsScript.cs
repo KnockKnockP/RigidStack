@@ -1,10 +1,7 @@
-﻿#region Using tags.
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-#endregion
 
-#region "Difficulty" byte enum.
 public enum Difficulty : byte {
     Sandbox = 0,
     Easy = 1,
@@ -12,11 +9,8 @@ public enum Difficulty : byte {
     Difficult = 3,
     Extreme = 4
 };
-#endregion
 
-#region Static "GraphicsLevel" class.
 public static class GraphicsLevel {
-    #region Variables.
     private static readonly string[] graphicsLevels = {
         "Potato.",
         "Low.",
@@ -28,13 +22,10 @@ public static class GraphicsLevel {
     public static string getGraphicsLevelString(int graphicsLevel) {
         return graphicsLevels[graphicsLevel];
     }
-    #endregion
 }
-#endregion
 
-#region "MonoBehaviour" inherited "settingsScript" class.
 public class settingsScript : MonoBehaviour {
-    #region Variables for setting up the scene.
+    //Variables for setting up the scene.
     [Header("Gameplay settings.")]
     [SerializeField] private Text difficultyText = null;
     [SerializeField] private Dropdown difficultyDropdown = null;
@@ -57,9 +48,7 @@ public class settingsScript : MonoBehaviour {
 
 
     [SerializeField] private Text backgroundScalingText = null;
-    #endregion
 
-    #region Start.
     private void Start() {
         string sceneName = SceneManager.GetActiveScene().name;
         if (sceneName == SceneNames.GameplaySettingsMenu) {
@@ -73,7 +62,6 @@ public class settingsScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
     #region Difficulty.
     public void changeDifficulty() {
@@ -176,4 +164,3 @@ public class settingsScript : MonoBehaviour {
     }
     #endregion
 }
-#endregion

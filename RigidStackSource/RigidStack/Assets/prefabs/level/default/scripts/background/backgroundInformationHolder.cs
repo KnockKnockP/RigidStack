@@ -1,11 +1,7 @@
-﻿#region A using tag.
-using System;
-using UnityEngine;
-#endregion
+﻿using UnityEngine;
 
-#region "MonoBehaviour" inherited "backgroundInformationHolder" class.
 public class backgroundInformationHolder : MonoBehaviour {
-    #region Variables for the background placement.
+    //Variables for the background placement.
     /*
         verticalSize is SpriteRenderer.sprite.bounds.size.y.
         gridOffset is the value you have to add or subtract for the background to fit perfectly.
@@ -14,6 +10,4 @@ public class backgroundInformationHolder : MonoBehaviour {
     */
     public float gridOffset = 0f, aspectRatioGridOffset = 0f;
     //aspectRatioGridOffset might be ((grid position) / 2).
-    #endregion
 }
-#endregion

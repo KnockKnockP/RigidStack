@@ -221,7 +221,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &368477578
 RectTransform:
   m_ObjectHideFlags: 0
@@ -532,8 +532,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 150, y: 82.548}
-  m_SizeDelta: {x: 300, y: 55}
+  m_AnchoredPosition: {x: 102.9, y: 82.548}
+  m_SizeDelta: {x: 205.78421, y: 55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &703371888
 MonoBehaviour:
@@ -568,7 +568,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: v0.1.0.
+  m_Text: Version.
 --- !u!222 &703371889
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1532,7 +1532,7 @@ PrefabInstance:
     - target: {fileID: 7619175100446462209, guid: 8a1996e8de259614aaa0a39eb6604a15,
         type: 3}
       propertyPath: m_Name
-      value: gameManager
+      value: scriptCrammer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8a1996e8de259614aaa0a39eb6604a15, type: 3}
@@ -1578,3 +1578,19 @@ MonoBehaviour:
   newProfileExceptionText: {fileID: 0}
   profilesDropdown: {fileID: 0}
   deleteButton: {fileID: 0}
+--- !u!114 &7619175099963299231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619175099963299228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 080a4e399540d284dbd82d4251f613a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentVersionText: {fileID: 703371888}
+  updateText: {fileID: 0}
+  noticeText: {fileID: 0}
+  inGameConsole: {fileID: 0}

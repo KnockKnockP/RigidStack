@@ -1,24 +1,16 @@
-﻿#region A using tag.
-using UnityEngine;
-#endregion
+﻿using UnityEngine;
 
-#region "MonoBehaviour" inherited "cameraScript" class.
 public class cameraScript : MonoBehaviour {
-    #region Variables.
-    #region A variable for accessing the main camera.
+    //A variable for accessing the main camera.
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
-    #endregion
 
-    #region Variables for moving the camera.
+    //Variables for moving the camera.
     public static bool shouldMoveCameraUp, shouldMoveCameraDown;
     public static float cameraMovementSpeed = 10f;
     [SerializeField] private endMenuManager _endMenuManager = null;
     [HideInInspector] public Vector3 originalCameraPosition;
     [SerializeField] private Transform platformTransform = null, girdTransform = null;
-    #endregion
-    #endregion
 
-    #region Awake function.
     private void Awake() {
         Vector3 position = platformTransform.position;
         position.y = (position.y + girdTransform.position.y);
@@ -27,9 +19,7 @@ public class cameraScript : MonoBehaviour {
         originalCameraPosition = position;
         return;
     }
-    #endregion
 
-    #region Update function.
     private void Update() {
         if (shouldMoveCameraUp == true) {
             moveCameraUp();
@@ -38,7 +28,6 @@ public class cameraScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
     #region Toggling the camera.
     public void setBooleanToMoveTheCameraUp(bool _value) {
@@ -72,4 +61,3 @@ public class cameraScript : MonoBehaviour {
     }
     #endregion
 }
-#endregion

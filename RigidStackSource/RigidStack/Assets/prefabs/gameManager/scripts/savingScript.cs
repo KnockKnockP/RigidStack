@@ -1,6 +1,5 @@
 ﻿//Warning : Big spaghetti ahead.
 
-#region Using tags.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,38 +7,25 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-#endregion
 
-#region Static LoadedPlayerData class.
 public static class LoadedPlayerData {
-    #region Variables for accessing player datas.
     public static PlayerData playerData = new PlayerData();
     public static PlayerGraphics playerGraphics = new PlayerGraphics();
     public static List<PlayerData> profiles = new List<PlayerData>();
-    #endregion
 }
-#endregion
 
-#region Serializable PlayerData class.
 [Serializable]
 public class PlayerData {
-    #region Generic player variables.
     public bool isManualCheckingEnabled = false;
     public int maxHeight = 0;
     public string name = "";
     public Difficulty difficulty = Difficulty.Easy;
-    #endregion
 }
-#endregion
 
-#region Serializable PlayerGraphics class.
 public class PlayerGraphics {
-    #region Graphics variables.
-    #region Actual graphics variables.
     public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
     public int graphics = QualitySettings.GetQualityLevel(), verticalSyncCount = QualitySettings.vSyncCount;
     private static int _targetFramesPerSecond = 60;
@@ -52,7 +38,6 @@ public class PlayerGraphics {
             Application.targetFrameRate = value;
         }
     }
-    #endregion
 
     #region Graphics variables' names.
     public string[] graphicsVariablesNames = new string[] {
@@ -109,33 +94,26 @@ public class PlayerGraphics {
         nameof(targetFramesPerSecond)
     };
     #endregion
-    #endregion
 }
-#endregion
 
-#region "MonoBehaviour" inherited "savingScript" class.
 public class savingScript : MonoBehaviour {
-    #region Variables.
-    #region Common variables.
+    //Common variables.
     private static byte count = 0;
     [Header("Common.")]
     [SerializeField] private UniversalRenderPipelineAsset[] _universalRenderPipelineAssets = null;
     public static UniversalRenderPipelineAsset[] universalRenderPipelineAssets;
     [SerializeField] private settingsScript _settingsScript = null;
-    #endregion
 
-    #region Variables for the pre main menu.
+    //Variables for the pre main menu.
     [Header("Pre main menu.")]
     [SerializeField] private Text noticeText = null;
-    #endregion
 
-    #region Variables for the settings menu.
+    //Variables for the settings menu.
     [Header("Settings menu.")]
     [SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
-    #endregion
 
-    #region Variables for the profiles menu.
+    //Variables for the profiles menu.
     private bool hasLoadedProfileListOnStart;
     private static readonly string defaultProfileName = "Default";
     private static string lastlySelectedProfileName = defaultProfileName;
@@ -143,28 +121,17 @@ public class savingScript : MonoBehaviour {
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
-    #endregion
-    #endregion
 
-    #region Classes.
-    #region "TypesAndObjects" class.
     private class TypeAndObject {
-        #region Variables for reflections.
         public Type type;
         public object _object;
-        #endregion
 
-        #region The constructor.
         public TypeAndObject(Type _type, object __object) {
             type = _type;
             _object = __object;
         }
-        #endregion
     };
-    #endregion
-    #endregion
 
-    #region Start function.
     private void Start() {
         //Doing this useless operation to remove the unused variable warning.
         if (noticeText != null) {
@@ -190,9 +157,8 @@ public class savingScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Making a new profile.
+    #region Profiles.
     public void makeNewProfile(InputField inputField) {
         if (checkName(inputField) == true) {
             makeNewProfile(inputField.text);
@@ -216,9 +182,7 @@ public class savingScript : MonoBehaviour {
         Debug.Log("Added a new profile with the name : " + newPlayerData.name + ".");
         return;
     }
-    #endregion
 
-    #region Deleting a profile.
     public void deleteProfile() {
         try {
             File.Delete(getPath(false, false, false, LoadedPlayerData.profiles[profilesDropdown.value].name));
@@ -238,9 +202,7 @@ public class savingScript : MonoBehaviour {
         loadProfiles();
         return;
     }
-    #endregion
 
-    #region Selecting a profile.
     public void selectProfile() {
         selectProfile(LoadedPlayerData.profiles[profilesDropdown.value].name);
         return;
@@ -266,7 +228,7 @@ public class savingScript : MonoBehaviour {
     }
     #endregion
 
-    #region Saving a profile list.
+    #region Profile lists.
     public void saveProfiles() {
         string path = getPath(false, true, false, null);
         try {
@@ -281,9 +243,7 @@ public class savingScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Loading a profile list.
     private void loadProfiles() {
         string path = getPath(false, true, false, null);
         try {
@@ -318,7 +278,7 @@ public class savingScript : MonoBehaviour {
     }
     #endregion
 
-    #region Saving a profile data.
+    #region Profile datas.
     public void save() {
         save(LoadedPlayerData.playerData.name);
         return;
@@ -339,9 +299,7 @@ public class savingScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Loading a profile data.
     public void load() {
         load(LoadedPlayerData.playerData.name, true);
         return;
@@ -374,7 +332,7 @@ public class savingScript : MonoBehaviour {
     }
     #endregion
 
-    #region Saving a profile's graphics settings.
+    #region Graphics settings.
     private void saveGraphicsSettings(string profileName) {
         #if ENABLE_IL2CPP
             IL2CPPWarning("Saving");
@@ -429,9 +387,7 @@ public class savingScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Loading a profile's graphics settings.
     public void loadGraphicsSettings(string profileName) {
         #if ENABLE_IL2CPP
             IL2CPPWarning("Loading");
@@ -505,9 +461,7 @@ public class savingScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Shitty reflections.
     private void setValues(FieldInfo fieldInfo, PropertyInfo propertyInfo, string variableInString, TypeAndObject typeAndObject) {
         if ((fieldInfo == null && propertyInfo == null)) {
             Debug.LogError("Both fieldInfo and propertyInfo can not be null");
@@ -538,7 +492,6 @@ public class savingScript : MonoBehaviour {
     }
     #endregion
 
-    #region Updating player datas.
     private void updateAll() {
         _settingsScript.updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
         _settingsScript.updateDifficulty(LoadedPlayerData.playerData.difficulty);
@@ -547,9 +500,7 @@ public class savingScript : MonoBehaviour {
         _settingsScript.updateVerticalSyncCount(LoadedPlayerData.playerGraphics.verticalSyncCount);
         return;
     }
-    #endregion
 
-    #region Getting a path.
     private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, string playerName) {
         #if UNITY_EDITOR
             string dataPath = Application.dataPath;
@@ -567,7 +518,6 @@ public class savingScript : MonoBehaviour {
         }
         return (dataPath + "/Saves/" + playerName + ".RS");
     }
-    #endregion
 
     #region Name checking.
     public void checkNameNoReturn(InputField inputField) {
@@ -613,7 +563,6 @@ public class savingScript : MonoBehaviour {
     }
     #endregion
 
-    #region Checking if file exists.
     private bool checkIfFileExists(string path) {
         if (File.Exists(path) == false) {
             savingText.color = Color.red;
@@ -623,9 +572,7 @@ public class savingScript : MonoBehaviour {
         }
         return true;
     }
-    #endregion
 
-    #region Enabling or disabling buttons.
     private void disableOrEnabledButtons(bool status) {
         if ((saveButton != null) && (loadButton != null)) {
             saveButton.interactable = status;
@@ -633,7 +580,6 @@ public class savingScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
     #region IL2CPP warning.
     #if ENABLE_IL2CPP
@@ -655,7 +601,6 @@ public class savingScript : MonoBehaviour {
     #endif
     #endregion
 
-    #region Catching an exception.
     private void catchException(Exception exception) {
         savingText.gameObject.SetActive(true);
         savingText.color = Color.red;
@@ -663,6 +608,4 @@ public class savingScript : MonoBehaviour {
         Debug.LogError(exception);
         return;
     }
-    #endregion
 }
-#endregion

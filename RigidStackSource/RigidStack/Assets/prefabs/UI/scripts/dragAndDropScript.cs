@@ -1,16 +1,11 @@
-﻿#region Using tags.
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
-#endregion
 
-#region "MonoBehaviour", "IPointerDownHandler", "IDragHandler", "IPointerUpHandler" inherited "dragAndDropScript" class.
 public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
-    #region Variables.
-    #region A variable for accessing the shared variables.
+    //A variable for accessing the shared variables.
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
-    #endregion
 
-    #region Variables for dragging and dropping the object.
+    //Variables for dragging and dropping the object.
     private bool isDragging;
     private static short spriteOrder = 1;
     private dragAndDropImageScript _dragAndDropImageScript;
@@ -20,26 +15,20 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
     //The object the player can place using this drag and drop image.
     [HideInInspector] public GameObject objectToPlace, placedGameObject;
-    #endregion
-    #endregion
 
-    #region Awake function.
     private void Awake() {
         _dragAndDropImageScript = dragAndDropImageGameobject.GetComponent<dragAndDropImageScript>();
         _heightScript = FindObjectOfType<heightScript>();
         _endMenuManager = FindObjectOfType<endMenuManager>();
         return;
     }
-    #endregion
 
-    #region Start function.
     private void Start() {
         disableObjectEditingPanel();
         return;
     }
-    #endregion
 
-    #region Selecting the object from the dock.
+    //Selecting the object from the dock.
     public virtual void OnPointerDown(PointerEventData pointerEventData) {
         if (_dragAndDropImageScript.objectCount != 0) {
             if (isDragging == false) {
@@ -59,9 +48,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
         }
         return;
     }
-    #endregion
 
-    #region Dragging the object.
     public virtual void OnDrag(PointerEventData pointerEventData) {
         if (placedGameObject == null) {
             return;
@@ -73,9 +60,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
         }
         return;
     }
-    #endregion
 
-    #region Dropping the object.
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
         if (_dragAndDropImageScript.objectCount != 0) {
             if (isDragging == true) {
@@ -92,9 +77,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
         }
         return;
     }
-    #endregion
 
-    #region Placing the object.
     public void placeObject() {
         placedGameObject.transform.position = new Vector3(placedGameObject.transform.position.x, placedGameObject.transform.position.y, 0);
         _dragAndDropImageScript.objectCount--;
@@ -113,15 +96,12 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
         placedGameObject = null;
         return;
     }
-    #endregion
 
-    #region Cancelling the object placement.
     public void cancelPlacingObject() {
         Destroy(placedGameObject);
         disableObjectEditingPanel();
         return;
     }
-    #endregion
 
     #region Rotating the object.
     public void rotateLeft() {
@@ -135,7 +115,7 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     }
     #endregion
 
-    #region Enabling and disabling the object editing panel.
+    #region Toggling the object editing panel.
     private void enableObjectEditingPanel() {
         _sharedMonobehaviour.dockPanel.SetActive(false);
         _sharedMonobehaviour.objectEditingPanel.SetActive(true);
@@ -150,4 +130,3 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
     }
     #endregion
 }
-#endregion

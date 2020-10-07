@@ -1,12 +1,8 @@
-﻿#region
-using UnityEngine;
-#endregion
+﻿using UnityEngine;
 
-#region "MonoBehaviour" inherited "floorScript" class.
 public class floorScript : MonoBehaviour {
-    #region A variable for ending the game.
+    //A variable for ending the game.
     [SerializeField] private endMenuManager _endMenuManager = null;
-    #endregion
 
     #region Checking the collision.
     private void OnCollisionEnter2D(Collision2D collision) {
@@ -28,4 +24,3 @@ public class floorScript : MonoBehaviour {
     }
     #endregion
 }
-#endregion

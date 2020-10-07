@@ -1,12 +1,9 @@
-﻿#region Using tags.
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-#endregion
 
-#region "MonoBehaviour" inherited "inputManager" class.
 public class inputManager : MonoBehaviour {
-    #region Controls comment.
+    #region Controls.
     /*
         W, up arrow key : Move camera up,
         S, down arrow key : Move camera down,
@@ -18,22 +15,18 @@ public class inputManager : MonoBehaviour {
     */
     #endregion
 
-    #region Variables for input management.
+    //Variables for input management.
     [SerializeField] private pauseScript _pauseScript = null;
     [SerializeField] private heightScript _heightScript = null;
     [SerializeField] private Button confirmButton = null;
-    #endregion
 
-    #region Update function.
     private void Update() {
         StartCoroutine(manageCameraMovement());
         StartCoroutine(manageDragAndDrop());
         StartCoroutine(manageOthers());
         return;
     }
-    #endregion
 
-    #region Managing the camera movement inputs.
     private IEnumerator manageCameraMovement() {
         yield return null;
         if ((Input.GetKeyDown(KeyCode.W) == true) || (Input.GetKeyDown(KeyCode.UpArrow) == true)) {
@@ -56,9 +49,7 @@ public class inputManager : MonoBehaviour {
         }
         yield return null;
     }
-    #endregion
 
-    #region Managing drag and drop inputs.
     private IEnumerator manageDragAndDrop() {
         yield return null;
         if ((confirmButton.interactable == true) && (confirmButton.gameObject.activeInHierarchy == true)) {
@@ -88,9 +79,7 @@ public class inputManager : MonoBehaviour {
         }
         yield return null;
     }
-    #endregion
 
-    #region Managing other inputs.
     private IEnumerator manageOthers() {
         yield return null;
         if ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true)) {
@@ -99,6 +88,4 @@ public class inputManager : MonoBehaviour {
         }
         yield return null;
     }
-    #endregion
 }
-#endregion

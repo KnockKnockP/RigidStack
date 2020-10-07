@@ -1,11 +1,7 @@
-﻿#region Using tags.
-using System;
+﻿using System;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
-#endregion
 
-#region Static "StaticClass" class.
 public static class StaticClass {
     #region Checking values.
     public static bool isInBetweenOfTwoValues(byte value, byte least, byte max) {
@@ -41,7 +37,6 @@ public static class StaticClass {
     }
     #endregion
 
-    #region Copying values from one class to another.
     //https://www.stackoverflow.com/a/36713403/
     public static void CopyAllTo<T>(this T source, T target) {
         Type type = typeof(T);
@@ -61,6 +56,4 @@ public static class StaticClass {
             }
         }
     }
-    #endregion
 }
-#endregion

@@ -1,14 +1,9 @@
-﻿#region A using tag.
-using UnityEngine;
-#endregion
+﻿using UnityEngine;
 
-#region "MonoBehaviour" inherited "windScript" class.
 public class windScript : MonoBehaviour {
-    #region A variable for the wind.
+    //A variable for the wind.
     private float windStrength = 0.001f;
-    #endregion
 
-    #region Start function.
     private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Sandbox) : {
@@ -34,9 +29,7 @@ public class windScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Pushing objects out.
     private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.CompareTag("object") == true) {
             Rigidbody2D rigidbody2D = collision.gameObject.GetComponent<Rigidbody2D>();
@@ -45,6 +38,4 @@ public class windScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 }
-#endregion

@@ -1,18 +1,13 @@
-﻿#region Using tags.
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-#endregion
 
-#region "MonoBehaviour" inherited "objectiveScript" class.
 public class objectiveScript : MonoBehaviour {
-    #region Variables.
-    #region A variable for accessing the main camera.
+    //A variable for accessing the main camera.
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
-    #endregion
 
-    #region Variables for the basic gameplay.
+    //Variables for the basic gameplay.
     private int second, newSecond = 60, windSustainTime = 1, windGenerationHeight = 50;
     public static int newObjectiveScoreAddition = 10;
     private int _objectiveScore;
@@ -25,9 +20,8 @@ public class objectiveScript : MonoBehaviour {
             Debug.Log("Objective score has been set to " + objectiveScore);
         }
     }
-    #endregion
 
-    #region Variables for cannons.
+    //Variables for cannons.
     bool hasCannonsEntered = false;
     private float cannonShootingDelay = 5f;
     [SerializeField] private Text timerText = null;
@@ -45,18 +39,14 @@ public class objectiveScript : MonoBehaviour {
     private List<GameObject> cannonList = new List<GameObject>();
 
     [SerializeField] private GameObject cannonGrouperObject = null, cannon = null;
-    #endregion
 
-    #region Variables for winds.
+    //Variables for winds.
     public static int minimumDifferenceForEachWinds = 5;
     [SerializeField] private GameObject windPrefab = null, windsEmptyObject = null;
     private List<GameObject> winds = new List<GameObject>();
     private readonly List<GameObject> tempWinds = new List<GameObject>();
     private IEnumerator toggleWindsFunction;
-    #endregion
-    #endregion
 
-    #region Start function.
     private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Sandbox) : {
@@ -111,9 +101,7 @@ public class objectiveScript : MonoBehaviour {
         StartCoroutine(countDown());
         return;
     }
-    #endregion
 
-    #region Generating the objective.
     public void generateObjective(bool isFromAwake) {
         if (isFromAwake == false) {
             reset();
@@ -145,9 +133,7 @@ public class objectiveScript : MonoBehaviour {
         StartCoroutine(toggleWindsFunction);
         return;
     }
-    #endregion
 
-    #region Freezing all objects.
     private void freezeAll() {
         heightScript _heightScript = FindObjectOfType<heightScript>();
         Color32 dimmedColor = new Color32(50, 50, 50, 255);
@@ -162,9 +148,7 @@ public class objectiveScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Resetting height canvases.
     private void reset() {
         foreach (Canvas _textCanvas in textCanvases) {
             Destroy(_textCanvas.gameObject);
@@ -172,9 +156,8 @@ public class objectiveScript : MonoBehaviour {
         textCanvases.Clear();
         return;
     }
-    #endregion
 
-    #region Generating cannons.
+    #region Cannons.
     private void generateCannons(int height, bool isFromAwake) {
         float leftSide = _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
         Vector3 position = new Vector3((leftSide - 1f), height, 0f);
@@ -195,9 +178,7 @@ public class objectiveScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Removing cannons.
     private void removeCannons() {
         foreach (GameObject _cannon in cannonList) {
             if (_cannon != null) {
@@ -221,9 +202,7 @@ public class objectiveScript : MonoBehaviour {
         tempCannonInformationHolders.Clear();
         return;
     }
-    #endregion
 
-    #region Managing cannons' movements.
     private void enterCannons() {
         hasCannonsEntered = true;
         foreach (Animator cannonAnimator in cannonsAnimator) {
@@ -239,9 +218,7 @@ public class objectiveScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Shooting cannons.
     private IEnumerator shootCannons(float waitSecond) {
         while (true) {
             yield return null;
@@ -255,7 +232,7 @@ public class objectiveScript : MonoBehaviour {
     }
     #endregion
 
-    #region Generating winds.
+    #region Winds.
     private void generateWinds(bool isFromAwake) {
         if (heightScript.currentGameMaxHeight >= windGenerationHeight) {
             for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
@@ -280,9 +257,7 @@ public class objectiveScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 
-    #region Removing winds.
     private void removeWinds() {
         foreach (GameObject _wind in winds) {
             if (_wind != null) {
@@ -294,9 +269,7 @@ public class objectiveScript : MonoBehaviour {
         tempWinds.Clear();
         return;
     }
-    #endregion
 
-    #region Randomly toggling winds.
     private IEnumerator toggleWinds(bool isFromAwake) {
         List<GameObject> _winds;
         if (isFromAwake == true) {
@@ -329,7 +302,6 @@ public class objectiveScript : MonoBehaviour {
     }
     #endregion
 
-    #region Counting down the remaining time.
     private IEnumerator countDown() {
         bool needsToStopCoroutine = false;
         IEnumerator shootCannonsFunction = shootCannons(cannonShootingDelay);
@@ -356,6 +328,4 @@ public class objectiveScript : MonoBehaviour {
             yield return null;
         }
     }
-    #endregion
 }
-#endregion

@@ -1,24 +1,17 @@
-﻿#region Using tags.
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Video;
-#endregion
 
-#region "MonoBehaviour" inherited "televisionScript" class.
 public class televisionScript : MonoBehaviour {
-    #region Variables to control the video.
+    //Variables to control the video.
     [HideInInspector] public VideoPlayer videoPlayer;
     [HideInInspector] public SpriteRenderer videoPlayerSpriteRenderer;
-    #endregion
 
-    #region Awake function.
     private void Awake() {
         videoPlayer = GetComponentInChildren<VideoPlayer>();
         videoPlayerSpriteRenderer = videoPlayer.gameObject.GetComponent<SpriteRenderer>();
         return;
     }
-    #endregion
 
-    #region Update function.
     private void Update() {
         videoPlayer.playbackSpeed = Time.timeScale;
         if (Time.timeScale == 0f) {
@@ -27,6 +20,4 @@ public class televisionScript : MonoBehaviour {
         }
         return;
     }
-    #endregion
 }
-#endregion
