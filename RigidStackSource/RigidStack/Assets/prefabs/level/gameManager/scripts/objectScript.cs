@@ -1,32 +1,40 @@
-﻿using System;
+﻿using Mirror;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class objectScript : MonoBehaviour {
+public class objectScript : NetworkBehaviour {
     //Variables for drag and dropping objects.
     private readonly dragAndDropImageScript[] dragAndDropImageScripts = new dragAndDropImageScript[5];
-    [SerializeField] private Image[] dragAndDropImages = null;
+    [SerializeField] private GameObject[] dragAndDropObjects = null;
+    //[SerializeField] private Image[] dragAndDropImages = null;
+    //private readonly SyncList<Image> dragAndDropImagesSyncList = new SyncList<Image>();
     //We are going to use this array to check for duplicates.
     private readonly Sprite[] sprites = new Sprite[5];
     [SerializeField] private GameObject[] objects = null;
 
     private void Awake() {
-        for (short i = 0; i < dragAndDropImages.Length; i++) {
-            dragAndDropImageScripts[i] = dragAndDropImages[i].GetComponent<dragAndDropImageScript>();
+        for (short i = 0; i < dragAndDropObjects.Length; i++) {
+            dragAndDropImageScripts[i] = dragAndDropObjects[i].GetComponent<dragAndDropImageScript>();
+            //dragAndDropImagesSyncList.Add(dragAndDropImages[i]);
         }
-        resetRandomization();
-        shuffleItems();
+        if (isServer) {
+            resetRandomization();
+            shuffleItems();
+        }
         return;
     }
 
+    [Server]
     private void resetRandomization() {
         UnityEngine.Random.InitState(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second * DateTime.Now.Millisecond);
         return;
     }
 
+    [Server]
     private void shuffleItems() {
         bool isDuplicate;
-        for (short i = 0; i < dragAndDropImages.Length; i++) {
+        for (short i = 0; i < dragAndDropObjects.Length; i++) {
             //We pick the random object to assign to.
             short random = (short)(UnityEngine.Random.Range(0, objects.Length));
             //We get the sprite of the random object.
@@ -41,21 +49,21 @@ public class objectScript : MonoBehaviour {
                 }
             }
             if (isDuplicate == false) {
-                dragAndDropImages[i].sprite = randomSprite;
-                sprites[i] = dragAndDropImages[i].sprite;
+                Image image = dragAndDropObjects[i].GetComponent<Image>();
+                image.sprite = randomSprite;
+                sprites[i] = image.sprite;
                 objectInformation selectedObjectsObjectInformation = objects[random].GetComponent<objectInformation>();
                 dragAndDropImageScripts[i].objectCount = (short)(UnityEngine.Random.Range(selectedObjectsObjectInformation.minimumAmount, (selectedObjectsObjectInformation.maximumAmount + 1)));
-                dragAndDropImages[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
+                dragAndDropObjects[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
             }
         }
         return;
     }
 
+    [Server]
     public void giveMoreItems() {
-        foreach (Image image in dragAndDropImages) {
-            image.sprite = null;
-        }
         for (short i = 0; i < sprites.Length; i++) {
+            dragAndDropObjects[i].GetComponent<Image>().sprite = null;
             sprites[i] = null;
         }
         shuffleItems();

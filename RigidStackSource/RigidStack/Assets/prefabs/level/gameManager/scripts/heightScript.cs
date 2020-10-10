@@ -2,14 +2,20 @@
     I fucking hate working on this script and I want to stop working on it.
     Hopefully this is the last time I would ever touch this script and see no bugs from it.
     2020-10-08 02:10 PM.
+
+    Well, fuck.
+    I need to touch this stupid script again to implement multiplayer.
+    This is going to take some while to get it right.
+    2020-10-10 05:47 PM.
 */
 
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class heightScript : MonoBehaviour {
+public class heightScript : NetworkBehaviour {
     //Variables for height counting.
     private byte frameCount;
     [HideInInspector] public float tolerance = 0.1f;
@@ -116,7 +122,9 @@ public class heightScript : MonoBehaviour {
                     if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
                         _objectiveScript.generateObjective(false);
                         resetLists();
-                        _objectScript.giveMoreItems();
+                        if (isServer) {
+                            _objectScript.giveMoreItems();
+                        }
                         LoadedPlayerData.playerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
                     }
                 }
