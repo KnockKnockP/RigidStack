@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,12 +14,12 @@ public class objectScript : NetworkBehaviour {
     private readonly Sprite[] sprites = new Sprite[5];
     [SerializeField] private GameObject[] objects = null;
 
-    private void Awake() {
+    private void Start() {
         for (short i = 0; i < dragAndDropObjects.Length; i++) {
             dragAndDropImageScripts[i] = dragAndDropObjects[i].GetComponent<dragAndDropImageScript>();
             //dragAndDropImagesSyncList.Add(dragAndDropImages[i]);
         }
-        if (isServer) {
+        if (isServer == true) {
             resetRandomization();
             shuffleItems();
         }

@@ -1,12 +1,14 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
+public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
     //A variable for accessing the shared variables.
     [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
 
     //Variables for dragging and dropping the object.
     private bool isDragging;
+    //Syncvar this.
     private static short spriteOrder = 1;
     private dragAndDropImageScript _dragAndDropImageScript;
     private heightScript _heightScript;
@@ -40,6 +42,9 @@ public class dragAndDropScript : MonoBehaviour, IPointerDownHandler, IDragHandle
                 placedGameObject.GetComponent<SpriteRenderer>().sortingOrder = spriteOrder;
                 if (placedGameObject.name.Contains("television") == true) {
                     placedGameObject.GetComponent<televisionScript>().videoPlayerSpriteRenderer.sortingOrder = spriteOrder;
+                }
+                if (NetworkManagerScript.isMultiplayerGame == true) {
+                    NetworkServer.Spawn(placedGameObject, connectionToServer);
                 }
                 if (spriteOrder != 32766) {
                     spriteOrder++;

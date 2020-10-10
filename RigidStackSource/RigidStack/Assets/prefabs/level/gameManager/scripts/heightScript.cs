@@ -122,7 +122,7 @@ public class heightScript : NetworkBehaviour {
                     if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
                         _objectiveScript.generateObjective(false);
                         resetLists();
-                        if (isServer) {
+                        if (isServer == true) {
                             _objectScript.giveMoreItems();
                         }
                         LoadedPlayerData.playerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);

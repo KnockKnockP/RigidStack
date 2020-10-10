@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Mirror;
+using System;
 using System.Collections;
 using UnityEngine;
 #if !UNITY_EDITOR
     using UnityEngine.Experimental.Rendering.Universal;
 #endif
 
-public class backgroundManager : MonoBehaviour {
+public class backgroundManager : NetworkBehaviour {
     //Variables for testing backgrounds.
     [SerializeField] private bool forceMorning = false, forceAfternoon = false, forceNight = false;
 
     //A variable for accessing the main camera.
-    [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
+    public sharedMonobehaviour _sharedMonobehaviour = null;
 
     //Variables for generating backgrounds.
     private float maximumHeightOfGeneratedBackgrounds;
@@ -60,7 +61,7 @@ public class backgroundManager : MonoBehaviour {
     private void generateStaticBackgrounds() {
         for (int i = 0; i < background.staticBackgrounds.Length; i++) {
             GameObject generatedBackground = Instantiate(background.staticBackgrounds[i], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-            resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
+            resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio, _sharedMonobehaviour.mainCamera);
             Vector3 backgroundPosition;
             if (i == 0) {
                 if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
@@ -87,7 +88,7 @@ public class backgroundManager : MonoBehaviour {
             yield return null;
             if (_sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - _sharedMonobehaviour.mainCamera.orthographicSize)) {
                 GameObject generatedBackground = Instantiate(background.dynamicBackgrounds[UnityEngine.Random.Range(0, background.dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-                resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
+                resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio, _sharedMonobehaviour.mainCamera);
                 Vector3 backgroundPosition;
                 if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
                     backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
@@ -102,11 +103,11 @@ public class backgroundManager : MonoBehaviour {
     }
 
     //https://answers.unity.com/answers/620736/view.html
-    public void resizeBackground(GameObject background, bool keepAspectRatio) {
+    public static void resizeBackground(GameObject background, bool keepAspectRatio, Camera mainCamera) {
         SpriteRenderer backgroundSpriteRenderer = background.GetComponent<SpriteRenderer>();
         float width = backgroundSpriteRenderer.sprite.bounds.size.x,
               height = backgroundSpriteRenderer.sprite.bounds.size.y,
-              worldScreenHeight = (_sharedMonobehaviour.mainCamera.orthographicSize * 2f),
+              worldScreenHeight = (mainCamera.orthographicSize * 2f),
               worldScreenWidth = ((worldScreenHeight / Screen.height) * Screen.width);
         Vector3 imageScale = new Vector3(1f, 1f, 1f);
         if (keepAspectRatio == true) {

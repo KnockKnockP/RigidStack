@@ -19,7 +19,7 @@ public class randomBackgroundObjectGenerationScript : MonoBehaviour {
             //Debug.Log(gameObject + "'s random object will generate after : " + waitSecond + " second(s).");
             yield return new WaitForSeconds(waitSecond);
             GameObject generatedRandomObject = Instantiate(objects[Random.Range(0, objects.Length)], transform.position, Quaternion.identity, transform);
-            _backgroundManager.resizeBackground(generatedRandomObject, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
+            backgroundManager.resizeBackground(generatedRandomObject, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio, _backgroundManager._sharedMonobehaviour.mainCamera);
             yield return new WaitForSeconds(generatedRandomObject.GetComponent<randomBackgroundObjectInformationHolder>().secondsToExistInTheScene);
             Destroy(generatedRandomObject);
         }

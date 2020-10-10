@@ -14,6 +14,9 @@ public class NetworkManagerScript : MonoBehaviour {
 
     private void Awake() {
         usablePort = (ushort)(GetAvailablePort(1024));
+
+        usablePort = 1024; Debug.LogWarning("Remove or comment this line out.");
+
         GetComponent<TelepathyTransport>().port = usablePort;
         networkManager = NetworkManager.singleton;
         if (isMultiplayerGame == true) {
