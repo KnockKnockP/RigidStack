@@ -18,12 +18,10 @@ public class NetworkManagerScript : MonoBehaviour {
         usablePort = 1024; Debug.LogWarning("Remove or comment this line out.");
 
         GetComponent<TelepathyTransport>().port = usablePort;
-        networkManager = NetworkManager.singleton;
+        networkManager = FindObjectOfType<NetworkManager>();
         if (isMultiplayerGame == true) {
         } else {
-            #if UNITY_EDITOR
-                GetComponent<NetworkManagerHUD>().enabled = false;
-            #endif
+            GetComponent<NetworkManagerHUD>().enabled = false;
             networkManager.StartHost();
         }
         return;

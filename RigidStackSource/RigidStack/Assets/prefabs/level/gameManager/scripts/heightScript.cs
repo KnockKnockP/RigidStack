@@ -7,6 +7,15 @@
     I need to touch this stupid script again to implement multiplayer.
     This is going to take some while to get it right.
     2020-10-10 05:47 PM.
+
+    Fucking hell.
+    This motherfucking script just wont fucking stupid ass sucking work for fucks sake.
+    How many times do I have to stare at this stupid script just to make this motherfucking simple height checking working?
+    This is madness, there are fuck ton of bugs that I need to fix because it does not happen in the editor.
+    Every time I try to debug this shit it magically fixes it self.
+    Jesus fucking chirst.
+    This script is fucking cursed.
+    2020-10-11 03:31 PM.
 */
 
 using Mirror;
@@ -72,11 +81,16 @@ public class heightScript : NetworkBehaviour {
                 break;
             }
         }
-        heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore.ToString() + ".");
+        Invoke(nameof(updateScoreTextOnStart), 1f);
         checkHeightButton.gameObject.SetActive(LoadedPlayerData.playerData.isManualCheckingEnabled);
         if (LoadedPlayerData.playerData.isManualCheckingEnabled == false) {
             StartCoroutine(updateHeight());
         }
+        return;
+    }
+
+    private void updateScoreTextOnStart() {
+        heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore + ".");
         return;
     }
 

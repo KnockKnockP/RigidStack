@@ -18,14 +18,10 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     //The object the player can place using this drag and drop image.
     [HideInInspector] public GameObject objectToPlace, placedGameObject;
 
-    private void Awake() {
+    private void Start() {
         _dragAndDropImageScript = dragAndDropImageGameobject.GetComponent<dragAndDropImageScript>();
         _heightScript = FindObjectOfType<heightScript>();
         _endMenuManager = FindObjectOfType<endMenuManager>();
-        return;
-    }
-
-    private void Start() {
         disableObjectEditingPanel();
         return;
     }

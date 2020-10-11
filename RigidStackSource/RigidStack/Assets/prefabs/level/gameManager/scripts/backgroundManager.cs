@@ -1,12 +1,11 @@
-﻿using Mirror;
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 #if !UNITY_EDITOR
     using UnityEngine.Experimental.Rendering.Universal;
 #endif
 
-public class backgroundManager : NetworkBehaviour {
+public class backgroundManager : MonoBehaviour {
     //Variables for testing backgrounds.
     [SerializeField] private bool forceMorning = false, forceAfternoon = false, forceNight = false;
 

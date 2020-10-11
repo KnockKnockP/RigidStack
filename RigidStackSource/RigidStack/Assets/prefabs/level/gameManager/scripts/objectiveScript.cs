@@ -10,16 +10,7 @@ public class objectiveScript : MonoBehaviour {
     //Variables for the basic gameplay.
     private int second, newSecond = 60, windSustainTime = 1, windGenerationHeight = 50;
     public static int newObjectiveScoreAddition = 10;
-    private int _objectiveScore;
-    public int objectiveScore {
-        get {
-            return _objectiveScore;
-        }
-        set {
-            _objectiveScore = value;
-            Debug.Log("Objective score has been set to " + objectiveScore);
-        }
-    }
+    [HideInInspector] public int objectiveScore = 0;
     private heightScript _heightScript;
 
     //Variables for cannons.
@@ -97,7 +88,6 @@ public class objectiveScript : MonoBehaviour {
                 break;
             }
         }
-
         second = newSecond;
         generateObjective(true);
         StartCoroutine(countDown());
