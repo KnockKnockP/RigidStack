@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 
 public class cameraScript : MonoBehaviour {
-    //A variable for accessing the main camera.
-    [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
-
     //Variables for moving the camera.
     public static bool shouldMoveCameraUp, shouldMoveCameraDown;
     public static float cameraMovementSpeed = 10f;
@@ -11,11 +8,11 @@ public class cameraScript : MonoBehaviour {
     [HideInInspector] public Vector3 originalCameraPosition;
     [SerializeField] private Transform platformTransform = null, girdTransform = null;
 
-    private void Awake() {
+    private void Start() {
         Vector3 position = platformTransform.position;
         position.y = (position.y + girdTransform.position.y);
-        position.z = _sharedMonobehaviour.mainCamera.transform.position.z;
-        _sharedMonobehaviour.mainCamera.transform.position = position;
+        position.z = sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.z;
+        sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position = position;
         originalCameraPosition = position;
         return;
     }
@@ -44,18 +41,18 @@ public class cameraScript : MonoBehaviour {
     #region Moving the camera.
     private void moveCameraUp() {
         _endMenuManager.shouldMoveTheCamera = false;
-        Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
+        Vector3 newPosition = sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position;
         newPosition.y = (newPosition.y + (cameraMovementSpeed * Time.unscaledDeltaTime));
-        _sharedMonobehaviour.mainCamera.transform.position = newPosition;
+        sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position = newPosition;
         return;
     }
 
     private void moveCameraDown() {
         _endMenuManager.shouldMoveTheCamera = false;
-        Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
+        Vector3 newPosition = sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position;
         newPosition.y = (newPosition.y - (cameraMovementSpeed * Time.unscaledDeltaTime));
         if (newPosition.y >= -2) {
-            _sharedMonobehaviour.mainCamera.transform.position = newPosition;
+            sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position = newPosition;
         }
         return;
     }

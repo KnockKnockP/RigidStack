@@ -11,9 +11,6 @@ public class dragAndDropImageScript : MonoBehaviour {
         set {
             _objectCount = value;
             objectCounterText.text = _objectCount.ToString();
-            if (_objectCount == 0) {
-                Debug.Log("You can not use this object.");
-            }
         }
     }
     [SerializeField] private Text objectCounterText = null;

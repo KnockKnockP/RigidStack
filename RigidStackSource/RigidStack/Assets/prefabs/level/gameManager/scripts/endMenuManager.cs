@@ -6,8 +6,6 @@ public class endMenuManager : MonoBehaviour {
     //Variables for slowing down time.
     private bool shouldSlowDownTime;
     [HideInInspector] public bool shouldMoveTheCamera;
-    private float startTime, originalYPosition;
-    [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
     [SerializeField] private cameraScript _cameraScript = null;
 
     //Variables for the end menu.
@@ -27,16 +25,15 @@ public class endMenuManager : MonoBehaviour {
     [HideInInspector] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
 
     private void Start() {
-        startTime = Time.time;
         _heightScript = FindObjectOfType<heightScript>();
     }
 
     private void Update() {
         if (shouldMoveTheCamera == true) {
-            Vector3 newPosition = _sharedMonobehaviour.mainCamera.transform.position;
+            Vector3 newPosition = sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position;
             newPosition.y = Mathf.SmoothStep(newPosition.y, _cameraScript.originalCameraPosition.y, Time.fixedUnscaledDeltaTime);
-            _sharedMonobehaviour.mainCamera.transform.position = newPosition;
-            if (((_sharedMonobehaviour.mainCamera.transform.position.x - _cameraScript.originalCameraPosition.x) < 0.01f) && ((_sharedMonobehaviour.mainCamera.transform.position.y - _cameraScript.originalCameraPosition.y) < 0.01f)) {
+            sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position = newPosition;
+            if (((sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.x - _cameraScript.originalCameraPosition.x) < 0.01f) && ((sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.y - _cameraScript.originalCameraPosition.y) < 0.01f)) {
                 shouldMoveTheCamera = false;
             }
         }
@@ -47,6 +44,11 @@ public class endMenuManager : MonoBehaviour {
                 shouldSlowDownTime = false;
             }
         }
+        return;
+    }
+
+    private void OnDestroy() {
+        isGameEnded = false;
         return;
     }
 
@@ -93,7 +95,6 @@ public class endMenuManager : MonoBehaviour {
     }
 
     private void moveCamera() {
-        originalYPosition = _sharedMonobehaviour.mainCamera.transform.position.y;
         shouldMoveTheCamera = true;
         return;
     }

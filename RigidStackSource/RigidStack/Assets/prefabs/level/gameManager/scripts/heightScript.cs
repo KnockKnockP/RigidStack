@@ -26,6 +26,7 @@ using UnityEngine.UI;
 
 public class heightScript : NetworkBehaviour {
     //Variables for height counting.
+    private readonly byte maxFrameChecking = 5;
     private byte frameCount;
     [HideInInspector] public float tolerance = 0.1f;
     /*
@@ -52,13 +53,9 @@ public class heightScript : NetworkBehaviour {
     //A variable for manual height checking.
     [SerializeField] private Button checkHeightButton = null;
 
-    private void Awake() {
+    private void Start() {
         _objectScript = FindObjectOfType<objectScript>();
         _objectiveScript = FindObjectOfType<objectiveScript>();
-        return;
-    }
-
-    private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Sandbox) : {
                 tolerance = 0.1f;
@@ -81,14 +78,20 @@ public class heightScript : NetworkBehaviour {
                 break;
             }
         }
-        Invoke(nameof(updateScoreTextOnStart), 1f);
         checkHeightButton.gameObject.SetActive(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        if (LoadedPlayerData.playerData.isManualCheckingEnabled == false) {
+        if (isServer == true) {
+            Invoke(nameof(updateScoreTextOnStart), 1f);
+        }
+        if ((LoadedPlayerData.playerData.isManualCheckingEnabled == false) && (isServer == true)) {
             StartCoroutine(updateHeight());
+        }
+        if (isClientOnly == true) {
+            checkHeightButton.gameObject.SetActive(false);
         }
         return;
     }
 
+    [Server]
     private void updateScoreTextOnStart() {
         heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore + ".");
         return;
@@ -103,11 +106,13 @@ public class heightScript : NetworkBehaviour {
 
     public void manuallyCheckHeight() {
         frameCount = 0;
-        checkHeight();
-        checkHeight();
+        for (byte i = 0; i < maxFrameChecking; i++) {
+            checkHeight();
+        }
         return;
     }
 
+    [Server]
     public void checkHeight() {
         if (endMenuManager.isGameEnded == true) {
             return;
@@ -130,7 +135,8 @@ public class heightScript : NetworkBehaviour {
             frameCount++;
             if (frameCount == 1) {
                 previousFrameGameObject = maxHeightGameObject;
-            } else if (frameCount == 2) {
+                return;
+            } else if (frameCount == maxFrameChecking) {
                 if (previousFrameGameObject == maxHeightGameObject) {
                     heightText.text = ("Score : " + currentFrameMaxHeight + " / " + _objectiveScript.objectiveScore + ".");
                     if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
@@ -143,6 +149,10 @@ public class heightScript : NetworkBehaviour {
                     }
                 }
                 frameCount = 0;
+            } else {
+                if (previousFrameGameObject != maxHeightGameObject) {
+                    return;
+                }
             }
         }
         return;

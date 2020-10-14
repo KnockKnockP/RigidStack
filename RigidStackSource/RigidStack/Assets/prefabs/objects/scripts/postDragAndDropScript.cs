@@ -1,9 +1,7 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
-public class postDragAndDropScript : MonoBehaviour {
-    //A variable for accessing the main camera.
-    [HideInInspector] public sharedMonobehaviour _sharedMonobehaviour;
-
+public class postDragAndDropScript : NetworkBehaviour {
     //Variables for manipulating the object.
     public static bool isCollisionFishy;
     private objectEditingScript _objectEditingScript;
@@ -12,11 +10,12 @@ public class postDragAndDropScript : MonoBehaviour {
 
     private void Awake() {
         _objectEditingScript = FindObjectOfType<objectEditingScript>();
+        placedGameObject = gameObject;
         return;
     }
 
     private void OnMouseDrag() {
-        placedGameObject.transform.position = _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        placedGameObject.transform.position = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
         if (isCollisionFishy == true) {
             _objectEditingScript.confirmButton.interactable = false;
         }
@@ -36,6 +35,23 @@ public class postDragAndDropScript : MonoBehaviour {
     #endregion
 
     public void suicide() {
+        commandSuicide();
+        return;
+    }
+
+    [Command(ignoreAuthority = true)]
+    private void commandSuicide() {
+        clientRpcSuicide();
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRpcSuicide() {
+        actuallySuicide();
+        return;
+    }
+
+    private void actuallySuicide() {
         placedGameObject = null;
         Destroy(this);
         return;

@@ -1,11 +1,15 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
-public class floorScript : MonoBehaviour {
+public class floorScript : NetworkBehaviour {
     //A variable for ending the game.
     [SerializeField] private endMenuManager _endMenuManager = null;
 
     #region Checking the collision.
     private void OnCollisionEnter2D(Collision2D collision) {
+        if (isClientOnly == true) {
+            return;
+        }
         if (collision.gameObject.CompareTag("platform") == false) {
             _endMenuManager.endGame();
             Destroy(this);

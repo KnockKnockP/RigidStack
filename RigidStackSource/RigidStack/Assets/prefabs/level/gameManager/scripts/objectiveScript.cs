@@ -4,9 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class objectiveScript : MonoBehaviour {
-    //A variable for accessing the main camera.
-    [SerializeField] private sharedMonobehaviour _sharedMonobehaviour = null;
-
     //Variables for the basic gameplay.
     private int second, newSecond = 60, windSustainTime = 1, windGenerationHeight = 50;
     public static int newObjectiveScoreAddition = 10;
@@ -109,7 +106,7 @@ public class objectiveScript : MonoBehaviour {
         second = newSecond;
 
         int newScore = (objectiveScore + newObjectiveScoreAddition);
-        float leftSide = (_sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x + textCanvasTemplate.GetComponent<RectTransform>().rect.width - textCanvasTemplate.transform.localScale.x);
+        float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x + textCanvasTemplate.GetComponent<RectTransform>().rect.width - textCanvasTemplate.transform.localScale.x);
         for (int i = objectiveScore; i <= newScore; i = (i + 5)) {
             Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(leftSide, i), Quaternion.identity, heightTextsParent);
             newCanvas.GetComponentInChildren<Text>().text = (newCanvas.transform.position.y.ToString() + ".");
@@ -150,7 +147,7 @@ public class objectiveScript : MonoBehaviour {
 
     #region Cannons.
     private void generateCannons(int height, bool isFromAwake) {
-        float leftSide = _sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
+        float leftSide = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
         Vector3 position = new Vector3((leftSide - 1f), height, 0f);
         GameObject generatedCannon = Instantiate(cannon, position, Quaternion.identity, cannonGrouperObject.transform);
         generatedCannon.name = (height.ToString() + " cannon");
@@ -227,7 +224,7 @@ public class objectiveScript : MonoBehaviour {
     private void generateWinds(bool isFromAwake) {
         if (_heightScript.currentGameMaxHeight >= windGenerationHeight) {
             for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
-                float leftSide = (_sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
+                float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
                 Vector3 windPosition = new Vector3(leftSide, i, 0);
                 GameObject generatedWind = Instantiate(windPrefab, windPosition, Quaternion.identity, windsEmptyObject.transform);
 
@@ -235,7 +232,7 @@ public class objectiveScript : MonoBehaviour {
                 generatedWind.name = (i + " wind");
 
                 BoxCollider2D generatedWindBoxCollider2D = generatedWind.GetComponent<BoxCollider2D>();
-                float width = ((2f * _sharedMonobehaviour.mainCamera.orthographicSize) * _sharedMonobehaviour.mainCamera.aspect);
+                float width = ((2f * sharedMonobehaviour._sharedMonobehaviour.mainCamera.orthographicSize) * sharedMonobehaviour._sharedMonobehaviour.mainCamera.aspect);
                 generatedWindBoxCollider2D.size = new Vector2(width, generatedWindBoxCollider2D.size.y);
                 generatedWindBoxCollider2D.offset = new Vector2((generatedWindBoxCollider2D.size.x / 2), generatedWindBoxCollider2D.offset.y);
 
@@ -284,10 +281,12 @@ public class objectiveScript : MonoBehaviour {
 
     private IEnumerator actuallyToggleWinds(GameObject _wind, int delay) {
         yield return new WaitForSeconds(delay);
-        if ((_wind != null) && (_wind.activeInHierarchy == false)) {
-            _wind.SetActive(true);
-        } else {
-            _wind.SetActive(false);
+        if (_wind != null) {
+            if (_wind.activeInHierarchy == false) {
+                _wind.SetActive(true);
+            } else {
+                _wind.SetActive(false);
+            }
         }
         yield return null;
     }

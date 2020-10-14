@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using UnityEngine;
 
-public class NetworkManagerScript : MonoBehaviour {
+public class NetworkManagerScript : NetworkBehaviour {
     //Variables for determining the game mode.
     public static bool isMultiplayerGame = false, isCoop = false;
 
