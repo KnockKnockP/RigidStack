@@ -78,6 +78,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     }
     #endregion
 
+    #region Dragging the selected object.
     public virtual void OnDrag(PointerEventData pointerEventData) {
         if (placedGameObject == null) {
             return;
@@ -93,6 +94,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         _gameObject.transform.position = position;
         return;
     }
+    #endregion
 
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
         if ((_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
@@ -145,13 +147,22 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     }
     #endregion
 
+    #region Cancelling placing the object.
     public void cancelPlacingObject() {
-        if (placedGameObject != null) {
-            Destroy(placedGameObject);
-        }
+        commandCancelPlacingObject(placedGameObject);
         disableObjectEditingPanel();
         return;
     }
+
+    [Command(ignoreAuthority = true)]
+    private void commandCancelPlacingObject(GameObject _gameObject) {
+        if (_gameObject != null) {
+            NetworkServer.UnSpawn(_gameObject);
+            Destroy(_gameObject);
+        }
+        return;
+    }
+    #endregion
 
     #region Rotating the object.
     public void rotateLeft() {
