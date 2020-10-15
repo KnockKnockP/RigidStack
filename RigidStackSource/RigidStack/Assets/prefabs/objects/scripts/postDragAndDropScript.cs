@@ -15,9 +15,11 @@ public class postDragAndDropScript : NetworkBehaviour {
     }
 
     private void OnMouseDrag() {
-        placedGameObject.transform.position = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-        if (isCollisionFishy == true) {
-            _objectEditingScript.confirmButton.interactable = false;
+        if (placedGameObject == dragAndDropScript._dragAndDropScript.placedGameObject == placedGameObject) {
+            placedGameObject.transform.position = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+            if (isCollisionFishy == true) {
+                _objectEditingScript.confirmButton.interactable = false;
+            }
         }
         return;
     }
