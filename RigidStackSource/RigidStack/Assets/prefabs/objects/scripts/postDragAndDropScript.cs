@@ -47,11 +47,6 @@ public class postDragAndDropScript : NetworkBehaviour {
 
     [ClientRpc]
     private void clientRpcSuicide() {
-        actuallySuicide();
-        return;
-    }
-
-    private void actuallySuicide() {
         placedGameObject = null;
         Destroy(this);
         return;
