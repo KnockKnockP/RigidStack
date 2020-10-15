@@ -159,7 +159,14 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         if (_gameObject != null) {
             NetworkServer.UnSpawn(_gameObject);
             Destroy(_gameObject);
+            clientRPCIncrementObjectCount();
         }
+        return;
+    }
+    
+    [ClientRpc]
+    private void clientRPCIncrementObjectCount() {
+        _dragAndDropImageScript.objectCount++;
         return;
     }
     #endregion
