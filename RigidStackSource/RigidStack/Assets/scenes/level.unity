@@ -632,7 +632,7 @@ RectTransform:
   m_Children:
   - {fileID: 948360702}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -1488,7 +1488,7 @@ RectTransform:
   m_Children:
   - {fileID: 1030255033}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2204,7 +2204,7 @@ RectTransform:
   - {fileID: 1652410129}
   - {fileID: 1172469103}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -7853,7 +7853,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1878107254}
-  - {fileID: 1402084108}
   - {fileID: 758157997}
   - {fileID: 1452800245}
   - {fileID: 374139995}
@@ -7863,6 +7862,7 @@ RectTransform:
   - {fileID: 2129427823}
   - {fileID: 1501594754}
   - {fileID: 75663925}
+  - {fileID: 1402084108}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8583,7 +8583,7 @@ RectTransform:
   m_Children:
   - {fileID: 236020926}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 1
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0.148}
@@ -8739,7 +8739,7 @@ RectTransform:
   m_Children:
   - {fileID: 2016542887}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -9039,7 +9039,7 @@ RectTransform:
   m_Children:
   - {fileID: 970034437}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -10181,7 +10181,7 @@ RectTransform:
   - {fileID: 1747908011}
   - {fileID: 832632736}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -10846,7 +10846,7 @@ RectTransform:
   - {fileID: 728570382}
   - {fileID: 1812526564}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -10923,7 +10923,7 @@ RectTransform:
   - {fileID: 545875506}
   - {fileID: 1531924963}
   m_Father: {fileID: 1101156553}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -11093,7 +11093,7 @@ PrefabInstance:
     - target: {fileID: 1855863677960160234, guid: e6e1c349ec2c18a44884ba51f4aa3d91,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1855863677960160234, guid: e6e1c349ec2c18a44884ba51f4aa3d91,
         type: 3}
@@ -11627,7 +11627,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0150f7677116c6743ac0c7fe2a8fecd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sharedMonobehaviour: {fileID: 7619175099963299235}
   _endMenuManager: {fileID: 7619175099963299236}
   originalCameraPosition: {x: 0, y: 0, z: 0}
   platformTransform: {fileID: 1286257870278225829}
@@ -11665,7 +11664,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84de976f075c354a81ff748dc5904c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sharedMonobehaviour: {fileID: 7619175099963299235}
   objectiveScore: 0
   timerText: {fileID: 797998249}
   heightTextsParent: {fileID: 830823893}
@@ -11702,7 +11700,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 519420031}
-  towerObjects: {fileID: 1287847411}
   dockPanel: {fileID: 1402084107}
   objectEditingPanel: {fileID: 758157996}
 --- !u!114 &7619175099963299236
@@ -11718,7 +11715,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shouldMoveTheCamera: 0
-  _sharedMonobehaviour: {fileID: 7619175099963299235}
   _cameraScript: {fileID: 7619175099963299231}
   endMenuScoreText: {fileID: 1096650041}
   _objectiveScript: {fileID: 7619175099963299233}
@@ -11741,7 +11737,6 @@ MonoBehaviour:
   forceMorning: 0
   forceAfternoon: 0
   forceNight: 0
-  _sharedMonobehaviour: {fileID: 7619175099963299235}
   gridTransform: {fileID: 378434609}
   backgroundHolderEmptyObject: {fileID: 1342161716}
   dayBackgrounds: {fileID: 11400000, guid: efb770e8cf3ae734a96ed86867d803ee, type: 2}
