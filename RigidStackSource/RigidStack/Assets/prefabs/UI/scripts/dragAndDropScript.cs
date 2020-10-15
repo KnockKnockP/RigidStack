@@ -100,7 +100,6 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         if ((_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
             if (placedGameObject == null) {
                 isDragging = false;
-                //return;
             }
             enableObjectEditingPanel();
             isDragging = false;
@@ -124,7 +123,6 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
             _gameObject = placedGameObjectSyncServer;
         }
         _gameObject.transform.position = new Vector3(_gameObject.transform.position.x, _gameObject.transform.position.y, 0);
-        clientRPCDecrementObjectCount();
         _gameObject.GetComponent<postDragAndDropScript>().suicide();
 
         _heightScript.placedObjects.Add(_gameObject);
@@ -137,12 +135,6 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
 
         placedGameObject = null;
-        return;
-    }
-
-    [ClientRpc]
-    private void clientRPCDecrementObjectCount() {
-        _dragAndDropImageScript.objectCount--;
         return;
     }
     #endregion
