@@ -166,12 +166,18 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
 
     #region Rotating the object.
     public void rotateLeft() {
-        placedGameObject.transform.Rotate(0f, 0f, objectEditingScript.angle);
+        commandRotate(placedGameObject, objectEditingScript.angle);
         return;
     }
 
     public void rotateRight() {
-        placedGameObject.transform.Rotate(0f, 0f, -objectEditingScript.angle);
+        commandRotate(placedGameObject, (byte)(-objectEditingScript.angle));
+        return;
+    }
+
+    [Command(ignoreAuthority = true)]
+    private void commandRotate(GameObject _gameObject, byte angle) {
+        _gameObject.transform.Rotate(0f, 0f, angle);
         return;
     }
     #endregion
