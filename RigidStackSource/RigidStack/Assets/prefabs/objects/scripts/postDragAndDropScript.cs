@@ -56,12 +56,12 @@ public class postDragAndDropScript : NetworkBehaviour {
 
     [Command(ignoreAuthority = true)]
     private void commandSuicide() {
-        clientRpcSuicide();
+        clientRPCSuicide();
         return;
     }
 
     [ClientRpc]
-    private void clientRpcSuicide() {
+    private void clientRPCSuicide() {
         thisGameObject = null;
         Destroy(this);
         return;
