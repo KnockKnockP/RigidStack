@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+//TODO : Serialize NetworkIdentity component for placedGameObject.
 public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
     //Variables for dragging and dropping the object.
     private bool isDragging, isClientThatPlacedTheObject;
@@ -40,20 +41,23 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
 
     [Command(ignoreAuthority = true)]
     private void commandSpawnObject(GameObject _gameObject, Vector3 position, int _index) {
+        //HACK : Replace this hack.
         if (isServer == true) {
             _gameObject = objectToPlace;
         }
         GameObject _placedGameObject = Instantiate(_gameObject, position, Quaternion.identity);
         NetworkServer.Spawn(_placedGameObject);
-        targetRPCReturnPlacedGameObject(DummyPlayerScript.dummyPlayerScript.dummyPlayerSyncList[_index].networkIdentity.connectionToClient, _placedGameObject);
-        clientRPCUpdatePlacedGameObject(_placedGameObject.GetComponent<NetworkIdentity>().netId);
+        uint id = _placedGameObject.GetComponent<NetworkIdentity>().netId;
+        targetRPCReturnPlacedGameObject(DummyPlayerScript.dummyPlayerScript.dummyPlayerSyncList[_index].networkIdentity.connectionToClient, id);
+        clientRPCUpdatePlacedGameObject(id);
         return;
     }
 
     [TargetRpc]
-    private void targetRPCReturnPlacedGameObject(NetworkConnection networkConnection, GameObject _gameObject) {
+    private void targetRPCReturnPlacedGameObject(NetworkConnection networkConnection, uint id) {
         _ = networkConnection;
-        placedGameObject = _gameObject;
+        placedGameObject = NetworkIdentity.spawned[id].gameObject;
+        Debug.Log("Here in targetRPCReturnPlacedGameObject.");
         return;
     }
 
@@ -65,7 +69,6 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         } else {
             isClientThatPlacedTheObject = false;
         }
-        //BUG : This shitty _gameObject gets passed as null.
         _gameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
         _gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
         _gameObject.GetComponent<SpriteRenderer>().sortingOrder = spriteOrder;
@@ -81,10 +84,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
 
     #region Dragging the selected object.
     public virtual void OnDrag(PointerEventData pointerEventData) {
-        if (placedGameObject == null) {
-            return;
-        }
-        if ((_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
+        if ((placedGameObject != null) && (_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
             commandDragObject(placedGameObject, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)));
         }
         return;
@@ -99,9 +99,6 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
 
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
         if ((_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
-            if (placedGameObject == null) {
-                isDragging = false;
-            }
             enableObjectEditingPanel();
             isDragging = false;
         }
@@ -111,26 +108,36 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     #region Placing the object.
     public void placeObject() {
         disableObjectEditingPanel();
-        commandPlaceObject();
+        commandPlaceObject(placedGameObject.GetComponent<NetworkIdentity>().netId);
         return;
     }
 
     [Command(ignoreAuthority = true)]
-    private void commandPlaceObject() {
-        placedGameObject.transform.position = new Vector3(placedGameObject.transform.position.x, placedGameObject.transform.position.y, 0);
-        placedGameObject.GetComponent<postDragAndDropScript>().suicide();
+    private void commandPlaceObject(uint id) {
+        clientRPCPlaceObject(id);
+        return;
+    }
 
-        _heightScript.placedObjects.Add(placedGameObject);
-        _heightScript.placedObjectsTransforms.Add(placedGameObject.transform);
-        _endMenuManager.allPlacedObjectsSpriteRenderers.Add(placedGameObject.GetComponent<SpriteRenderer>());
-        Rigidbody2D rigidbody2D = placedGameObject.GetComponent<Rigidbody2D>();
+    [ClientRpc]
+    private void clientRPCPlaceObject(uint id) {
+        GameObject _gameObject = NetworkIdentity.spawned[id].gameObject;
+        _gameObject.transform.position = new Vector3(_gameObject.transform.position.x, _gameObject.transform.position.y, 0);
+        if (isClientThatPlacedTheObject == true) {
+            _gameObject.GetComponent<postDragAndDropScript>().suicide();
+        }
+
+        _heightScript.placedObjects.Add(_gameObject);
+        _heightScript.placedObjectsTransforms.Add(_gameObject.transform);
+        _endMenuManager.allPlacedObjectsSpriteRenderers.Add(_gameObject.GetComponent<SpriteRenderer>());
+        Rigidbody2D rigidbody2D = _gameObject.GetComponent<Rigidbody2D>();
         _heightScript.placedObjectsRigidbody2D.Add(rigidbody2D);
 
-        placedGameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
+        _gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
 
-        placedGameObject = null;
-        return;
+        if ((placedGameObject != null) && (_gameObject.GetComponent<NetworkIdentity>().netId == placedGameObject.GetComponent<NetworkIdentity>().netId)) {
+            placedGameObject = null;
+        }
     }
     #endregion
 

@@ -109,7 +109,7 @@ public class NetworkManagerScript : NetworkBehaviour {
 
     private void Awake() {
         usablePort = (ushort)(GetAvailablePort(1024));
-        Debug.LogWarning(usablePort);
+        Debug.Log("Found usuable port : " + usablePort);
         usablePort = 1024; Debug.LogWarning("Remove or comment this line out.");
 
         GetComponent<TelepathyTransport>().port = usablePort;
