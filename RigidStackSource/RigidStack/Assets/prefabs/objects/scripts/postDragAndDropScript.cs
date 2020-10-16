@@ -4,29 +4,22 @@ using UnityEngine;
 public class postDragAndDropScript : NetworkBehaviour {
     //Variables for manipulating the object.
     public static bool isCollisionFishy;
-    //private uint thisNetId = 0, placedGameObjectNetId = 0;
     private objectEditingScript _objectEditingScript;
     //The object we are going to manipulate.
-    private GameObject thisGameObject/*, placedGameObject*/;
+    private GameObject thisGameObject;
 
     private void Awake() {
         _objectEditingScript = FindObjectOfType<objectEditingScript>();
         thisGameObject = gameObject;
-        //thisNetId = thisGameObject.GetComponent<NetworkIdentity>().netId;
-        //placedGameObject = dragAndDropScript._dragAndDropScript.placedGameObject;
-        //placedGameObjectNetId = placedGameObject.GetComponent<NetworkIdentity>().netId;
         return;
     }
 
     #region Dragging the placed object.
     private void OnMouseDrag() {
-        //if ((thisNetId != 0) && (placedGameObjectNetId != 0) && (placedGameObjectNetId == thisNetId)) {
-            //placedGameObject.transform.position = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-            commandDragObject(thisGameObject, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)));
-            if (isCollisionFishy == true) {
-                _objectEditingScript.confirmButton.interactable = false;
-            }
-        //}
+        commandDragObject(thisGameObject, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)));
+        if (isCollisionFishy == true) {
+            _objectEditingScript.confirmButton.interactable = false;
+        }
         return;
     }
 
