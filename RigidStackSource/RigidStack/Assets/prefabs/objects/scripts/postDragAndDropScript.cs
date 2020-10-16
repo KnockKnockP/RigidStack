@@ -4,25 +4,38 @@ using UnityEngine;
 public class postDragAndDropScript : NetworkBehaviour {
     //Variables for manipulating the object.
     public static bool isCollisionFishy;
+    //private uint thisNetId = 0, placedGameObjectNetId = 0;
     private objectEditingScript _objectEditingScript;
     //The object we are going to manipulate.
-    [HideInInspector] public GameObject placedGameObject;
+    private GameObject thisGameObject/*, placedGameObject*/;
 
     private void Awake() {
         _objectEditingScript = FindObjectOfType<objectEditingScript>();
-        placedGameObject = gameObject;
+        thisGameObject = gameObject;
+        //thisNetId = thisGameObject.GetComponent<NetworkIdentity>().netId;
+        //placedGameObject = dragAndDropScript._dragAndDropScript.placedGameObject;
+        //placedGameObjectNetId = placedGameObject.GetComponent<NetworkIdentity>().netId;
         return;
     }
 
+    #region Dragging the placed object.
     private void OnMouseDrag() {
-        if (placedGameObject == dragAndDropScript._dragAndDropScript.placedGameObject == placedGameObject) {
-            placedGameObject.transform.position = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+        //if ((thisNetId != 0) && (placedGameObjectNetId != 0) && (placedGameObjectNetId == thisNetId)) {
+            //placedGameObject.transform.position = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+            commandDragObject(thisGameObject, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)));
             if (isCollisionFishy == true) {
                 _objectEditingScript.confirmButton.interactable = false;
             }
-        }
+        //}
         return;
     }
+
+    [Command(ignoreAuthority = true)]
+    private void commandDragObject(GameObject _gameObject, Vector3 position) {
+        _gameObject.transform.position = position;
+        return;
+    }
+    #endregion
 
     #region Detecting the collision.
     private void OnTriggerEnter2D() {
@@ -49,7 +62,7 @@ public class postDragAndDropScript : NetworkBehaviour {
 
     [ClientRpc]
     private void clientRpcSuicide() {
-        placedGameObject = null;
+        thisGameObject = null;
         Destroy(this);
         return;
     }
