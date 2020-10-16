@@ -1,19 +1,17 @@
 ﻿using Mirror;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-//TODO : Serialize NetworkIdentity component for placedGameObject.
 public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
     //Variables for dragging and dropping the object.
     private bool isDragging, isClientThatPlacedTheObject;
-    public static int index;
     //TODO : Sync this variable.
     private static short spriteOrder = 1;
     private dragAndDropImageScript _dragAndDropImageScript;
     private heightScript _heightScript;
     private endMenuManager _endMenuManager;
     public static dragAndDropScript _dragAndDropScript;
+    private uint placedGameObjectNetId;
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
     //The object the player can place using this drag and drop image.
     [HideInInspector] public GameObject objectToPlace, placedGameObject;
@@ -31,16 +29,27 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         if ((_dragAndDropImageScript.objectCount != 0) && (isDragging == false)) {
             isDragging = true;
             _dragAndDropScript = this;
-            //Decrement objectCount here.
+            commandDecrementObjectCount();
             isClientThatPlacedTheObject = true;
-            commandSpawnObject(objectToPlace, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), index);
-            //commandUpdatePlacedGameObject(placedGameObject);
+            commandSpawnObject(objectToPlace, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)), DummyPlayerScript.networkIdentity.connectionToClient);
         }
         return;
     }
 
     [Command(ignoreAuthority = true)]
-    private void commandSpawnObject(GameObject _gameObject, Vector3 position, int _index) {
+    private void commandDecrementObjectCount() {
+        clientRPCDecrementObjectCount();
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCDecrementObjectCount() {
+        _dragAndDropImageScript.objectCount--;
+        return;
+    }
+
+    [Command(ignoreAuthority = true)]
+    private void commandSpawnObject(GameObject _gameObject, Vector3 position, NetworkConnectionToClient networkConnectionToClient) {
         //HACK : Replace this hack.
         if (isServer == true) {
             _gameObject = objectToPlace;
@@ -48,7 +57,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         GameObject _placedGameObject = Instantiate(_gameObject, position, Quaternion.identity);
         NetworkServer.Spawn(_placedGameObject);
         uint id = _placedGameObject.GetComponent<NetworkIdentity>().netId;
-        targetRPCReturnPlacedGameObject(DummyPlayerScript.dummyPlayerScript.dummyPlayerSyncList[_index].networkIdentity.connectionToClient, id);
+        targetRPCReturnPlacedGameObject(networkConnectionToClient, id);
         clientRPCUpdatePlacedGameObject(id);
         return;
     }
@@ -57,7 +66,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     private void targetRPCReturnPlacedGameObject(NetworkConnection networkConnection, uint id) {
         _ = networkConnection;
         placedGameObject = NetworkIdentity.spawned[id].gameObject;
-        Debug.Log("Here in targetRPCReturnPlacedGameObject.");
+        placedGameObjectNetId = placedGameObject.GetComponent<NetworkIdentity>().netId;
         return;
     }
 
@@ -84,7 +93,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
 
     #region Dragging the selected object.
     public virtual void OnDrag(PointerEventData pointerEventData) {
-        if ((placedGameObject != null) && (_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
+        if ((placedGameObject != null) && (isDragging == true)) {
             commandDragObject(placedGameObject, sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)));
         }
         return;
@@ -108,7 +117,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     #region Placing the object.
     public void placeObject() {
         disableObjectEditingPanel();
-        commandPlaceObject(placedGameObject.GetComponent<NetworkIdentity>().netId);
+        commandPlaceObject(placedGameObjectNetId);
         return;
     }
 
@@ -135,7 +144,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         _gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
         rigidbody2D.constraints = RigidbodyConstraints2D.None;
 
-        if ((placedGameObject != null) && (_gameObject.GetComponent<NetworkIdentity>().netId == placedGameObject.GetComponent<NetworkIdentity>().netId)) {
+        if ((placedGameObject != null) && (_gameObject.GetComponent<NetworkIdentity>().netId == placedGameObjectNetId)) {
             placedGameObject = null;
         }
     }
@@ -157,7 +166,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         }
         return;
     }
-    
+
     [ClientRpc]
     private void clientRPCIncrementObjectCount() {
         _dragAndDropImageScript.objectCount++;
@@ -167,18 +176,18 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
 
     #region Rotating the object.
     public void rotateLeft() {
-        commandRotate(placedGameObject, objectEditingScript.angle);
+        commandRotate(placedGameObject.transform, objectEditingScript.angle);
         return;
     }
 
     public void rotateRight() {
-        commandRotate(placedGameObject, -objectEditingScript.angle);
+        commandRotate(placedGameObject.transform, -objectEditingScript.angle);
         return;
     }
 
     [Command(ignoreAuthority = true)]
-    private void commandRotate(GameObject _gameObject, int angle) {
-        _gameObject.transform.Rotate(0f, 0f, angle);
+    private void commandRotate(Transform _transform, int angle) {
+        _transform.Rotate(0f, 0f, angle);
         return;
     }
     #endregion
