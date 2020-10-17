@@ -13,7 +13,7 @@ public static class StaticClass {
     }
 
     public static bool isInBetweenOfTwoValues(float value, float least, float max) {
-        return((value > least) && (value < max));
+        return ((value > least) && (value < max));
     }
 
     public static bool isInBetweenOfTwoValues(Vector2 value, float least, float max) {

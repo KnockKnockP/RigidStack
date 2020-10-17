@@ -2,13 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ninja.WebSockets
-{
+namespace Ninja.WebSockets {
     /// <summary>
     /// Ping Pong Manager used to facilitate ping pong WebSocket messages
     /// </summary>
-    interface IPingPongManager
-    {
+    interface IPingPongManager {
         /// <summary>
         /// Raised when a Pong frame is received
         /// </summary>

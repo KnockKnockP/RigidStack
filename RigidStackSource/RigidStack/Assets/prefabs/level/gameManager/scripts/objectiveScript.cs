@@ -39,7 +39,7 @@ public class objectiveScript : MonoBehaviour {
     private void Start() {
         _heightScript = FindObjectOfType<heightScript>();
         switch (LoadedPlayerData.playerData.difficulty) {
-            case (Difficulty.Sandbox) : {
+            case (Difficulty.Sandbox): {
                 newObjectiveScoreAddition = 10;
                 newSecond = 60;
                 windSustainTime = 1;
@@ -48,7 +48,7 @@ public class objectiveScript : MonoBehaviour {
                 cannonShootingDelay = 5f;
                 break;
             }
-            case (Difficulty.Easy) : {
+            case (Difficulty.Easy): {
                 newObjectiveScoreAddition = 10;
                 newSecond = 15;
                 windSustainTime = 2;
@@ -57,7 +57,7 @@ public class objectiveScript : MonoBehaviour {
                 cannonShootingDelay = 3f;
                 break;
             }
-            case (Difficulty.Moderate) : {
+            case (Difficulty.Moderate): {
                 newObjectiveScoreAddition = 15;
                 newSecond = 15;
                 windSustainTime = 3;
@@ -66,7 +66,7 @@ public class objectiveScript : MonoBehaviour {
                 cannonShootingDelay = 2f;
                 break;
             }
-            case (Difficulty.Difficult) : {
+            case (Difficulty.Difficult): {
                 newObjectiveScoreAddition = 20;
                 newSecond = 13;
                 windSustainTime = 3;
@@ -75,7 +75,7 @@ public class objectiveScript : MonoBehaviour {
                 cannonShootingDelay = 1f;
                 break;
             }
-            case (Difficulty.Extreme) : {
+            case (Difficulty.Extreme): {
                 newObjectiveScoreAddition = 20;
                 newSecond = 10;
                 windSustainTime = 3;

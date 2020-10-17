@@ -19,10 +19,8 @@
 using System.ComponentModel;
 using UnityEngine;
 
-namespace Mirror
-{
-    public abstract class NetworkTransformBase : NetworkBehaviour
-    {
+namespace Mirror {
+    public abstract class NetworkTransformBase : NetworkBehaviour {
         [Header("Authority")]
         [Tooltip("Set to true if moves come from owner client, set to false if moves always come from server")]
         public bool clientAuthority;
@@ -42,7 +40,9 @@ namespace Mirror
         public float localScaleSensitivity = .01f;
 
         // target transform to sync. can be on a child.
-        protected abstract Transform targetComponent { get; }
+        protected abstract Transform targetComponent {
+            get;
+        }
 
         // server
         Vector3 lastPosition;
@@ -50,8 +50,7 @@ namespace Mirror
         Vector3 lastScale;
 
         // client
-        public class DataPoint
-        {
+        public class DataPoint {
             public float timeStamp;
             // use local position/rotation for VR support
             public Vector3 localPosition;
@@ -69,8 +68,7 @@ namespace Mirror
         // serialization is needed by OnSerialize and by manual sending from authority
         // public only for tests
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void SerializeIntoWriter(NetworkWriter writer, Vector3 position, Quaternion rotation, Vector3 scale)
-        {
+        public static void SerializeIntoWriter(NetworkWriter writer, Vector3 position, Quaternion rotation, Vector3 scale) {
             // serialize position, rotation, scale
             // note: we do NOT compress rotation.
             //       we are CPU constrained, not bandwidth constrained.
@@ -80,8 +78,7 @@ namespace Mirror
             writer.WriteVector3(scale);
         }
 
-        public override bool OnSerialize(NetworkWriter writer, bool initialState)
-        {
+        public override bool OnSerialize(NetworkWriter writer, bool initialState) {
             // use local position/rotation/scale for VR support
             SerializeIntoWriter(writer, targetComponent.transform.localPosition, targetComponent.transform.localRotation, targetComponent.transform.localScale);
             return true;
@@ -92,8 +89,7 @@ namespace Mirror
         // => if this is the first time ever then we use our best guess:
         //    -> delta based on transform.localPosition
         //    -> elapsed based on send interval hoping that it roughly matches
-        static float EstimateMovementSpeed(DataPoint from, DataPoint to, Transform transform, float sendInterval)
-        {
+        static float EstimateMovementSpeed(DataPoint from, DataPoint to, Transform transform, float sendInterval) {
             Vector3 delta = to.localPosition - (from != null ? from.localPosition : transform.localPosition);
             float elapsed = from != null ? to.timeStamp - from.timeStamp : sendInterval;
             // avoid NaN
@@ -101,11 +97,9 @@ namespace Mirror
         }
 
         // serialization is needed by OnSerialize and by manual sending from authority
-        void DeserializeFromReader(NetworkReader reader)
-        {
+        void DeserializeFromReader(NetworkReader reader) {
             // put it into a data point immediately
-            DataPoint temp = new DataPoint
-            {
+            DataPoint temp = new DataPoint {
                 // deserialize position
                 localPosition = reader.ReadVector3()
             };
@@ -123,10 +117,8 @@ namespace Mirror
             // reassign start wisely
             // -> first ever data point? then make something up for previous one
             //    so that we can start interpolation without waiting for next.
-            if (start == null)
-            {
-                start = new DataPoint
-                {
+            if (start == null) {
+                start = new DataPoint {
                     timeStamp = Time.time - syncInterval,
                     // local position/rotation for VR support
                     localPosition = targetComponent.transform.localPosition,
@@ -164,8 +156,7 @@ namespace Mirror
             //             \.
             //              C
             //
-            else
-            {
+            else {
                 float oldDistance = Vector3.Distance(start.localPosition, goal.localPosition);
                 float newDistance = Vector3.Distance(goal.localPosition, temp.localPosition);
 
@@ -175,8 +166,7 @@ namespace Mirror
                 // position if we aren't too far away
                 //
                 // local position/rotation for VR support
-                if (Vector3.Distance(targetComponent.transform.localPosition, start.localPosition) < oldDistance + newDistance)
-                {
+                if (Vector3.Distance(targetComponent.transform.localPosition, start.localPosition) < oldDistance + newDistance) {
                     start.localPosition = targetComponent.transform.localPosition;
                     start.localRotation = targetComponent.transform.localRotation;
                     start.localScale = targetComponent.transform.localScale;
@@ -187,16 +177,14 @@ namespace Mirror
             goal = temp;
         }
 
-        public override void OnDeserialize(NetworkReader reader, bool initialState)
-        {
+        public override void OnDeserialize(NetworkReader reader, bool initialState) {
             // deserialize
             DeserializeFromReader(reader);
         }
 
         // local authority client sends sync message to server for broadcasting
         [Command]
-        void CmdClientToServerSync(byte[] payload)
-        {
+        void CmdClientToServerSync(byte[] payload) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
@@ -215,10 +203,8 @@ namespace Mirror
         }
 
         // where are we in the timeline between start and goal? [0,1]
-        static float CurrentInterpolationFactor(DataPoint start, DataPoint goal)
-        {
-            if (start != null)
-            {
+        static float CurrentInterpolationFactor(DataPoint start, DataPoint goal) {
+            if (start != null) {
                 float difference = goal.timeStamp - start.timeStamp;
 
                 // the moment we get 'goal', 'start' is supposed to
@@ -230,10 +216,8 @@ namespace Mirror
             return 0;
         }
 
-        static Vector3 InterpolatePosition(DataPoint start, DataPoint goal, Vector3 currentPosition)
-        {
-            if (start != null)
-            {
+        static Vector3 InterpolatePosition(DataPoint start, DataPoint goal, Vector3 currentPosition) {
+            if (start != null) {
                 // Option 1: simply interpolate based on time. but stutter
                 // will happen, it's not that smooth. especially noticeable if
                 // the camera automatically follows the player
@@ -249,20 +233,16 @@ namespace Mirror
             return currentPosition;
         }
 
-        static Quaternion InterpolateRotation(DataPoint start, DataPoint goal, Quaternion defaultRotation)
-        {
-            if (start != null)
-            {
+        static Quaternion InterpolateRotation(DataPoint start, DataPoint goal, Quaternion defaultRotation) {
+            if (start != null) {
                 float t = CurrentInterpolationFactor(start, goal);
                 return Quaternion.Slerp(start.localRotation, goal.localRotation, t);
             }
             return defaultRotation;
         }
 
-        static Vector3 InterpolateScale(DataPoint start, DataPoint goal, Vector3 currentScale)
-        {
-            if (start != null)
-            {
+        static Vector3 InterpolateScale(DataPoint start, DataPoint goal, Vector3 currentScale) {
+            if (start != null) {
                 float t = CurrentInterpolationFactor(start, goal);
                 return Vector3.Lerp(start.localScale, goal.localScale, t);
             }
@@ -274,8 +254,7 @@ namespace Mirror
         //    fence between us and the goal
         // -> checking time always works, this way we just teleport if we still
         //    didn't reach the goal after too much time has elapsed
-        bool NeedsTeleport()
-        {
+        bool NeedsTeleport() {
             // calculate time between the two data points
             float startTime = start != null ? start.timeStamp : Time.time - syncInterval;
             float goalTime = goal != null ? goal.timeStamp : Time.time;
@@ -285,8 +264,7 @@ namespace Mirror
         }
 
         // moved since last time we checked it?
-        bool HasEitherMovedRotatedScaled()
-        {
+        bool HasEitherMovedRotatedScaled() {
             // moved or rotated or scaled?
             // local position/rotation/scale for VR support
             bool moved = Vector3.Distance(lastPosition, targetComponent.transform.localPosition) > localPositionSensitivity;
@@ -298,8 +276,7 @@ namespace Mirror
             //  never sync because of C#'s float comparison tolerance. see also:
             //  https://github.com/vis2k/Mirror/pull/428)
             bool change = moved || rotated || scaled;
-            if (change)
-            {
+            if (change) {
                 // local position/rotation for VR support
                 lastPosition = targetComponent.transform.localPosition;
                 lastRotation = targetComponent.transform.localRotation;
@@ -309,40 +286,32 @@ namespace Mirror
         }
 
         // set position carefully depending on the target component
-        void ApplyPositionRotationScale(Vector3 position, Quaternion rotation, Vector3 scale)
-        {
+        void ApplyPositionRotationScale(Vector3 position, Quaternion rotation, Vector3 scale) {
             // local position/rotation for VR support
             targetComponent.transform.localPosition = position;
             targetComponent.transform.localRotation = rotation;
             targetComponent.transform.localScale = scale;
         }
 
-        void Update()
-        {
+        void Update() {
             // if server then always sync to others.
-            if (isServer)
-            {
+            if (isServer) {
                 // just use OnSerialize via SetDirtyBit only sync when position
                 // changed. set dirty bits 0 or 1
                 SetDirtyBit(HasEitherMovedRotatedScaled() ? 1UL : 0UL);
             }
 
             // no 'else if' since host mode would be both
-            if (isClient)
-            {
+            if (isClient) {
                 // send to server if we have local authority (and aren't the server)
                 // -> only if connectionToServer has been initialized yet too
-                if (!isServer && IsClientWithAuthority)
-                {
+                if (!isServer && IsClientWithAuthority) {
                     // check only each 'syncInterval'
-                    if (Time.time - lastClientSendTime >= syncInterval)
-                    {
-                        if (HasEitherMovedRotatedScaled())
-                        {
+                    if (Time.time - lastClientSendTime >= syncInterval) {
+                        if (HasEitherMovedRotatedScaled()) {
                             // serialize
                             // local position/rotation for VR support
-                            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
-                            {
+                            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
                                 SerializeIntoWriter(writer, targetComponent.transform.localPosition, targetComponent.transform.localRotation, targetComponent.transform.localScale);
 
                                 // send to server
@@ -356,23 +325,18 @@ namespace Mirror
                 // apply interpolation on client for all players
                 // unless this client has authority over the object. could be
                 // himself or another object that he was assigned authority over
-                if (!IsClientWithAuthority)
-                {
+                if (!IsClientWithAuthority) {
                     // received one yet? (initialized?)
-                    if (goal != null)
-                    {
+                    if (goal != null) {
                         // teleport or interpolate
-                        if (NeedsTeleport())
-                        {
+                        if (NeedsTeleport()) {
                             // local position/rotation for VR support
                             ApplyPositionRotationScale(goal.localPosition, goal.localRotation, goal.localScale);
 
                             // reset data points so we don't keep interpolating
                             start = null;
                             goal = null;
-                        }
-                        else
-                        {
+                        } else {
                             // local position/rotation for VR support
                             ApplyPositionRotationScale(InterpolatePosition(start, goal, targetComponent.transform.localPosition),
                                                        InterpolateRotation(start, goal, targetComponent.transform.localRotation),
@@ -383,8 +347,7 @@ namespace Mirror
             }
         }
 
-        static void DrawDataPointGizmo(DataPoint data, Color color)
-        {
+        static void DrawDataPointGizmo(DataPoint data, Color color) {
             // use a little offset because transform.localPosition might be in
             // the ground in many cases
             Vector3 offset = Vector3.up * 0.01f;
@@ -403,21 +366,22 @@ namespace Mirror
             Gizmos.DrawRay(data.localPosition + offset, data.localRotation * Vector3.up);
         }
 
-        static void DrawLineBetweenDataPoints(DataPoint data1, DataPoint data2, Color color)
-        {
+        static void DrawLineBetweenDataPoints(DataPoint data1, DataPoint data2, Color color) {
             Gizmos.color = color;
             Gizmos.DrawLine(data1.localPosition, data2.localPosition);
         }
 
         // draw the data points for easier debugging
-        void OnDrawGizmos()
-        {
+        void OnDrawGizmos() {
             // draw start and goal points
-            if (start != null) DrawDataPointGizmo(start, Color.gray);
-            if (goal != null) DrawDataPointGizmo(goal, Color.white);
+            if (start != null)
+                DrawDataPointGizmo(start, Color.gray);
+            if (goal != null)
+                DrawDataPointGizmo(goal, Color.white);
 
             // draw line between them
-            if (start != null && goal != null) DrawLineBetweenDataPoints(start, goal, Color.cyan);
+            if (start != null && goal != null)
+                DrawLineBetweenDataPoints(start, goal, Color.cyan);
         }
     }
 }

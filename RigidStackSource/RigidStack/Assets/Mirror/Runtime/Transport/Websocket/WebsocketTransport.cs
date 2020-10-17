@@ -4,11 +4,9 @@ using System.Net;
 using System.Security.Authentication;
 using UnityEngine;
 
-namespace Mirror.Websocket
-{
+namespace Mirror.Websocket {
     [HelpURL("https://mirror-networking.com/docs/Transports/WebSockets.html")]
-    public class WebsocketTransport : Transport
-    {
+    public class WebsocketTransport : Transport {
         public const string Scheme = "ws";
         public const string SecureScheme = "wss";
 
@@ -37,8 +35,7 @@ namespace Mirror.Websocket
         [Tooltip("SSL and TLS Protocols")]
         public SslProtocols EnabledSslProtocols = SslProtocols.Default;
 
-        public WebsocketTransport()
-        {
+        public WebsocketTransport() {
             // dispatch the events from the server
             server.Connected += (connectionId) => OnServerConnected.Invoke(connectionId);
             server.Disconnected += (connectionId) => OnServerDisconnected.Invoke(connectionId);
@@ -58,26 +55,22 @@ namespace Mirror.Websocket
             Debug.Log("Websocket transport initialized!");
         }
 
-        public override bool Available()
-        {
+        public override bool Available() {
             // WebSockets should be available on all platforms, including WebGL (automatically) using our included JSLIB code
             return true;
         }
 
-        void OnEnable()
-        {
+        void OnEnable() {
             server.enabled = true;
             client.enabled = true;
         }
 
-        void OnDisable()
-        {
+        void OnDisable() {
             server.enabled = false;
             client.enabled = false;
         }
 
-        void LateUpdate()
-        {
+        void LateUpdate() {
             // note: we need to check enabled in case we set it to false
             // when LateUpdate already started.
             // (https://github.com/vis2k/Mirror/pull/379)
@@ -86,18 +79,15 @@ namespace Mirror.Websocket
 
             // process a maximum amount of client messages per tick
             // TODO add clientMaxReceivesPerTick same as telepathy
-            while (true)
-            {
+            while (true) {
                 // stop when there is no more message
-                if (!client.ProcessClientMessage())
-                {
+                if (!client.ProcessClientMessage()) {
                     break;
                 }
 
                 // Some messages can disable transport
                 // If this is disabled stop processing message in queue
-                if (!enabled)
-                {
+                if (!enabled) {
                     break;
                 }
             }
@@ -106,25 +96,19 @@ namespace Mirror.Websocket
         // client
         public override bool ClientConnected() => client.IsConnected;
 
-        public override void ClientConnect(string host)
-        {
-            if (Secure)
-            {
+        public override void ClientConnect(string host) {
+            if (Secure) {
                 client.Connect(new Uri($"wss://{host}:{port}"));
-            }
-            else
-            {
+            } else {
                 client.Connect(new Uri($"ws://{host}:{port}"));
             }
         }
 
-        public override void ClientConnect(Uri uri)
-        {
+        public override void ClientConnect(Uri uri) {
             if (uri.Scheme != Scheme && uri.Scheme != SecureScheme)
                 throw new ArgumentException($"Invalid url {uri}, use {Scheme}://host:port or {SecureScheme}://host:port instead", nameof(uri));
 
-            if (uri.IsDefaultPort)
-            {
+            if (uri.IsDefaultPort) {
                 UriBuilder uriBuilder = new UriBuilder(uri);
                 uriBuilder.Port = port;
                 uri = uriBuilder.Uri;
@@ -133,16 +117,14 @@ namespace Mirror.Websocket
             client.Connect(uri);
         }
 
-        public override bool ClientSend(int channelId, ArraySegment<byte> segment)
-        {
+        public override bool ClientSend(int channelId, ArraySegment<byte> segment) {
             client.Send(segment);
             return true;
         }
 
         public override void ClientDisconnect() => client.Disconnect();
 
-        public override Uri ServerUri()
-        {
+        public override Uri ServerUri() {
             UriBuilder builder = new UriBuilder();
             builder.Scheme = Secure ? SecureScheme : Scheme;
             builder.Host = Dns.GetHostName();
@@ -154,14 +136,11 @@ namespace Mirror.Websocket
         // server
         public override bool ServerActive() => server.Active;
 
-        public override void ServerStart()
-        {
+        public override void ServerStart() {
             server._secure = Secure;
-            if (Secure)
-            {
+            if (Secure) {
                 server._secure = Secure;
-                server._sslConfig = new Server.SslConfiguration
-                {
+                server._sslConfig = new Server.SslConfiguration {
                     Certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(CertificatePath, CertificatePassword),
                     ClientCertificateRequired = false,
                     CheckCertificateRevocation = false,
@@ -171,46 +150,38 @@ namespace Mirror.Websocket
             _ = server.Listen(port);
         }
 
-        public override bool ServerSend(List<int> connectionIds, int channelId, ArraySegment<byte> segment)
-        {
+        public override bool ServerSend(List<int> connectionIds, int channelId, ArraySegment<byte> segment) {
             // send to all
             foreach (int connectionId in connectionIds)
                 server.Send(connectionId, segment);
             return true;
         }
 
-        public override bool ServerDisconnect(int connectionId)
-        {
+        public override bool ServerDisconnect(int connectionId) {
             return server.Disconnect(connectionId);
         }
 
-        public override string ServerGetClientAddress(int connectionId)
-        {
+        public override string ServerGetClientAddress(int connectionId) {
             return server.GetClientAddress(connectionId);
         }
         public override void ServerStop() => server.Stop();
 
         // common
-        public override void Shutdown()
-        {
+        public override void Shutdown() {
             client.Disconnect();
             server.Stop();
         }
 
-        public override int GetMaxPacketSize(int channelId)
-        {
+        public override int GetMaxPacketSize(int channelId) {
             // Telepathy's limit is Array.Length, which is int
             return int.MaxValue;
         }
 
-        public override string ToString()
-        {
-            if (client.Connecting || client.IsConnected)
-            {
+        public override string ToString() {
+            if (client.Connecting || client.IsConnected) {
                 return client.ToString();
             }
-            if (server.Active)
-            {
+            if (server.Active) {
                 return server.ToString();
             }
             return "";

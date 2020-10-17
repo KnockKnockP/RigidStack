@@ -1,28 +1,23 @@
-using System.Collections.Generic;
 using Mono.CecilX;
 using Mono.CecilX.Cil;
+using System.Collections.Generic;
 
-namespace Mirror.Weaver
-{
+namespace Mirror.Weaver {
 
-    public static class Writers
-    {
+    public static class Writers {
         const int MaxRecursionCount = 128;
 
         static Dictionary<string, MethodReference> writeFuncs;
 
-        public static void Init()
-        {
+        public static void Init() {
             writeFuncs = new Dictionary<string, MethodReference>();
         }
 
-        public static void Register(TypeReference dataType, MethodReference methodReference)
-        {
+        public static void Register(TypeReference dataType, MethodReference methodReference) {
             writeFuncs[dataType.FullName] = methodReference;
         }
 
-        static void RegisterWriteFunc(string name, MethodDefinition newWriterFunc)
-        {
+        static void RegisterWriteFunc(string name, MethodDefinition newWriterFunc) {
             writeFuncs[name] = newWriterFunc;
             Weaver.WeaveLists.generatedWriteFunctions.Add(newWriterFunc);
 
@@ -30,33 +25,24 @@ namespace Mirror.Weaver
             Weaver.WeaveLists.generateContainerClass.Methods.Add(newWriterFunc);
         }
 
-        public static MethodReference GetWriteFunc(TypeReference variable, int recursionCount = 0)
-        {
-            if (writeFuncs.TryGetValue(variable.FullName, out MethodReference foundFunc))
-            {
+        public static MethodReference GetWriteFunc(TypeReference variable, int recursionCount = 0) {
+            if (writeFuncs.TryGetValue(variable.FullName, out MethodReference foundFunc)) {
                 return foundFunc;
-            }
-            else if (variable.Resolve().IsEnum)
-            {
+            } else if (variable.Resolve().IsEnum) {
                 // serialize enum as their base type
                 return GetWriteFunc(variable.Resolve().GetEnumUnderlyingType());
-            }
-            else
-            {
+            } else {
                 MethodDefinition newWriterFunc = GenerateWriter(variable, recursionCount);
-                if (newWriterFunc != null)
-                {
+                if (newWriterFunc != null) {
                     RegisterWriteFunc(variable.FullName, newWriterFunc);
                 }
                 return newWriterFunc;
             }
         }
 
-        static MethodDefinition GenerateWriter(TypeReference variableReference, int recursionCount = 0)
-        {
+        static MethodDefinition GenerateWriter(TypeReference variableReference, int recursionCount = 0) {
             // TODO: do we need this check? do we ever receieve types that are "ByReference"s
-            if (variableReference.IsByReference)
-            {
+            if (variableReference.IsByReference) {
                 // error??
                 Weaver.Error($"Cannot pass {variableReference.Name} by reference", variableReference);
                 return null;
@@ -65,57 +51,47 @@ namespace Mirror.Weaver
             // Arrays are special, if we resolve them, we get the element type,
             // eg int[] resolves to int
             // therefore process this before checks below
-            if (variableReference.IsArray)
-            {
+            if (variableReference.IsArray) {
                 return GenerateArrayWriteFunc(variableReference, recursionCount);
             }
 
             // check for collections
 
-            if (variableReference.IsArraySegment())
-            {
+            if (variableReference.IsArraySegment()) {
                 return GenerateArraySegmentWriteFunc(variableReference, recursionCount);
             }
-            if (variableReference.IsList())
-            {
+            if (variableReference.IsList()) {
                 return GenerateListWriteFunc(variableReference, recursionCount);
             }
 
             // check for invalid types
 
             TypeDefinition variableDefinition = variableReference.Resolve();
-            if (variableDefinition == null)
-            {
+            if (variableDefinition == null) {
                 Weaver.Error($"{variableReference.Name} is not a supported type. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
-            if (variableDefinition.IsDerivedFrom(WeaverTypes.ComponentType))
-            {
+            if (variableDefinition.IsDerivedFrom(WeaverTypes.ComponentType)) {
                 Weaver.Error($"Cannot generate writer for component type {variableReference.Name}. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
-            if (variableReference.FullName == WeaverTypes.ObjectType.FullName)
-            {
+            if (variableReference.FullName == WeaverTypes.ObjectType.FullName) {
                 Weaver.Error($"Cannot generate writer for {variableReference.Name}. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
-            if (variableReference.FullName == WeaverTypes.ScriptableObjectType.FullName)
-            {
+            if (variableReference.FullName == WeaverTypes.ScriptableObjectType.FullName) {
                 Weaver.Error($"Cannot generate writer for {variableReference.Name}. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
-            if (variableDefinition.HasGenericParameters)
-            {
+            if (variableDefinition.HasGenericParameters) {
                 Weaver.Error($"Cannot generate writer for generic type {variableReference.Name}. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
-            if (variableDefinition.IsInterface)
-            {
+            if (variableDefinition.IsInterface) {
                 Weaver.Error($"Cannot generate writer for interface {variableReference.Name}. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
-            if (variableDefinition.IsAbstract)
-            {
+            if (variableDefinition.IsAbstract) {
                 Weaver.Error($"Cannot generate writer for abstract class {variableReference.Name}. Use a supported type or provide a custom writer", variableReference);
                 return null;
             }
@@ -125,21 +101,16 @@ namespace Mirror.Weaver
             return GenerateClassOrStructWriterFunction(variableReference, recursionCount);
         }
 
-        static MethodDefinition GenerateClassOrStructWriterFunction(TypeReference variable, int recursionCount)
-        {
-            if (recursionCount > MaxRecursionCount)
-            {
+        static MethodDefinition GenerateClassOrStructWriterFunction(TypeReference variable, int recursionCount) {
+            if (recursionCount > MaxRecursionCount) {
                 Weaver.Error($"{variable.Name} can't be serialized because it references itself", variable);
                 return null;
             }
 
             string functionName = "_Write" + variable.Name + "_";
-            if (variable.DeclaringType != null)
-            {
+            if (variable.DeclaringType != null) {
                 functionName += variable.DeclaringType.Name;
-            }
-            else
-            {
+            } else {
                 functionName += "None";
             }
             // create new writer for this type
@@ -168,14 +139,11 @@ namespace Mirror.Weaver
         /// <param name="recursionCount"></param>
         /// <param name="worker"></param>
         /// <returns>false if fail</returns>
-        static bool WriteAllFields(TypeReference variable, int recursionCount, ILProcessor worker)
-        {
+        static bool WriteAllFields(TypeReference variable, int recursionCount, ILProcessor worker) {
             uint fields = 0;
-            foreach (FieldDefinition field in variable.FindAllPublicFields())
-            {
+            foreach (FieldDefinition field in variable.FindAllPublicFields()) {
                 MethodReference writeFunc = GetWriteFunc(field.FieldType, recursionCount + 1);
-                if (writeFunc != null)
-                {
+                if (writeFunc != null) {
                     FieldReference fieldRef = Weaver.CurrentAssembly.MainModule.ImportReference(field);
 
                     fields++;
@@ -183,26 +151,21 @@ namespace Mirror.Weaver
                     worker.Append(worker.Create(OpCodes.Ldarg_1));
                     worker.Append(worker.Create(OpCodes.Ldfld, fieldRef));
                     worker.Append(worker.Create(OpCodes.Call, writeFunc));
-                }
-                else
-                {
+                } else {
                     Weaver.Error($"{field.Name} has unsupported type. Use a type supported by Mirror instead", field);
                     return false;
                 }
             }
 
-            if (fields == 0)
-            {
+            if (fields == 0) {
                 Log.Warning($"{variable} has no no public or non-static fields to serialize");
             }
 
             return true;
         }
 
-        static MethodDefinition GenerateArrayWriteFunc(TypeReference variable, int recursionCount)
-        {
-            if (!variable.IsArrayType())
-            {
+        static MethodDefinition GenerateArrayWriteFunc(TypeReference variable, int recursionCount) {
+            if (!variable.IsArrayType()) {
                 Weaver.Error($"{variable.Name} is an unsupported type. Jagged and multidimensional arrays are not supported", variable);
                 return null;
             }
@@ -210,19 +173,15 @@ namespace Mirror.Weaver
             TypeReference elementType = variable.GetElementType();
             MethodReference elementWriteFunc = GetWriteFunc(elementType, recursionCount + 1);
             MethodReference intWriterFunc = GetWriteFunc(WeaverTypes.int32Type);
-            if (elementWriteFunc == null)
-            {
+            if (elementWriteFunc == null) {
                 Weaver.Error($"Cannot generate writer for Array because element {elementType.Name} does not have a writer. Use a supported type or provide a custom writer", variable);
                 return null;
             }
 
             string functionName = "_WriteArray" + variable.GetElementType().Name + "_";
-            if (variable.DeclaringType != null)
-            {
+            if (variable.DeclaringType != null) {
                 functionName += variable.DeclaringType.Name;
-            }
-            else
-            {
+            } else {
                 functionName += "None";
             }
 
@@ -304,26 +263,21 @@ namespace Mirror.Weaver
             return writerFunc;
         }
 
-        static MethodDefinition GenerateArraySegmentWriteFunc(TypeReference variable, int recursionCount)
-        {
+        static MethodDefinition GenerateArraySegmentWriteFunc(TypeReference variable, int recursionCount) {
             GenericInstanceType genericInstance = (GenericInstanceType)variable;
             TypeReference elementType = genericInstance.GenericArguments[0];
             MethodReference elementWriteFunc = GetWriteFunc(elementType, recursionCount + 1);
             MethodReference intWriterFunc = GetWriteFunc(WeaverTypes.int32Type);
 
-            if (elementWriteFunc == null)
-            {
+            if (elementWriteFunc == null) {
                 Weaver.Error($"Cannot generate writer for ArraySegment because element {elementType.Name} does not have a writer. Use a supported type or provide a custom writer", variable);
                 return null;
             }
 
             string functionName = "_WriteArraySegment_" + elementType.Name + "_";
-            if (variable.DeclaringType != null)
-            {
+            if (variable.DeclaringType != null) {
                 functionName += variable.DeclaringType.Name;
-            }
-            else
-            {
+            } else {
                 functionName += "None";
             }
 
@@ -400,26 +354,21 @@ namespace Mirror.Weaver
             return writerFunc;
         }
 
-        static MethodDefinition GenerateListWriteFunc(TypeReference variable, int recursionCount)
-        {
+        static MethodDefinition GenerateListWriteFunc(TypeReference variable, int recursionCount) {
             GenericInstanceType genericInstance = (GenericInstanceType)variable;
             TypeReference elementType = genericInstance.GenericArguments[0];
             MethodReference elementWriteFunc = GetWriteFunc(elementType, recursionCount + 1);
             MethodReference intWriterFunc = GetWriteFunc(WeaverTypes.int32Type);
 
-            if (elementWriteFunc == null)
-            {
+            if (elementWriteFunc == null) {
                 Weaver.Error($"Cannot generate writer for List because element {elementType.Name} does not have a writer. Use a supported type or provide a custom writer", variable);
                 return null;
             }
 
             string functionName = "_WriteList_" + elementType.Name + "_";
-            if (variable.DeclaringType != null)
-            {
+            if (variable.DeclaringType != null) {
                 functionName += variable.DeclaringType.Name;
-            }
-            else
-            {
+            } else {
                 functionName += "None";
             }
 

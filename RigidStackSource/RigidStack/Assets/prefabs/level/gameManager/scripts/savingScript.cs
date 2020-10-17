@@ -334,10 +334,10 @@ public class savingScript : MonoBehaviour {
 
     #region Graphics settings.
     private void saveGraphicsSettings(string profileName) {
-        #if ENABLE_IL2CPP
+#if ENABLE_IL2CPP
             IL2CPPWarning("Saving");
             return;
-        #endif
+#endif
         try {
             StreamWriter streamWriter = new StreamWriter(getPath(false, false, true, profileName));
             for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
@@ -389,10 +389,10 @@ public class savingScript : MonoBehaviour {
     }
 
     public void loadGraphicsSettings(string profileName) {
-        #if ENABLE_IL2CPP
+#if ENABLE_IL2CPP
             IL2CPPWarning("Loading");
             return;
-        #endif
+#endif
         if (count == 2) {
             count = 0;
             return;
@@ -502,11 +502,11 @@ public class savingScript : MonoBehaviour {
     }
 
     private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, string playerName) {
-        #if UNITY_EDITOR
-            string dataPath = Application.dataPath;
-        #else
+#if UNITY_EDITOR
+        string dataPath = Application.dataPath;
+#else
             string dataPath = Application.persistentDataPath;
-        #endif
+#endif
         if (getSavesFolder == true) {
             return (dataPath + "/Saves/");
         }
@@ -582,7 +582,7 @@ public class savingScript : MonoBehaviour {
     }
 
     #region IL2CPP warning.
-    #if ENABLE_IL2CPP
+#if ENABLE_IL2CPP
         private void IL2CPPWarning(string loadingOrSaving) {
             string text = (loadingOrSaving + " graphics settings file is not supported in IL2CPP build.");
             Color32 warningColor = new Color32(255, 200, 0, 255);
@@ -598,7 +598,7 @@ public class savingScript : MonoBehaviour {
             }
             return;
         }
-    #endif
+#endif
     #endregion
 
     private void catchException(Exception exception) {

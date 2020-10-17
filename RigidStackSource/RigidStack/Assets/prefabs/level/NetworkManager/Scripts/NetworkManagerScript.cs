@@ -1,10 +1,7 @@
 ﻿using Mirror;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
-using System.Text;
 using UnityEngine;
 
 public class NetworkManagerScript : NetworkBehaviour {
@@ -42,33 +39,33 @@ public class NetworkManagerScript : NetworkBehaviour {
 
     private void stopServer() {
         if ((networkManager != null) && (networkManager.isNetworkActive == true)) {
-           networkManager.StopHost();
-       }
-       return;
+            networkManager.StopHost();
+        }
+        return;
     }
 
     //https://gist.github.com/jrusbatch/4211535#gistcomment-2754532
     private static int GetAvailablePort(int startingPort) {
-        #if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            IEnumerable<int> tcpConnectionPorts = ipGlobalProperties.GetActiveTcpConnections()
-                                                                                              .Where(n => n.LocalEndPoint.Port >= startingPort)
-                                                                                              .Select(n => n.LocalEndPoint.Port);
-            IEnumerable<int> tcpListenerPorts = ipGlobalProperties.GetActiveTcpListeners()
-                                                                                          .Where(n => n.Port >= startingPort)
-                                                                                          .Select(n => n.Port);
-            IEnumerable<int> udpListenerPorts = ipGlobalProperties.GetActiveUdpListeners()
-                                                                                          .Where(n => n.Port >= startingPort)
-                                                                                          .Select(n => n.Port);
-            int port = Enumerable.Range(startingPort, ushort.MaxValue)
-                                                                      .Where(i => !tcpConnectionPorts.Contains(i))
-                                                                      .Where(i => !tcpListenerPorts.Contains(i))
-                                                                      .Where(i => !udpListenerPorts.Contains(i))
-                                                                      .FirstOrDefault();
-            return port;
+#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+        IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+        IEnumerable<int> tcpConnectionPorts = ipGlobalProperties.GetActiveTcpConnections()
+                                                                                          .Where(n => n.LocalEndPoint.Port >= startingPort)
+                                                                                          .Select(n => n.LocalEndPoint.Port);
+        IEnumerable<int> tcpListenerPorts = ipGlobalProperties.GetActiveTcpListeners()
+                                                                                      .Where(n => n.Port >= startingPort)
+                                                                                      .Select(n => n.Port);
+        IEnumerable<int> udpListenerPorts = ipGlobalProperties.GetActiveUdpListeners()
+                                                                                      .Where(n => n.Port >= startingPort)
+                                                                                      .Select(n => n.Port);
+        int port = Enumerable.Range(startingPort, ushort.MaxValue)
+                                                                  .Where(i => !tcpConnectionPorts.Contains(i))
+                                                                  .Where(i => !tcpListenerPorts.Contains(i))
+                                                                  .Where(i => !udpListenerPorts.Contains(i))
+                                                                  .FirstOrDefault();
+        return port;
 #else
-            var udp = new UdpClient(0, AddressFamily.InterNetwork);
-int port = ((IPEndPoint)udp.Client.LocalEndPoint).Port;
+        UdpClient udp = new UdpClient(0, AddressFamily.InterNetwork);
+        return ((IPEndPoint)(udp.Client.LocalEndPoint)).Port;
 #endif
     }
 }

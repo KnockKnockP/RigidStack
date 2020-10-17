@@ -1,20 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
-namespace ParrelSync
-{
+namespace ParrelSync {
     /// <summary>
     /// For preventing assets being modified from the clone instance.
     /// </summary>
-    public class ParrelSyncAssetModificationProcessor : UnityEditor.AssetModificationProcessor
-    {
-        public static string[] OnWillSaveAssets(string[] paths)
-        {
-            if (ClonesManager.IsClone() && Preferences.AssetModPref.Value)
-            {
-                if (paths != null && paths.Length > 0 && !EditorQuit.IsQuiting)
-                {
+    public class ParrelSyncAssetModificationProcessor : UnityEditor.AssetModificationProcessor {
+        public static string[] OnWillSaveAssets(string[] paths) {
+            if (ClonesManager.IsClone() && Preferences.AssetModPref.Value) {
+                if (paths != null && paths.Length > 0 && !EditorQuit.IsQuiting) {
                     EditorUtility.DisplayDialog(
                         ClonesManager.ProjectName + ": Asset modifications saving detected and blocked",
                         "Asset modifications saving are blocked in the clone instance. \n\n" +
@@ -23,8 +16,7 @@ namespace ParrelSync
                         "Please use the original editor window if you want to make changes to the project files.",
                         "ok"
                     );
-                    foreach (var path in paths)
-                    {
+                    foreach (var path in paths) {
                         Debug.Log("Attempting to save " + path + " are blocked.");
                     }
                 }

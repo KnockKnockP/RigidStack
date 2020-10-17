@@ -20,20 +20,18 @@
 // THE SOFTWARE.
 // ---------------------------------------------------------------------
 
+using Ninja.WebSockets.Internal;
 using System;
 using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Ninja.WebSockets.Internal;
 
-namespace Ninja.WebSockets
-{
+namespace Ninja.WebSockets {
     /// <summary>
     /// Ping Pong Manager used to facilitate ping pong WebSocket messages
     /// </summary>
-    public class PingPongManager : IPingPongManager
-    {
+    public class PingPongManager : IPingPongManager {
         readonly WebSocketImplementation _webSocket;
         readonly Guid _guid;
         readonly TimeSpan _keepAliveInterval;
@@ -59,8 +57,7 @@ namespace Ninja.WebSockets
         /// </param>
         /// <param name="cancellationToken">The token used to cancel a pending ping send AND the automatic sending of ping messages
         /// if keepAliveInterval is positive</param>
-        public PingPongManager(Guid guid, WebSocket webSocket, TimeSpan keepAliveInterval, CancellationToken cancellationToken)
-        {
+        public PingPongManager(Guid guid, WebSocket webSocket, TimeSpan keepAliveInterval, CancellationToken cancellationToken) {
             WebSocketImplementation webSocketImpl = webSocket as WebSocketImplementation;
             _webSocket = webSocketImpl;
             if (_webSocket == null)
@@ -71,8 +68,7 @@ namespace Ninja.WebSockets
             webSocketImpl.Pong += WebSocketImpl_Pong;
             _stopwatch = Stopwatch.StartNew();
 
-            if (keepAliveInterval != TimeSpan.Zero)
-            {
+            if (keepAliveInterval != TimeSpan.Zero) {
                 Task.Run(PingForever, cancellationToken);
             }
         }
@@ -82,56 +78,45 @@ namespace Ninja.WebSockets
         /// </summary>
         /// <param name="payload">The payload (must be 125 bytes of less)</param>
         /// <param name="cancellation">The cancellation token</param>
-        public async Task SendPing(ArraySegment<byte> payload, CancellationToken cancellation)
-        {
+        public async Task SendPing(ArraySegment<byte> payload, CancellationToken cancellation) {
             await _webSocket.SendPingAsync(payload, cancellation);
         }
 
-        protected virtual void OnPong(PongEventArgs e)
-        {
+        protected virtual void OnPong(PongEventArgs e) {
             Pong?.Invoke(this, e);
         }
 
-        async Task PingForever()
-        {
+        async Task PingForever() {
             Events.Log.PingPongManagerStarted(_guid, (int)_keepAliveInterval.TotalSeconds);
 
-            try
-            {
-                while (!_cancellationToken.IsCancellationRequested)
-                {
+            try {
+                while (!_cancellationToken.IsCancellationRequested) {
                     await Task.Delay(_keepAliveInterval, _cancellationToken);
 
-                    if (_webSocket.State != WebSocketState.Open)
-                    {
+                    if (_webSocket.State != WebSocketState.Open) {
                         break;
                     }
 
-                    if (_pingSentTicks != 0)
-                    {
+                    if (_pingSentTicks != 0) {
                         Events.Log.KeepAliveIntervalExpired(_guid, (int)_keepAliveInterval.TotalSeconds);
                         await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, $"No Pong message received in response to a Ping after KeepAliveInterval {_keepAliveInterval}", _cancellationToken);
                         break;
                     }
 
-                    if (!_cancellationToken.IsCancellationRequested)
-                    {
+                    if (!_cancellationToken.IsCancellationRequested) {
                         _pingSentTicks = _stopwatch.Elapsed.Ticks;
                         ArraySegment<byte> buffer = new ArraySegment<byte>(BitConverter.GetBytes(_pingSentTicks));
                         await SendPing(buffer, _cancellationToken);
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
+            } catch (OperationCanceledException) {
                 // normal, do nothing
             }
 
             Events.Log.PingPongManagerEnded(_guid);
         }
 
-        void WebSocketImpl_Pong(object sender, PongEventArgs e)
-        {
+        void WebSocketImpl_Pong(object sender, PongEventArgs e) {
             _pingSentTicks = 0;
             OnPong(e);
         }

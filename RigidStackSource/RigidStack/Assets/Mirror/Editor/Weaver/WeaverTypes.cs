@@ -1,10 +1,8 @@
-using System.Linq;
 using Mono.CecilX;
+using System.Linq;
 
-namespace Mirror.Weaver
-{
-    public static class WeaverTypes
-    {
+namespace Mirror.Weaver {
+    public static class WeaverTypes {
         // Network types
         public static TypeReference NetworkBehaviourType;
         public static TypeReference RemoteCallHelperType;
@@ -107,8 +105,7 @@ namespace Mirror.Weaver
         public static MethodReference sendEventInternal;
 
 
-        public static void SetupUnityTypes(AssemblyDefinition unityAssembly, AssemblyDefinition mirrorAssembly)
-        {
+        public static void SetupUnityTypes(AssemblyDefinition unityAssembly, AssemblyDefinition mirrorAssembly) {
             gameObjectType = unityAssembly.MainModule.GetType("UnityEngine.GameObject");
             transformType = unityAssembly.MainModule.GetType("UnityEngine.Transform");
 
@@ -123,29 +120,24 @@ namespace Mirror.Weaver
             SyncObjectType = mirrorAssembly.MainModule.GetType("Mirror.SyncObject");
         }
 
-        static ModuleDefinition ResolveSystemModule(AssemblyDefinition currentAssembly)
-        {
+        static ModuleDefinition ResolveSystemModule(AssemblyDefinition currentAssembly) {
             AssemblyNameReference name = AssemblyNameReference.Parse("mscorlib");
-            ReaderParameters parameters = new ReaderParameters
-            {
+            ReaderParameters parameters = new ReaderParameters {
                 AssemblyResolver = currentAssembly.MainModule.AssemblyResolver
             };
             return currentAssembly.MainModule.AssemblyResolver.Resolve(name, parameters).MainModule;
         }
 
-        static TypeReference ImportSystemModuleType(AssemblyDefinition currentAssembly, ModuleDefinition systemModule, string fullName)
-        {
+        static TypeReference ImportSystemModuleType(AssemblyDefinition currentAssembly, ModuleDefinition systemModule, string fullName) {
             TypeDefinition type = systemModule.GetType(fullName) ?? systemModule.ExportedTypes.First(t => t.FullName == fullName).Resolve();
-            if (type != null)
-            {
+            if (type != null) {
                 return currentAssembly.MainModule.ImportReference(type);
             }
             Weaver.Error("Failed to import mscorlib type: " + fullName + " because Resolve failed. (Might happen when trying to Resolve in NetStandard dll, see also: https://github.com/vis2k/Mirror/issues/791)");
             return null;
         }
 
-        public static void SetupTargetTypes(AssemblyDefinition unityAssembly, AssemblyDefinition mirrorAssembly, AssemblyDefinition currentAssembly)
-        {
+        public static void SetupTargetTypes(AssemblyDefinition unityAssembly, AssemblyDefinition mirrorAssembly, AssemblyDefinition currentAssembly) {
             // system types
             ModuleDefinition systemModule = ResolveSystemModule(currentAssembly);
             voidType = ImportSystemModuleType(currentAssembly, systemModule, "System.Void");

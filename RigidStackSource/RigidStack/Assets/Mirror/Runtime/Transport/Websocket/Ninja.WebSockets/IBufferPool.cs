@@ -1,9 +1,7 @@
 using System.IO;
 
-namespace Ninja.WebSockets
-{
-    public interface IBufferPool
-    {
+namespace Ninja.WebSockets {
+    public interface IBufferPool {
         /// <summary>
         /// Gets a MemoryStream built from a buffer plucked from a thread safe pool
         /// The pool grows automatically.

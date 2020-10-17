@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Mirror
-{
+namespace Mirror {
     /// <summary>
     /// Component that controls visibility of networked objects between scenes.
     /// <para>Any object with this component on it will only be visible to other objects in the same scene</para>
@@ -13,8 +12,7 @@ namespace Mirror
     [AddComponentMenu("Network/NetworkSceneChecker")]
     [RequireComponent(typeof(NetworkIdentity))]
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkSceneChecker.html")]
-    public class NetworkSceneChecker : NetworkVisibility
-    {
+    public class NetworkSceneChecker : NetworkVisibility {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkSceneChecker));
 
         /// <summary>
@@ -30,14 +28,13 @@ namespace Mirror
         Scene currentScene;
 
         [ServerCallback]
-        void Awake()
-        {
+        void Awake() {
             currentScene = gameObject.scene;
-            if (logger.LogEnabled()) logger.Log($"NetworkSceneChecker.Awake currentScene: {currentScene}");
+            if (logger.LogEnabled())
+                logger.Log($"NetworkSceneChecker.Awake currentScene: {currentScene}");
         }
 
-        public override void OnStartServer()
-        {
+        public override void OnStartServer() {
             if (!sceneCheckerObjects.ContainsKey(currentScene))
                 sceneCheckerObjects.Add(currentScene, new HashSet<NetworkIdentity>());
 
@@ -45,8 +42,7 @@ namespace Mirror
         }
 
         [ServerCallback]
-        void Update()
-        {
+        void Update() {
             if (currentScene == gameObject.scene)
                 return;
 
@@ -73,8 +69,7 @@ namespace Mirror
             RebuildSceneObservers();
         }
 
-        void RebuildSceneObservers()
-        {
+        void RebuildSceneObservers() {
             foreach (NetworkIdentity networkIdentity in sceneCheckerObjects[currentScene])
                 if (networkIdentity != null)
                     networkIdentity.RebuildObservers(false);
@@ -86,8 +81,7 @@ namespace Mirror
         /// </summary>
         /// <param name="conn">Network connection of a player.</param>
         /// <returns>True if the player can see this object.</returns>
-        public override bool OnCheckObserver(NetworkConnection conn)
-        {
+        public override bool OnCheckObserver(NetworkConnection conn) {
             if (forceHidden)
                 return false;
 
@@ -100,8 +94,7 @@ namespace Mirror
         /// </summary>
         /// <param name="observers">The new set of observers for this object.</param>
         /// <param name="initialize">True if the set of observers is being built for the first time.</param>
-        public override void OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize)
-        {
+        public override void OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize) {
             // If forceHidden then return without adding any observers.
             if (forceHidden)
                 return;

@@ -1,17 +1,15 @@
 #if !UNITY_WEBGL || UNITY_EDITOR
 
+using Ninja.WebSockets;
 using System;
 using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Ninja.WebSockets;
 
-namespace Mirror.Websocket
-{
+namespace Mirror.Websocket {
 
-    public class Client
-    {
+    public class Client {
         public event Action Connected;
         public event Action<ArraySegment<byte>> ReceivedData;
         public event Action Disconnected;
@@ -23,16 +21,18 @@ namespace Mirror.Websocket
 
         public bool NoDelay = true;
 
-        public bool Connecting { get; set; }
-        public bool IsConnected { get; set; }
+        public bool Connecting {
+            get; set;
+        }
+        public bool IsConnected {
+            get; set;
+        }
 
         Uri uri;
 
-        public async void Connect(Uri uri)
-        {
+        public async void Connect(Uri uri) {
             // not if already started
-            if (webSocket != null)
-            {
+            if (webSocket != null) {
                 // paul:  exceptions are better than silence
                 ReceivedError?.Invoke(new Exception("Client already connected"));
                 return;
@@ -41,8 +41,7 @@ namespace Mirror.Websocket
             // We are connecting from now until Connect succeeds or fails
             Connecting = true;
 
-            WebSocketClientOptions options = new WebSocketClientOptions()
-            {
+            WebSocketClientOptions options = new WebSocketClientOptions() {
                 NoDelay = true,
                 KeepAliveInterval = TimeSpan.Zero,
                 SecWebSocketProtocol = "binary"
@@ -52,10 +51,8 @@ namespace Mirror.Websocket
 
             WebSocketClientFactory clientFactory = new WebSocketClientFactory();
 
-            try
-            {
-                using (webSocket = await clientFactory.ConnectAsync(uri, options, cancellation.Token))
-                {
+            try {
+                using (webSocket = await clientFactory.ConnectAsync(uri, options, cancellation.Token)) {
                     CancellationToken token = cancellation.Token;
                     IsConnected = true;
                     Connecting = false;
@@ -63,17 +60,11 @@ namespace Mirror.Websocket
 
                     await ReceiveLoop(webSocket, token);
                 }
-            }
-            catch (ObjectDisposedException)
-            {
+            } catch (ObjectDisposedException) {
                 // No error, the client got closed
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 ReceivedError?.Invoke(ex);
-            }
-            finally
-            {
+            } finally {
                 Disconnect();
                 Disconnected?.Invoke();
             }
@@ -81,16 +72,13 @@ namespace Mirror.Websocket
 
         public bool enabled;
 
-        async Task ReceiveLoop(WebSocket webSocket, CancellationToken token)
-        {
+        async Task ReceiveLoop(WebSocket webSocket, CancellationToken token) {
             byte[] buffer = new byte[MaxMessageSize];
 
-            while (true)
-            {
+            while (true) {
                 WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), token);
 
-                if (!enabled)
-                {
+                if (!enabled) {
                     await WaitForEnabledAsync();
                 }
 
@@ -105,41 +93,32 @@ namespace Mirror.Websocket
                 if (data.Count == 0)
                     break;
 
-                try
-                {
+                try {
                     ReceivedData?.Invoke(data);
-                }
-                catch (Exception exception)
-                {
+                } catch (Exception exception) {
                     ReceivedError?.Invoke(exception);
                 }
             }
         }
 
-        async Task WaitForEnabledAsync()
-        {
-            while (!enabled)
-            {
+        async Task WaitForEnabledAsync() {
+            while (!enabled) {
                 await Task.Delay(10);
             }
         }
 
-        public bool ProcessClientMessage()
-        {
+        public bool ProcessClientMessage() {
             // message in standalone client don't use queue to process
             return false;
         }
 
         // a message might come splitted in multiple frames
         // collect all frames
-        async Task<ArraySegment<byte>> ReadFrames(WebSocketReceiveResult result, WebSocket webSocket, byte[] buffer)
-        {
+        async Task<ArraySegment<byte>> ReadFrames(WebSocketReceiveResult result, WebSocket webSocket, byte[] buffer) {
             int count = result.Count;
 
-            while (!result.EndOfMessage)
-            {
-                if (count >= MaxMessageSize)
-                {
+            while (!result.EndOfMessage) {
+                if (count >= MaxMessageSize) {
                     string closeMessage = string.Format("Maximum message size: {0} bytes.", MaxMessageSize);
                     await webSocket.CloseAsync(WebSocketCloseStatus.MessageTooBig, closeMessage, CancellationToken.None);
                     ReceivedError?.Invoke(new WebSocketException(WebSocketError.HeaderError));
@@ -153,13 +132,11 @@ namespace Mirror.Websocket
             return new ArraySegment<byte>(buffer, 0, count);
         }
 
-        public void Disconnect()
-        {
+        public void Disconnect() {
             cancellation?.Cancel();
 
             // only if started
-            if (webSocket != null)
-            {
+            if (webSocket != null) {
                 // close client
                 webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
                 webSocket = null;
@@ -169,33 +146,25 @@ namespace Mirror.Websocket
         }
 
         // send the data or throw exception
-        public async void Send(ArraySegment<byte> segment)
-        {
-            if (webSocket == null)
-            {
+        public async void Send(ArraySegment<byte> segment) {
+            if (webSocket == null) {
                 ReceivedError?.Invoke(new SocketException((int)SocketError.NotConnected));
                 return;
             }
 
-            try
-            {
+            try {
                 await webSocket.SendAsync(segment, WebSocketMessageType.Binary, true, cancellation.Token);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Disconnect();
                 ReceivedError?.Invoke(ex);
             }
         }
 
-        public override string ToString()
-        {
-            if (IsConnected)
-            {
+        public override string ToString() {
+            if (IsConnected) {
                 return $"Websocket connected to {uri}";
             }
-            if (Connecting)
-            {
+            if (Connecting) {
                 return $"Websocket connecting to {uri}";
             }
             return "";

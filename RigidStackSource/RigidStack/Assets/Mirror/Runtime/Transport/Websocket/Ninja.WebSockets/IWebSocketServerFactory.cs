@@ -4,13 +4,11 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ninja.WebSockets
-{
+namespace Ninja.WebSockets {
     /// <summary>
     /// Web socket server factory used to open web socket server connections
     /// </summary>
-    public interface IWebSocketServerFactory
-    {
+    public interface IWebSocketServerFactory {
         /// <summary>
         /// Reads a http header information from a stream and decodes the parts relating to the WebSocket protocot upgrade
         /// </summary>

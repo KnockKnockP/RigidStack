@@ -1,7 +1,5 @@
-namespace Ninja.WebSockets.Internal
-{
-    internal enum WebSocketOpCode
-    {
+namespace Ninja.WebSockets.Internal {
+    internal enum WebSocketOpCode {
         ContinuationFrame = 0,
         TextFrame = 1,
         BinaryFrame = 2,

@@ -4,13 +4,11 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ninja.WebSockets
-{
+namespace Ninja.WebSockets {
     /// <summary>
     /// Web socket client factory used to open web socket client connections
     /// </summary>
-    public interface IWebSocketClientFactory
-    {
+    public interface IWebSocketClientFactory {
         /// <summary>
         /// Connect with default options
         /// </summary>

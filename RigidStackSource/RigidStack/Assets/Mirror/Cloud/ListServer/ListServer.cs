@@ -1,26 +1,24 @@
 using System;
 using UnityEngine.Events;
 
-namespace Mirror.Cloud.ListServerService
-{
-    public sealed class ListServer
-    {
+namespace Mirror.Cloud.ListServerService {
+    public sealed class ListServer {
         public readonly IListServerServerApi ServerApi;
         public readonly IListServerClientApi ClientApi;
 
-        public ListServer(IListServerServerApi serverApi, IListServerClientApi clientApi)
-        {
+        public ListServer(IListServerServerApi serverApi, IListServerClientApi clientApi) {
             ServerApi = serverApi ?? throw new ArgumentNullException(nameof(serverApi));
             ClientApi = clientApi ?? throw new ArgumentNullException(nameof(clientApi));
         }
     }
 
-    public interface IListServerServerApi : IBaseApi
-    {
+    public interface IListServerServerApi : IBaseApi {
         /// <summary>
         /// Has a server been added to the list with this connection
         /// </summary>
-        bool ServerInList { get; }
+        bool ServerInList {
+            get;
+        }
         /// <summary>
         /// Add a server to the list
         /// </summary>
@@ -42,8 +40,7 @@ namespace Mirror.Cloud.ListServerService
         void RemoveServer();
     }
 
-    public interface IListServerClientApi : IBaseApi
-    {
+    public interface IListServerClientApi : IBaseApi {
         /// <summary>
         /// Called when the server list is updated
         /// </summary>

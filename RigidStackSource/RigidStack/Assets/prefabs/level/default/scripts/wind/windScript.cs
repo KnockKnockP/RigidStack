@@ -6,23 +6,23 @@ public class windScript : MonoBehaviour {
 
     private void Start() {
         switch (LoadedPlayerData.playerData.difficulty) {
-            case (Difficulty.Sandbox) : {
+            case (Difficulty.Sandbox): {
                 windStrength = 0.001f;
                 break;
             }
-            case (Difficulty.Easy) : {
+            case (Difficulty.Easy): {
                 windStrength = 0.01f;
                 break;
             }
-            case (Difficulty.Moderate) : {
+            case (Difficulty.Moderate): {
                 windStrength = 0.05f;
                 break;
             }
-            case (Difficulty.Difficult) : {
+            case (Difficulty.Difficult): {
                 windStrength = 0.1f;
                 break;
             }
-            case (Difficulty.Extreme) : {
+            case (Difficulty.Extreme): {
                 windStrength = 0.2f;
                 break;
             }

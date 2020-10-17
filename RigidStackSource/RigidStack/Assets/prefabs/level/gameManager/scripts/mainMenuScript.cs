@@ -27,11 +27,11 @@ public class mainMenuScript : MonoBehaviour {
     }
 
     private void limitFPS() {
-        #if UNITY_EDITOR
-            QualitySettings.vSyncCount = 0;
-        #else
+#if UNITY_EDITOR
+        QualitySettings.vSyncCount = 0;
+#else
             Application.targetFrameRate = (Screen.currentResolution.refreshRate * 2);
-        #endif
+#endif
         return;
     }
 

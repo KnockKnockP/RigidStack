@@ -22,10 +22,8 @@
 
 using System;
 
-namespace Ninja.WebSockets.Internal
-{
-    internal static class WebSocketFrameCommon
-    {
+namespace Ninja.WebSockets.Internal {
+    internal static class WebSocketFrameCommon {
         public const int MaskKeyLength = 4;
 
         /// <summary>
@@ -35,10 +33,8 @@ namespace Ninja.WebSockets.Internal
         /// </summary>
         /// <param name="maskKey">The 4 byte mask key</param>
         /// <param name="payload">The payload to mutate</param>
-        public static void ToggleMask(ArraySegment<byte> maskKey, ArraySegment<byte> payload)
-        {
-            if (maskKey.Count != MaskKeyLength)
-            {
+        public static void ToggleMask(ArraySegment<byte> maskKey, ArraySegment<byte> payload) {
+            if (maskKey.Count != MaskKeyLength) {
                 throw new Exception($"MaskKey key must be {MaskKeyLength} bytes");
             }
 
@@ -51,8 +47,7 @@ namespace Ninja.WebSockets.Internal
             // apply the mask key (this is a reversible process so no need to copy the payload)
             // NOTE: this is a hot function
             // TODO: make this faster
-            for (int i = payloadOffset; i < payloadCount; i++)
-            {
+            for (int i = payloadOffset; i < payloadCount; i++) {
                 // index should start at zero
                 int payloadIndex = i - payloadOffset;
                 int maskKeyIndex = maskKeyOffset + (payloadIndex % MaskKeyLength);

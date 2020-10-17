@@ -17,7 +17,7 @@ public class backgroundManager : MonoBehaviour {
     [SerializeField] private DayBackgrounds dayBackgrounds = null;
 
     private void Start() {
-        #if !UNITY_EDITOR
+#if !UNITY_EDITOR
             if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
                 GameObject globalLight = new GameObject("Global light.");
                 Light2D light2D = globalLight.AddComponent<Light2D>();
@@ -26,17 +26,17 @@ public class backgroundManager : MonoBehaviour {
                 Destroy(this);
                 return;
             }
-        #endif
+#endif
         setBackground();
-        #if UNITY_EDITOR
-            if (forceMorning == true) {
-                background = dayBackgrounds.morningBackground;
-            } else if (forceAfternoon == true) {
-                background = dayBackgrounds.afternoonBackground;
-            } else if (forceNight == true) {
-                background = dayBackgrounds.nightBackground;
-            }
-        #endif
+#if UNITY_EDITOR
+        if (forceMorning == true) {
+            background = dayBackgrounds.morningBackground;
+        } else if (forceAfternoon == true) {
+            background = dayBackgrounds.afternoonBackground;
+        } else if (forceNight == true) {
+            background = dayBackgrounds.nightBackground;
+        }
+#endif
         generateStaticBackgrounds();
         StartCoroutine(generateDynamicBackgrounds());
         return;

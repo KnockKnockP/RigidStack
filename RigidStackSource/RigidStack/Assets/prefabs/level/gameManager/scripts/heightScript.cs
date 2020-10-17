@@ -57,23 +57,23 @@ public class heightScript : NetworkBehaviour {
         _objectScript = FindObjectOfType<objectScript>();
         _objectiveScript = FindObjectOfType<objectiveScript>();
         switch (LoadedPlayerData.playerData.difficulty) {
-            case (Difficulty.Sandbox) : {
+            case (Difficulty.Sandbox): {
                 tolerance = 0.1f;
                 break;
             }
-            case (Difficulty.Easy) : {
+            case (Difficulty.Easy): {
                 tolerance = 0.01f;
                 break;
             }
-            case (Difficulty.Moderate) : {
+            case (Difficulty.Moderate): {
                 tolerance = 0.001f;
                 break;
             }
-            case (Difficulty.Difficult) : {
+            case (Difficulty.Difficult): {
                 tolerance = 0.0001f;
                 break;
             }
-            case (Difficulty.Extreme) : {
+            case (Difficulty.Extreme): {
                 tolerance = 0f;
                 break;
             }
