@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
     //Variables for dragging and dropping the object.
     private bool isDragging, isClientThatPlacedTheObject;
-    //TODO : Sync this variable.
     private static short spriteOrder = 1;
     private dragAndDropImageScript _dragAndDropImageScript;
     private heightScript _heightScript;
@@ -75,11 +74,8 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         GameObject _gameObject = NetworkIdentity.spawned[id].gameObject;
         if (isClientThatPlacedTheObject == false) {
             Destroy(_gameObject.GetComponent<postDragAndDropScript>());
-        } else {
-            isClientThatPlacedTheObject = false;
         }
         _gameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-        _gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
         _gameObject.GetComponent<SpriteRenderer>().sortingOrder = spriteOrder;
         if (_gameObject.name.Contains("television") == true) {
             _gameObject.GetComponent<televisionScript>().videoPlayerSpriteRenderer.sortingOrder = spriteOrder;
@@ -107,7 +103,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     #endregion
 
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
-        if ((_dragAndDropImageScript.objectCount != 0) && (isDragging == true)) {
+        if (isDragging == true) {
             enableObjectEditingPanel();
             isDragging = false;
         }
@@ -132,7 +128,10 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         GameObject _gameObject = NetworkIdentity.spawned[id].gameObject;
         _gameObject.transform.position = new Vector3(_gameObject.transform.position.x, _gameObject.transform.position.y, 0);
         if (isClientThatPlacedTheObject == true) {
-            _gameObject.GetComponent<postDragAndDropScript>().suicide();
+            postDragAndDropScript _postDragAndDropScript = _gameObject.GetComponent<postDragAndDropScript>();
+            _postDragAndDropScript.thisGameObject = null;
+            Destroy(_postDragAndDropScript);
+            isClientThatPlacedTheObject = false;
         }
 
         _heightScript.placedObjects.Add(_gameObject);

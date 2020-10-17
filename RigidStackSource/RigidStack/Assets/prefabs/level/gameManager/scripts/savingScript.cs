@@ -115,7 +115,7 @@ public class savingScript : MonoBehaviour {
 
     //Variables for the profiles menu.
     private bool hasLoadedProfileListOnStart;
-    private static readonly string defaultProfileName = "Default";
+    private const string defaultProfileName = "Default";
     private static string lastlySelectedProfileName = defaultProfileName;
     [Header("Profiles menu.")]
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;

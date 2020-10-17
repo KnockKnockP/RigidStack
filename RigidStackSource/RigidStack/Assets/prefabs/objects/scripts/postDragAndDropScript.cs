@@ -6,7 +6,7 @@ public class postDragAndDropScript : NetworkBehaviour {
     public static bool isCollisionFishy;
     private objectEditingScript _objectEditingScript;
     //The object we are going to manipulate.
-    private GameObject thisGameObject;
+    [HideInInspector] public GameObject thisGameObject;
 
     private void Awake() {
         _objectEditingScript = FindObjectOfType<objectEditingScript>();
@@ -41,22 +41,4 @@ public class postDragAndDropScript : NetworkBehaviour {
         return;
     }
     #endregion
-
-    public void suicide() {
-        commandSuicide();
-        return;
-    }
-
-    [Command(ignoreAuthority = true)]
-    private void commandSuicide() {
-        clientRPCSuicide();
-        return;
-    }
-
-    [ClientRpc]
-    private void clientRPCSuicide() {
-        thisGameObject = null;
-        Destroy(this);
-        return;
-    }
 }
