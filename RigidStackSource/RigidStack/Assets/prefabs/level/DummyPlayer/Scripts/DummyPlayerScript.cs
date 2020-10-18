@@ -6,10 +6,13 @@ public class DummyPlayerScript : NetworkBehaviour {
     public static GameObject player;
 
     private void Start() {
-        if (gameObject.GetComponent<NetworkIdentity>().isLocalPlayer == true) {
+        NetworkIdentity _networkIdentity = GetComponent<NetworkIdentity>();
+        if (_networkIdentity.isLocalPlayer == true) {
             player = gameObject;
-            networkIdentity = player.GetComponent<NetworkIdentity>();
+            networkIdentity = _networkIdentity;
+            gameObject.name = (LoadedPlayerData.playerData.name + "'s player.");
         }
+        DontDestroyOnLoad(gameObject);
         return;
     }
 }

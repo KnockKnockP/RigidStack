@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
-public class pauseScript : MonoBehaviour {
+public class pauseScript : NetworkBehaviour {
     //Variables for pausing the game.
     private bool isPaused;
     [SerializeField] private GameObject pauseMenuPanel = null;
@@ -25,14 +26,30 @@ public class pauseScript : MonoBehaviour {
     }
 
     public void toMainMenu() {
-        FindObjectOfType<loadSceneScript>().loadScene(SceneNames.MainMenu);
+        loadSceneScript.loadScene(SceneNames.MainMenu);
+        stopConnection(true);
         return;
     }
 
     public void exit() {
         FindObjectOfType<savingScript>().save();
+        stopConnection(false);
         Application.Quit();
         Debug.Log("Exited the game.");
+        return;
+    }
+
+    private void stopConnection(bool destroy) {
+        if (NetworkManager.singleton.isNetworkActive == true) {
+            if (isServer == true) {
+                NetworkManager.singleton.StopHost();
+            } else if (isClientOnly == true) {
+                NetworkManager.singleton.StopClient();
+            }
+            if (destroy == true) {
+                Destroy(NetworkManager.singleton.gameObject);
+            }
+        }
         return;
     }
 }

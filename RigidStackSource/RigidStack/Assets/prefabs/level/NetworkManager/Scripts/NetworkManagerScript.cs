@@ -1,71 +1,36 @@
 ﻿using Mirror;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
+using System.Net;
+using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class NetworkManagerScript : NetworkBehaviour {
-    //Variables for determining the game mode.
-    public static bool isMultiplayerGame = false, isCoop = false;
-
-    //Variables for hosting the server.
-    private static ushort usablePort;
-    private NetworkManager networkManager;
+public class NetworkManagerScript : MonoBehaviour {
+    //A variable for determining the game mode.
+    public static bool isMultiplayerGame = false;
 
     private void Awake() {
-        usablePort = (ushort)(GetAvailablePort(1024));
-        Debug.Log("Found usuable port : " + usablePort);
-        //usablePort = 1024; Debug.LogWarning("Remove or comment this line out.");
+        SceneManager.sceneLoaded += sceneChanged;
+        return;
+    }
 
-        GetComponent<TelepathyTransport>().port = usablePort;
-        networkManager = FindObjectOfType<NetworkManager>();
-        if (isMultiplayerGame == true) {
-        } else {
-            GetComponent<NetworkManagerHUD>().enabled = false;
+    private void sceneChanged(Scene scene, LoadSceneMode loadSceneMode) {
+        if ((scene.name == SceneNames.Level) && (isMultiplayerGame == false)) {
+            NetworkManager networkManager = NetworkManager.singleton;
+            if (networkManager.isNetworkActive == true) {
+                /*
+                    Should I stop the host or the client?
+                    I have no fucking idea.
+                 */
+                networkManager.StopHost();
+            }
+            networkManager.GetComponent<TelepathyTransport>().port = GetAvailablePort();
             networkManager.StartHost();
         }
         return;
     }
 
-    private void OnDestroy() {
-        stopServer();
-        return;
-    }
-
-    private void OnApplicationQuit() {
-        stopServer();
-        return;
-    }
-
-    private void stopServer() {
-        if ((networkManager != null) && (networkManager.isNetworkActive == true)) {
-            networkManager.StopHost();
-        }
-        return;
-    }
-
-    //https://gist.github.com/jrusbatch/4211535#gistcomment-2754532
-    private static int GetAvailablePort(int startingPort) {
-#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-        IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-        IEnumerable<int> tcpConnectionPorts = ipGlobalProperties.GetActiveTcpConnections()
-                                                                                          .Where(n => n.LocalEndPoint.Port >= startingPort)
-                                                                                          .Select(n => n.LocalEndPoint.Port);
-        IEnumerable<int> tcpListenerPorts = ipGlobalProperties.GetActiveTcpListeners()
-                                                                                      .Where(n => n.Port >= startingPort)
-                                                                                      .Select(n => n.Port);
-        IEnumerable<int> udpListenerPorts = ipGlobalProperties.GetActiveUdpListeners()
-                                                                                      .Where(n => n.Port >= startingPort)
-                                                                                      .Select(n => n.Port);
-        int port = Enumerable.Range(startingPort, ushort.MaxValue)
-                                                                  .Where(i => !tcpConnectionPorts.Contains(i))
-                                                                  .Where(i => !tcpListenerPorts.Contains(i))
-                                                                  .Where(i => !udpListenerPorts.Contains(i))
-                                                                  .FirstOrDefault();
-        return port;
-#else
-        UdpClient udp = new UdpClient(0, AddressFamily.InterNetwork);
-        return ((IPEndPoint)(udp.Client.LocalEndPoint)).Port;
-#endif
+    //https://gist.github.com/jrusbatch/4211535#gistcomment-3437695
+    public static ushort GetAvailablePort() {
+        return (ushort)(((IPEndPoint)(new UdpClient(0, AddressFamily.InterNetwork).Client.LocalEndPoint)).Port);
     }
 }

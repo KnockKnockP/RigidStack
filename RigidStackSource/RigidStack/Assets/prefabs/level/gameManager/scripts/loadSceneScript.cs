@@ -11,7 +11,7 @@ public static class SceneNames {
 }
 
 public class loadSceneScript : MonoBehaviour {
-    public void loadScene(string sceneName) {
+    public static void loadScene(string sceneName) {
         Time.timeScale = 1f;
         heightScript _heightScript = FindObjectOfType<heightScript>();
         if (_heightScript != null) {
@@ -23,12 +23,6 @@ public class loadSceneScript : MonoBehaviour {
 
     public void loadLevel() {
         NetworkManagerScript.isMultiplayerGame = false;
-        loadScene(SceneNames.Level);
-        return;
-    }
-
-    public void loadMultiplayerLevel() {
-        NetworkManagerScript.isMultiplayerGame = true;
         loadScene(SceneNames.Level);
         return;
     }
