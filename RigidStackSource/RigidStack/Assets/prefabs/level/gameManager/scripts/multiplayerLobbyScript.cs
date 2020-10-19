@@ -92,6 +92,10 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     public void joinMultiplayerLobby(InputField inputField) {
         usuablePort = ushort.Parse(inputField.text);
         telepathyTransport.port = usuablePort;
+        NetworkIdentity[] networkIdentities = FindObjectsOfType<NetworkIdentity>();
+        foreach (NetworkIdentity networkIdentity in networkIdentities) {
+            networkIdentity.gameObject.SetActive(false);
+        }
         networkManager.StartClient();
         return;
     }

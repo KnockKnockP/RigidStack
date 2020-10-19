@@ -33,7 +33,9 @@ public class pauseScript : NetworkBehaviour {
 
     public void exit() {
         FindObjectOfType<savingScript>().save();
-        stopConnection(false);
+        if (NetworkManager.singleton != null) {
+            stopConnection(false);
+        }
         Application.Quit();
         Debug.Log("Exited the game.");
         return;

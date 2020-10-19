@@ -17,7 +17,11 @@ public class NetworkManagerScript : MonoBehaviour {
     }
 
     private void Start() {
-        if (SceneManager.GetActiveScene().name == SceneNames.MainMenu) {
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == SceneNames.preMainMenu) {
+            scriptCrammer.SetActive(true);
+            Destroy(gameObject);
+        } else if (sceneName == SceneNames.MainMenu) {
             scriptCrammer.SetActive(true);
         }
         return;
