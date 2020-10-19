@@ -8,8 +8,18 @@ public class NetworkManagerScript : MonoBehaviour {
     //A variable for determining the game mode.
     public static bool isMultiplayerGame = false;
 
+    //A variable for setting up the main menu.
+    [SerializeField] private GameObject scriptCrammer = null;
+
     private void Awake() {
         SceneManager.sceneLoaded += sceneChanged;
+        return;
+    }
+
+    private void Start() {
+        if (SceneManager.GetActiveScene().name == SceneNames.MainMenu) {
+            scriptCrammer.SetActive(true);
+        }
         return;
     }
 

@@ -16,7 +16,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [SerializeField] private Dropdown selectPlayerDropdownMenu = null;
     [SerializeField] private GameObject lobbyPanel = null;
 
-    private void Awake() {
+    private void Start() {
         telepathyTransport = FindObjectOfType<TelepathyTransport>();
         networkManager = FindObjectOfType<NetworkManager>();
         return;
