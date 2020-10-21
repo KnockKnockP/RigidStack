@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -42,14 +43,31 @@ public class NetworkManagerScript : MonoBehaviour {
             if (networkManager.isNetworkActive == true) {
                 networkManager.StopHost();
             }
-            networkManager.GetComponent<TelepathyTransport>().port = GetAvailablePort();
+            networkManager.GetComponent<TelepathyTransport>().port = getAvailablePort();
             networkManager.StartHost();
         }
         return;
     }
 
+    //https://gamedev.stackexchange.com/a/161776/
+    public static string getIP() {
+        foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces()) {
+            if ((networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211) || (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)) {
+                foreach (UnicastIPAddressInformation unicastIPAddressInformation in networkInterface.GetIPProperties().UnicastAddresses) {
+                    if (unicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork) {
+                        string ipString = unicastIPAddressInformation.Address.ToString();
+                        if (ipString.StartsWith("192.168")) {
+                            return ipString;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     //https://gist.github.com/jrusbatch/4211535#gistcomment-3437695
-    public static ushort GetAvailablePort() {
+    public static ushort getAvailablePort() {
         return (ushort)(((IPEndPoint)(new UdpClient(0, AddressFamily.InterNetwork).Client.LocalEndPoint)).Port);
     }
 }
