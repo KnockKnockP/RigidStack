@@ -11,18 +11,27 @@ public class NetworkManagerScript : MonoBehaviour {
     //A variable for setting up the main menu.
     [SerializeField] private GameObject scriptCrammer = null;
 
+    //A variable for managing scenes.
+    private static bool hasAddedAnEvent = false;
+
     private void Awake() {
-        SceneManager.sceneLoaded += sceneChanged;
+        if (hasAddedAnEvent == false) {
+            SceneManager.sceneLoaded += sceneChanged;
+            hasAddedAnEvent = true;
+        }
         return;
     }
 
     private void Start() {
         string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == SceneNames.preMainMenu) {
+        if (sceneName == SceneNames.MainMenu) {
+            scriptCrammer.SetActive(true);
+        } else if (sceneName != SceneNames.Level) {
+            foreach (NetworkManager networkManager in FindObjectsOfType<NetworkManager>()) {
+                Destroy(networkManager.gameObject);
+            }
             scriptCrammer.SetActive(true);
             Destroy(gameObject);
-        } else if (sceneName == SceneNames.MainMenu) {
-            scriptCrammer.SetActive(true);
         }
         return;
     }
@@ -31,10 +40,6 @@ public class NetworkManagerScript : MonoBehaviour {
         if ((scene.name == SceneNames.Level) && (isMultiplayerGame == false)) {
             NetworkManager networkManager = NetworkManager.singleton;
             if (networkManager.isNetworkActive == true) {
-                /*
-                    Should I stop the host or the client?
-                    I have no fucking idea.
-                 */
                 networkManager.StopHost();
             }
             networkManager.GetComponent<TelepathyTransport>().port = GetAvailablePort();
