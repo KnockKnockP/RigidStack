@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,7 @@ using UnityEngine.UI;
 public class multiplayerLobbyScript : NetworkBehaviour {
     //Variables for maintaining the lobby.
     private ushort usuablePort;
+    private string disconnectedReason = "No reason.";
     private List<string> playerNames = new List<string>();
     private TelepathyTransport telepathyTransport;
     private NetworkManager networkManager;
@@ -72,18 +74,28 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [Command(ignoreAuthority = true)]
     private void commandUpdatePlayerList(string playerName) {
+        //Removing all null names. (Player names that have disconnected.).
         List<string> temp = new List<string>();
-        foreach (string _playerName in playerNames) {
-            if (_playerName != null) {
-                temp.Add(_playerName);
+        foreach (string name in playerNames) {
+            if (name != null) {
+                temp.Add(name);
             }
         }
-        playerNames = temp;
+        //Adding the new player name if it is not null.
         if (playerName != null) {
-            playerNames.Add(playerName);
+            temp.Add(playerName);
+        }
+        playerNames.Clear();
+        playerNames = temp;
+        //List to put it on the dropdown menu. (Excluding the host.).
+        List<string> temp2 = new List<string>();
+        foreach (string name in temp) {
+            if (name != LoadedPlayerData.playerData.name) {
+                temp2.Add(name);
+            }
         }
         selectPlayerDropdownMenu.ClearOptions();
-        selectPlayerDropdownMenu.AddOptions(playerNames);
+        selectPlayerDropdownMenu.AddOptions(temp2);
         return;
     }
     #endregion
@@ -107,55 +119,53 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             startButton.gameObject.SetActive(true);
             kickButton.gameObject.SetActive(true);
             selectPlayerDropdownMenu.gameObject.SetActive(true);
-        } else if (isClientOnly == true) {
-            commandUpdatePlayerList(LoadedPlayerData.playerData.name);
+            playerNames.Add(LoadedPlayerData.playerData.name);
         }
+        StartCoroutine(waitForNameCheckingToEnd());
         lobbyPanel.SetActive(true);
         return;
     }
-    #endregion
 
-    #region Exiting the joined multiplayer lobby.
-    public void exitMultiplayerLobby() {
-        if (isServer == true) {
-            commandCancelMultiplayerLobby();
-        } else if (isClientOnly == true) {
-            commandUpdateTexts(true);
-            networkManager.StopClient();
+    private IEnumerator waitForNameCheckingToEnd() {
+        while (true) {
+            if (DummyPlayerScript.didNameChecking == true) {
+                commandUpdatePlayerList(LoadedPlayerData.playerData.name);
+                break;
+            }
+            yield return null;
+        }
+        yield return null;
+    }
+
+    [Command(ignoreAuthority = true)]
+    public void commandNameCheck(string playerName, NetworkIdentity networkIdentity) {
+        foreach (string name in playerNames) {
+            if (playerName == name) {
+                targetRPCDisconnect(networkIdentity.connectionToClient);
+                return;
+            }
         }
         return;
     }
-    #endregion
 
-    #region Cancelling the multiplayer lobby.
-    [Command(ignoreAuthority = true)]
-    private void commandCancelMultiplayerLobby() {
-        clientRPCCancelMultiplayerLobby();
-        networkManager.StopHost();
-        return;
-    }
-
-    [ClientRpc(excludeOwner = true)]
-    private void clientRPCCancelMultiplayerLobby() {
-        networkManager.StopClient();
+    [TargetRpc]
+    private void targetRPCDisconnect(NetworkConnection networkConnection) {
+        _ = networkConnection;
+        disconnectedReason = "Duplicate name found in the lobby.";
+        exitMultiplayerLobby();
         lobbyPanel.SetActive(false);
+        //TODO : Make an error popup.
         return;
     }
     #endregion
 
-    #region Kicking a player.
-    [Server]
-    public void kickPlayer() {
-        getKicked(playerNames[selectPlayerDropdownMenu.value]);
-        return;
-    }
-
-    [ClientRpc]
-    private void getKicked(string playerNameToKick) {
-        if (LoadedPlayerData.playerData.name == playerNameToKick) {
-            commandRemoveName(playerNameToKick);
+    #region Exiting the multiplayer lobby.
+    public void exitMultiplayerLobby() {
+        if (isServer == true) {
+            cancelMultiplayerLobby();
+        } else if (isClientOnly == true) {
             commandUpdateTexts(true);
-            lobbyPanel.SetActive(false);
+            commandRemoveName(LoadedPlayerData.playerData.name);
             networkManager.StopClient();
         }
         return;
@@ -170,6 +180,43 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             }
         }
         commandUpdatePlayerList(null);
+        return;
+    }
+    #endregion
+
+    #region Cancelling the multiplayer lobby.
+    [Server]
+    private void cancelMultiplayerLobby() {
+        clientRPCCancelMultiplayerLobby();
+        networkManager.StopHost();
+        lobbyPanel.SetActive(false);
+        return;
+    }
+
+    [ClientRpc(excludeOwner = true)]
+    private void clientRPCCancelMultiplayerLobby() {
+        networkManager.StopClient();
+        lobbyPanel.SetActive(false);
+        return;
+    }
+    #endregion
+
+    #region Kicking a player.
+    [Server]
+    public void kickPlayer() {
+        getKicked(selectPlayerDropdownMenu.captionText.text);
+        return;
+    }
+
+    [ClientRpc]
+    private void getKicked(string playerNameToKick) {
+        if (LoadedPlayerData.playerData.name == playerNameToKick) {
+            commandRemoveName(playerNameToKick);
+            commandUpdateTexts(true);
+            lobbyPanel.SetActive(false);
+            disconnectedReason = "Kicked by the host.";
+            exitMultiplayerLobby();
+        }
         return;
     }
     #endregion
