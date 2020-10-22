@@ -1,35 +1,44 @@
 ﻿using Mirror;
+using Mirror.Discovery;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class multiplayerLobbyScript : NetworkBehaviour {
+    private class MultiplayerLobby {
+        public int index = -1;
+        public string serverName = "Unnamed.";
+        public ServerResponse serverResponse = null;
+    }
+
     //Variables for maintaining the lobby.
     private bool lobbyStarted;
-    private ushort usuablePort;
     private string disconnectedReason = "No reason.";
     private List<string> playerNames = new List<string>();
+    private readonly Dictionary<long, MultiplayerLobby> discoveredServers = new Dictionary<long, MultiplayerLobby>();
     private TelepathyTransport telepathyTransport;
     private NetworkManager networkManager;
+    private NetworkDiscovery networkDiscovery;
 
     //Variables for maintaining the lobby user interface.
-    [SerializeField] private Text roomCodeText = null, statusText = null;
+    [SerializeField] private Text statusText = null, IPText = null;
     [SerializeField] private Button startButton = null, kickButton = null;
-    [SerializeField] private Dropdown selectPlayerDropdownMenu = null;
+    [SerializeField] private Dropdown selectPlayerDropdownMenu = null, serverDropdownMenu = null;
     [SerializeField] private GameObject lobbyPanel = null;
 
     private void Start() {
         telepathyTransport = FindObjectOfType<TelepathyTransport>();
         networkManager = FindObjectOfType<NetworkManager>();
+        networkDiscovery = FindObjectOfType<NetworkDiscovery>();
         return;
     }
 
     public void createLobby() {
-        networkManager.networkAddress = NetworkManagerScript.getIP();
-        ushort usablePort = NetworkManagerScript.getAvailablePort();
-        telepathyTransport.port = usablePort;
+        telepathyTransport.port = NetworkManagerScript.getAvailablePort();
         networkManager.StartHost();
+        networkDiscovery.AdvertiseServer();
         return;
     }
 
@@ -60,12 +69,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [ClientRpc]
     private void clientRPCUpdateTexts(byte joinedPlayers) {
-        updateTexts(joinedPlayers);
-        return;
-    }
-
-    private void updateTexts(byte joinedPlayers) {
-        roomCodeText.text = ("Room code : " + telepathyTransport.port);
         if (joinedPlayers > 1) {
             statusText.text = ("Ready to start. (" + joinedPlayers + " / " + networkManager.maxConnections + ".).");
         } else {
@@ -103,14 +106,45 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #endregion
 
     #region Joining the multiplayer lobby.
-    public void joinMultiplayerLobby(InputField inputField) {
-        usuablePort = ushort.Parse(inputField.text);
-        telepathyTransport.port = usuablePort;
+    public void addServerResponce(ServerResponse serverResponse) {
+        string name = serverResponse.EndPoint.Address.ToString();
+        discoveredServers[serverResponse.serverId] = new MultiplayerLobby() {
+            index = discoveredServers.Count,
+            serverName = name,
+            serverResponse = serverResponse
+        };
+        List<string> temp = new List<string> {
+            name
+        };
+        serverDropdownMenu.AddOptions(temp);
+        return;
+    }
+
+    public void refreshServers() {
+        serverDropdownMenu.ClearOptions();
+        discoveredServers.Clear();
+        networkDiscovery.StartDiscovery();
+        return;
+    }
+
+    public void joinMultiplayerLobby() {
+        int index = serverDropdownMenu.value;
+        Uri uri = null;
+        foreach (MultiplayerLobby multiplayerLobby in discoveredServers.Values) {
+            if (multiplayerLobby.index == index) {
+                uri = multiplayerLobby.serverResponse.uri;
+                break;
+            }
+        }
+        if (uri == null) {
+            //TODO : Make an error popup.
+            return;
+        }
         NetworkIdentity[] networkIdentities = FindObjectsOfType<NetworkIdentity>();
         foreach (NetworkIdentity networkIdentity in networkIdentities) {
             networkIdentity.gameObject.SetActive(false);
         }
-        networkManager.StartClient();
+        networkManager.StartClient(uri);
         return;
     }
 
@@ -128,6 +162,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         if (isClientOnly == true) {
             StartCoroutine(waitForValidationsToEnd());
         }
+        IPText.text = networkManager.networkAddress;
         lobbyPanel.SetActive(true);
         return;
     }
@@ -135,7 +170,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     private IEnumerator waitForValidationsToEnd() {
         while (true) {
             if (DummyPlayerScript.loadedAllThings == true) {
-                Debug.LogWarning("waitForValidationsToEnd networkIdentity = " + DummyPlayerScript.networkIdentity);
                 commandNameCheck(LoadedPlayerData.playerData.name, DummyPlayerScript.networkIdentity);
                 commandCheckLobbyHasStarted(DummyPlayerScript.networkIdentity);
                 commandUpdatePlayerList(LoadedPlayerData.playerData.name);
@@ -148,7 +182,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [Command(ignoreAuthority = true)]
     public void commandNameCheck(string playerName, NetworkIdentity networkIdentity) {
-        Debug.LogWarning("commandNameCheck networkIdentity = " + networkIdentity);
         foreach (string name in playerNames) {
             if (playerName == name) {
                 targetRPCDisconnect(networkIdentity.connectionToClient, "Duplicate name found in the lobby.");

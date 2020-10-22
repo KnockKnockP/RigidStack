@@ -1876,7 +1876,7 @@ RectTransform:
   - {fileID: 2042322668}
   - {fileID: 262530172}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1959,6 +1959,8 @@ PrefabInstance:
     - {fileID: 6904283737170093539, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
     - {fileID: 6904283737170093564, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
     - {fileID: 6904283737170093565, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
+    - {fileID: 5524674476979154845, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
+    - {fileID: 609209648822392532, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
 --- !u!1 &856311730
 GameObject:
