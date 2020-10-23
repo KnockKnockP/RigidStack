@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 6904283737170093539}
   - component: {fileID: 609209648822392532}
   - component: {fileID: 5524674476979154845}
+  - component: {fileID: 1020843340}
+  - component: {fileID: 1020843339}
   - component: {fileID: 5481702614048272607}
   m_Layer: 0
   m_Name: NetworkManager
@@ -55,7 +57,7 @@ MonoBehaviour:
   serverTickRate: 10
   offlineScene: 
   onlineScene: 
-  transport: {fileID: 6904283737170093564}
+  transport: {fileID: 1020843339}
   networkAddress: 127.0.0.1
   maxConnections: 5
   disconnectInactiveConnections: 0
@@ -177,6 +179,95 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkDiscovery: {fileID: 609209648822392532}
+--- !u!114 &1020843340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6904283737170093537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2b44c570cb28644b8762e0b13e7c23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  address: 127.0.0.1
+  port: 4296
+  noDelay: 0
+  autoConnect: 0
+  invokeFromDispatcher: 1
+  sniffData: 0
+  objectCacheSettings:
+    maxWriters: 2
+    maxReaders: 2
+    maxMessages: 4
+    maxMessageBuffers: 4
+    maxSocketAsyncEventArgs: 32
+    maxActionDispatcherTasks: 16
+    maxAutoRecyclingArrays: 4
+    extraSmallMemoryBlockSize: 16
+    maxExtraSmallMemoryBlocks: 2
+    smallMemoryBlockSize: 64
+    maxSmallMemoryBlocks: 2
+    mediumMemoryBlockSize: 256
+    maxMediumMemoryBlocks: 2
+    largeMemoryBlockSize: 1024
+    maxLargeMemoryBlocks: 2
+    extraLargeMemoryBlockSize: 4096
+    maxExtraLargeMemoryBlocks: 2
+    maxMessageReceivedEventArgs: 4
+--- !u!114 &1020843339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6904283737170093537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c080dc3450b727418b7ddb4e0fc10f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClientConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  relayIP: 34.72.21.213
+  relayPort: 4296
+  forceRelayTraffic: 0
+  relayPassword: 
+  maxServerPlayers: 5
+  serverName: Server.
+  extraServerData: RigidStack
+  showOnServerList: 1
+  showDebugLogs: 0
+  serverListUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+  isAuthenticated: 0
+  useWebsockets: 0
+  serverID: 0
+  directConnectTimeout: 5
 --- !u!114 &5481702614048272607
 MonoBehaviour:
   m_ObjectHideFlags: 0
