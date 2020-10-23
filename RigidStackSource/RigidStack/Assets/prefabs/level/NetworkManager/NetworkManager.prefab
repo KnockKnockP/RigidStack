@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 6904283737170093565}
   - component: {fileID: 6904283737170093564}
   - component: {fileID: 6904283737170093539}
-  - component: {fileID: 609209648822392532}
-  - component: {fileID: 5524674476979154845}
   - component: {fileID: 5481702614048272607}
   m_Layer: 0
   m_Name: NetworkManager
@@ -133,50 +131,6 @@ MonoBehaviour:
   showGUI: 1
   offsetX: 75
   offsetY: 0
---- !u!114 &609209648822392532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6904283737170093537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c761308e733c51245b2e8bb4201f46dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  secretHandshake: 1334905579129537376
-  serverBroadcastListenPort: 47777
-  ActiveDiscoveryInterval: 3
-  transport: {fileID: 0}
-  OnServerFound:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: multiplayerLobbyScript, Assembly-CSharp
-        m_MethodName: addServerResponce
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &5524674476979154845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6904283737170093537}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88c37d3deca7a834d80cfd8d3cfcc510, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  networkDiscovery: {fileID: 609209648822392532}
 --- !u!114 &5481702614048272607
 MonoBehaviour:
   m_ObjectHideFlags: 0
