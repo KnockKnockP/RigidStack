@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using UnityEngine;
 
 public class postDragAndDropScript : NetworkBehaviour {
@@ -6,7 +7,7 @@ public class postDragAndDropScript : NetworkBehaviour {
     public static bool isCollisionFishy;
     private objectEditingScript _objectEditingScript;
     //The object we are going to manipulate.
-    [HideInInspector] public GameObject thisGameObject;
+    [NonSerialized] public GameObject thisGameObject;
 
     private void Awake() {
         _objectEditingScript = FindObjectOfType<objectEditingScript>();

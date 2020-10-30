@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,7 +14,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     private uint placedGameObjectNetId;
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
     //The object the player can place using this drag and drop image.
-    [HideInInspector] public GameObject objectToPlace, placedGameObject;
+    [NonSerialized] public GameObject objectToPlace, placedGameObject;
 
     private void Start() {
         _dragAndDropImageScript = dragAndDropImageGameobject.GetComponent<dragAndDropImageScript>();

@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Video;
 
 public class televisionScript : MonoBehaviour {
     //Variables to control the video.
-    [HideInInspector] public VideoPlayer videoPlayer;
-    [HideInInspector] public SpriteRenderer videoPlayerSpriteRenderer;
+    [NonSerialized] public VideoPlayer videoPlayer;
+    [NonSerialized] public SpriteRenderer videoPlayerSpriteRenderer;
 
     private void Awake() {
         videoPlayer = GetComponentInChildren<VideoPlayer>();

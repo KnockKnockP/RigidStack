@@ -19,6 +19,7 @@
 */
 
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,7 +29,7 @@ public class heightScript : NetworkBehaviour {
     //Variables for height counting.
     private readonly byte maxFrameChecking = 5;
     private byte frameCount;
-    [HideInInspector] public float tolerance = 0.1f;
+    [NonSerialized] public float tolerance = 0.1f;
     /*
         PlayerData.maxHeight is the maximum score for the account's life time, it is also equal to the old objective score.
         currentGameMaxHeight is the maximum score for the single session of the game.
@@ -37,14 +38,14 @@ public class heightScript : NetworkBehaviour {
         It looks like I marked this variable as static just to make it easier to access it from other scripts.
         Now I will have to manually reset this stupid ass fucking value.
     */
-    [HideInInspector] public int currentGameMaxHeight = 0;
+    [NonSerialized] public int currentGameMaxHeight = 0;
     private objectScript _objectScript;
 
     //Variables for tracking placed objects.
     private GameObject previousFrameGameObject;
-    [HideInInspector] public List<Transform> placedObjectsTransforms = new List<Transform>();
-    [HideInInspector] public List<Rigidbody2D> placedObjectsRigidbody2D = new List<Rigidbody2D>();
-    [HideInInspector] public List<GameObject> placedObjects = new List<GameObject>();
+    [NonSerialized] public List<Transform> placedObjectsTransforms = new List<Transform>();
+    [NonSerialized] public List<Rigidbody2D> placedObjectsRigidbody2D = new List<Rigidbody2D>();
+    [NonSerialized] public List<GameObject> placedObjects = new List<GameObject>();
 
     //Variables for showing the height.
     private objectiveScript _objectiveScript;

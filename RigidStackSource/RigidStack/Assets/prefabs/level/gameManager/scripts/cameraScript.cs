@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class cameraScript : MonoBehaviour {
     //Variables for moving the camera.
     public static bool shouldMoveCameraUp, shouldMoveCameraDown;
     public static float cameraMovementSpeed = 10f;
     [SerializeField] private endMenuManager _endMenuManager = null;
-    [HideInInspector] public Vector3 originalCameraPosition;
+    [NonSerialized] public Vector3 originalCameraPosition;
     [SerializeField] private Transform platformTransform = null, girdTransform = null;
 
     private void Start() {

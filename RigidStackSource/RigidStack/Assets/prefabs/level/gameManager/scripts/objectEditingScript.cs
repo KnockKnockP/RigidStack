@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class objectEditingScript : MonoBehaviour {
     //Variables for angle management.
-    [HideInInspector] public static byte angle = 1;
+    [NonSerialized] public static byte angle = 1;
     [SerializeField] private Text angleText = null;
     public Button confirmButton = null;
     [SerializeField] private Slider slider = null;

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class endMenuManager : MonoBehaviour {
     //Variables for slowing down time.
     private bool shouldSlowDownTime;
-    [HideInInspector] public bool shouldMoveTheCamera;
+    [NonSerialized] public bool shouldMoveTheCamera;
     [SerializeField] private cameraScript _cameraScript = null;
 
     //Variables for the end menu.
@@ -22,7 +23,7 @@ public class endMenuManager : MonoBehaviour {
 
     //Variables for dimming and undimming objects
     private bool isObjectUndimmed;
-    [HideInInspector] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
+    [NonSerialized] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
 
     private void Start() {
         _heightScript = FindObjectOfType<heightScript>();

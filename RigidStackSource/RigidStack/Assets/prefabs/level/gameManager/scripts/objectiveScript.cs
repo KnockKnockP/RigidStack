@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ public class objectiveScript : MonoBehaviour {
     //Variables for the basic gameplay.
     private int second, newSecond = 60, windSustainTime = 1, windGenerationHeight = 50;
     public static int newObjectiveScoreAddition = 10;
-    [HideInInspector] public int objectiveScore = 0;
+    [NonSerialized] public int objectiveScore = 0;
     private heightScript _heightScript;
 
     //Variables for cannons.
@@ -223,7 +224,7 @@ public class objectiveScript : MonoBehaviour {
     #region Winds.
     private void generateWinds(bool isFromAwake) {
         if (_heightScript.currentGameMaxHeight >= windGenerationHeight) {
-            for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
+            for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + UnityEngine.Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
                 float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
                 Vector3 windPosition = new Vector3(leftSide, i, 0);
                 GameObject generatedWind = Instantiate(windPrefab, windPosition, Quaternion.identity, windsEmptyObject.transform);
@@ -268,13 +269,13 @@ public class objectiveScript : MonoBehaviour {
         while (true) {
             yield return null;
             if (_winds.Count > 0) {
-                GameObject selectedWind = _winds[Random.Range(0, _winds.Count)];
+                GameObject selectedWind = _winds[UnityEngine.Random.Range(0, _winds.Count)];
                 if (selectedWind != null) {
-                    int randomDelay = Random.Range(0, newSecond);
+                    int randomDelay = UnityEngine.Random.Range(0, newSecond);
                     StartCoroutine(actuallyToggleWinds(selectedWind, randomDelay));
                     StartCoroutine(actuallyToggleWinds(selectedWind, (randomDelay + windSustainTime)));
                 }
-                yield return new WaitForSeconds(Random.Range((newSecond - 5), (newSecond + 5)));
+                yield return new WaitForSeconds(UnityEngine.Random.Range((newSecond - 5), (newSecond + 5)));
             }
         }
     }
