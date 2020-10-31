@@ -34,6 +34,10 @@ namespace Mirror.Discovery {
         protected int serverBroadcastListenPort = 47777;
 
         [SerializeField]
+        [Tooltip("Repeat discovery?")]
+        bool shouldRepeatDiscovery;
+
+        [SerializeField]
         [Tooltip("Time in seconds between multi-cast messages")]
         [Range(1, 60)]
         float ActiveDiscoveryInterval = 3;
@@ -218,7 +222,10 @@ namespace Mirror.Discovery {
 
             _ = ClientListenAsync();
 
-            InvokeRepeating(nameof(BroadcastDiscoveryRequest), 0, ActiveDiscoveryInterval);
+            if (shouldRepeatDiscovery)
+                InvokeRepeating(nameof(BroadcastDiscoveryRequest), 0, ActiveDiscoveryInterval);
+            else
+                BroadcastDiscoveryRequest();
         }
 
         /// <summary>
