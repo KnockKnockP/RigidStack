@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using UnityEngine;
 
 public class pauseScript : NetworkBehaviour {
@@ -10,14 +11,9 @@ public class pauseScript : NetworkBehaviour {
     [SerializeField] private endMenuManager _endMenuManager = null;
 
     public void pauseOrResume() {
-        if (endMenuManager.isGameEnded == false) {
-            if (isPaused == false) {
-                Time.timeScale = 0f;
-                isPaused = true;
-            } else {
-                Time.timeScale = 1f;
-                isPaused = false;
-            }
+        if ((endMenuManager.isGameEnded == false) && (NetworkManagerScript.isMultiplayerGame == false)) {
+            Time.timeScale = Convert.ToInt32(isPaused);
+            isPaused = !isPaused;
             pauseMenuPanel.SetActive(isPaused);
         } else {
             _endMenuManager.toggleEndMenu();

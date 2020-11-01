@@ -56,8 +56,10 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         _ = oldPlayerCount;
         playerCount = newPlayerCount;
         if (playerCount > 1) {
+            startButton.interactable = true;
             statusText.text = ("Ready to start. (" + playerCount + " / " + networkManager.maxConnections + ".).");
         } else {
+            startButton.interactable = false;
             statusText.text = ("Waiting for players. (" + playerCount + " / " + networkManager.maxConnections + ".).");
         }
         return;

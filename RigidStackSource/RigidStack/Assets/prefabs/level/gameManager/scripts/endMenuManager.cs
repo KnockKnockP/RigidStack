@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Mirror;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class endMenuManager : MonoBehaviour {
+public class endMenuManager : NetworkBehaviour {
     //Variables for slowing down time.
     private bool shouldSlowDownTime;
     [NonSerialized] public bool shouldMoveTheCamera;
+    [SyncVar(hook = nameof(syncTimeScale))] private float timeScale = 1f;
     [SerializeField] private cameraScript _cameraScript = null;
 
     //Variables for the end menu.
@@ -39,9 +41,9 @@ public class endMenuManager : MonoBehaviour {
             }
         }
         if (shouldSlowDownTime == true) {
-            Time.timeScale = Mathf.SmoothStep(Time.timeScale, 0f, Time.unscaledDeltaTime);
-            if (Time.timeScale < 0.001f) {
-                Time.timeScale = 0f;
+            timeScale = Mathf.SmoothStep(timeScale, 0f, Time.unscaledDeltaTime);
+            if (timeScale < 0.001f) {
+                timeScale = 0f;
                 shouldSlowDownTime = false;
             }
         }
@@ -53,18 +55,25 @@ public class endMenuManager : MonoBehaviour {
         return;
     }
 
+    [Server]
     public void endGame() {
+        clientRPCEndGame();
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCEndGame() {
         isGameEnded = true;
         endMenuScoreText.text = ("Game over!\r\n" +
                                  "Score : " + _heightScript.currentGameMaxHeight + " / " + LoadedPlayerData.playerData.maxHeight + ".");
         enableOrDisableEndMenu(true);
         dock.SetActive(false);
-        if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
+        if ((dragAndDropScript._dragAndDropScript != null) && (dragAndDropScript._dragAndDropScript.placedGameObject != null)) {
             Destroy(dragAndDropScript._dragAndDropScript.placedGameObject);
         }
         objectEditingPanel.SetActive(false);
-        moveCamera();
-        slowMotion();
+        shouldMoveTheCamera = true;
+        shouldSlowDownTime = true;
         return;
     }
 
@@ -95,13 +104,9 @@ public class endMenuManager : MonoBehaviour {
         return;
     }
 
-    private void moveCamera() {
-        shouldMoveTheCamera = true;
-        return;
-    }
-
-    private void slowMotion() {
-        shouldSlowDownTime = true;
+    private void syncTimeScale(float oldTimeScale, float newTimeScale) {
+        _ = oldTimeScale;
+        Time.timeScale = newTimeScale;
         return;
     }
 

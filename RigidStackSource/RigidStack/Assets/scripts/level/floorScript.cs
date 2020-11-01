@@ -7,10 +7,7 @@ public class floorScript : NetworkBehaviour {
 
     #region Checking the collision.
     private void OnCollisionEnter2D(Collision2D collision) {
-        if (isClientOnly == true) {
-            return;
-        }
-        if (collision.gameObject.CompareTag("platform") == false) {
+        if ((isServer == true) && (collision.gameObject.CompareTag("platform") == false)) {
             _endMenuManager.endGame();
             Destroy(this);
         }

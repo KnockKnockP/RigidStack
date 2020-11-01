@@ -33,12 +33,14 @@ public class heightScript : NetworkBehaviour {
     /*
         PlayerData.maxHeight is the maximum score for the account's life time, it is also equal to the old objective score.
         currentGameMaxHeight is the maximum score for the single session of the game.
+        currentScore is the current score that is displayed on the text.
         When the player dies, currentGameMaxHeight gets resetted.
 
         It looks like I marked this variable as static just to make it easier to access it from other scripts.
         Now I will have to manually reset this stupid ass fucking value.
     */
-    [NonSerialized] public int currentGameMaxHeight = 0;
+    [SyncVar(hook = nameof(updateHeightText))] private int currentScore;
+    [NonSerialized] public int currentGameMaxHeight;
     private objectScript _objectScript;
 
     //Variables for tracking placed objects.
@@ -98,6 +100,7 @@ public class heightScript : NetworkBehaviour {
         return;
     }
 
+    [Server]
     private IEnumerator updateHeight() {
         while (true) {
             checkHeight();
@@ -105,6 +108,7 @@ public class heightScript : NetworkBehaviour {
         }
     }
 
+    [Server]
     public void manuallyCheckHeight() {
         frameCount = 0;
         for (byte i = 0; i < maxFrameChecking; i++) {
@@ -118,44 +122,53 @@ public class heightScript : NetworkBehaviour {
         if (endMenuManager.isGameEnded == true) {
             return;
         }
-        const int shit = -9999;
-        int currentFrameMaxHeight = shit;
+        const int lowValue = -9999;
+        int currentFrameMaxHeight = lowValue;
         GameObject maxHeightGameObject = null;
         int i = 0;
+        //Getting the highest height and it's game object.
         for (; i < placedObjects.Count; i++) {
             if (checkValues(i) == true) {
                 int yPosition = (int)(placedObjectsTransforms[i].position.y);
                 if (yPosition > currentFrameMaxHeight) {
                     currentFrameMaxHeight = yPosition;
-                    currentGameMaxHeight = currentFrameMaxHeight;
                     maxHeightGameObject = placedObjects[i];
                 }
             }
         }
-        if (currentFrameMaxHeight != shit) {
+        //We check if it stays like that for maxFrameChecking frames.
+        if (currentFrameMaxHeight != lowValue) {
             frameCount++;
             if (frameCount == 1) {
                 previousFrameGameObject = maxHeightGameObject;
                 return;
-            } else if (frameCount == maxFrameChecking) {
-                if (previousFrameGameObject == maxHeightGameObject) {
-                    heightText.text = ("Score : " + currentFrameMaxHeight + " / " + _objectiveScript.objectiveScore + ".");
-                    if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
-                        _objectiveScript.generateObjective(false);
-                        resetLists();
-                        if (isServer == true) {
-                            _objectScript.giveMoreItems();
-                        }
-                        LoadedPlayerData.playerData.maxHeight = (_objectiveScript.objectiveScore - objectiveScript.newObjectiveScoreAddition);
+            } else if ((frameCount == maxFrameChecking) && (previousFrameGameObject == maxHeightGameObject)) {
+                currentScore = currentFrameMaxHeight;
+                if (currentScore > currentGameMaxHeight) {
+                    currentGameMaxHeight = currentScore;
+                }
+                if (currentScore > LoadedPlayerData.playerData.maxHeight) {
+                    LoadedPlayerData.playerData.maxHeight = currentScore;
+                }
+                if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
+                    _objectiveScript.generateObjective(false);
+                    resetLists();
+                    if (isServer == true) {
+                        _objectScript.giveMoreItems();
                     }
                 }
                 frameCount = 0;
-            } else {
-                if (previousFrameGameObject != maxHeightGameObject) {
-                    return;
-                }
+            } else if (previousFrameGameObject != maxHeightGameObject) {
+                frameCount = 0;
             }
         }
+        return;
+    }
+
+    private void updateHeightText(int oldScore, int newScore) {
+        _ = oldScore;
+        currentScore = newScore;
+        heightText.text = ("Score : " + currentScore + " / " + _objectiveScript.objectiveScore + ".");
         return;
     }
 

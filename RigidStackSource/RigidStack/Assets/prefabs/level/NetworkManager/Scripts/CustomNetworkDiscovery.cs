@@ -4,12 +4,6 @@ using System;
 using System.Net;
 using UnityEngine;
 
-/*
-    Discovery Guide : https://mirror-networking.com/docs/Guides/NetworkDiscovery.html
-    Documentation : https://mirror-networking.com/docs/Components/NetworkDiscovery.html
-    API Reference : https://mirror-networking.com/docs/api/Mirror.Discovery.NetworkDiscovery.html
-*/
-
 public class DiscoveryRequest : MessageBase {
     //What the client sends.
 }

@@ -11993,7 +11993,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _endMenuManager: {fileID: 7619175099963299236}
-  originalCameraPosition: {x: 0, y: 0, z: 0}
   platformTransform: {fileID: 1286257870278225829}
   girdTransform: {fileID: 378434609}
 --- !u!114 &7619175099963299232
@@ -12009,12 +12008,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
-  tolerance: -0.01
-  currentGameMaxHeight: 0
-  placedObjectsTransforms: []
-  placedObjectsRigidbody2D: []
-  placedObjects: []
+  syncInterval: 0.5
   heightText: {fileID: 688816209}
   checkHeightButton: {fileID: 1501594755}
 --- !u!114 &7619175099963299233
@@ -12029,7 +12023,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84de976f075c354a81ff748dc5904c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectiveScore: 0
   timerText: {fileID: 797998249}
   heightTextsParent: {fileID: 830823893}
   textCanvasTemplate: {fileID: 1180730670}
@@ -12050,6 +12043,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d2c19cfb6292e846bc246aab5a38b6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   pauseMenuPanel: {fileID: 2019807157}
   _endMenuManager: {fileID: 7619175099963299236}
 --- !u!114 &7619175099963299235
@@ -12079,14 +12074,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a463448af4981804f885219cab401ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldMoveTheCamera: 0
   _cameraScript: {fileID: 7619175099963299231}
   endMenuScoreText: {fileID: 1096650041}
   _objectiveScript: {fileID: 7619175099963299233}
   endMenu: {fileID: 1786818563}
   dock: {fileID: 1402084107}
   objectEditingPanel: {fileID: 758157996}
-  allPlacedObjectsSpriteRenderers: []
 --- !u!114 &7619175099963299237
 MonoBehaviour:
   m_ObjectHideFlags: 0
