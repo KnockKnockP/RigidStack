@@ -39,7 +39,7 @@ public class heightScript : NetworkBehaviour {
         It looks like I marked this variable as static just to make it easier to access it from other scripts.
         Now I will have to manually reset this stupid ass fucking value.
     */
-    [SyncVar(hook = nameof(updateHeightText))] private int currentScore;
+    [NonSerialized, SyncVar(hook = nameof(syncScore))] public int currentScore;
     [NonSerialized] public int currentGameMaxHeight;
     private objectScript _objectScript;
 
@@ -58,7 +58,6 @@ public class heightScript : NetworkBehaviour {
 
     private void Start() {
         _objectScript = FindObjectOfType<objectScript>();
-        _objectiveScript = FindObjectOfType<objectiveScript>();
         switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Sandbox): {
                 tolerance = 0.1f;
@@ -165,9 +164,17 @@ public class heightScript : NetworkBehaviour {
         return;
     }
 
-    private void updateHeightText(int oldScore, int newScore) {
+    private void syncScore(int oldScore, int newScore) {
         _ = oldScore;
         currentScore = newScore;
+        updateHeightText();
+        return;
+    }
+
+    public void updateHeightText() {
+        if (_objectiveScript == null) {
+            _objectiveScript = GetComponent<objectiveScript>();
+        }
         heightText.text = ("Score : " + currentScore + " / " + _objectiveScript.objectiveScore + ".");
         return;
     }

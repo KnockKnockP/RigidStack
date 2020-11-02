@@ -1,19 +1,27 @@
-﻿using System;
+﻿/*
+    I wish I wrote this entire game clean.
+    I need to deal with this super entangled spaghetti and I am confused as fuck.
+*/
+
+using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class objectiveScript : MonoBehaviour {
+public class objectiveScript : NetworkBehaviour {
     //Variables for the basic gameplay.
-    private int second, newSecond = 60, windSustainTime = 1, windGenerationHeight = 50;
-    public static int newObjectiveScoreAddition = 10;
+    [SyncVar(hook = nameof(syncSecond))] private int second;
+    [SyncVar(hook = nameof(syncNewSecond))] private int newSecond = 60;
+    [SyncVar] private int windSustainTime = 1, windGenerationHeight = 50;
+    [NonSerialized, SyncVar] public int newObjectiveScoreAddition = 10;
     [NonSerialized] public int objectiveScore = 0;
     private heightScript _heightScript;
 
     //Variables for cannons.
     bool hasCannonsEntered = false;
-    private float cannonShootingDelay = 5f;
+    [SyncVar] private float cannonShootingDelay = 5f;
     [SerializeField] private Text timerText = null;
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
@@ -31,64 +39,68 @@ public class objectiveScript : MonoBehaviour {
     [SerializeField] private GameObject cannonGrouperObject = null, cannon = null;
 
     //Variables for winds.
-    public static int minimumDifferenceForEachWinds = 5;
+    [SyncVar] public int minimumDifferenceForEachWinds = 5;
     [SerializeField] private GameObject windPrefab = null, windsEmptyObject = null;
     private List<GameObject> winds = new List<GameObject>();
     private readonly List<GameObject> tempWinds = new List<GameObject>();
     private IEnumerator toggleWindsFunction;
 
-    private void Start() {
+    public override void OnStartClient() {
+        base.OnStartClient();
         _heightScript = FindObjectOfType<heightScript>();
-        switch (LoadedPlayerData.playerData.difficulty) {
-            case (Difficulty.Sandbox): {
-                newObjectiveScoreAddition = 10;
-                newSecond = 60;
-                windSustainTime = 1;
-                minimumDifferenceForEachWinds = 5;
-                windGenerationHeight = 50;
-                cannonShootingDelay = 5f;
-                break;
-            }
-            case (Difficulty.Easy): {
-                newObjectiveScoreAddition = 10;
-                newSecond = 15;
-                windSustainTime = 2;
-                minimumDifferenceForEachWinds = 5;
-                windGenerationHeight = 50;
-                cannonShootingDelay = 3f;
-                break;
-            }
-            case (Difficulty.Moderate): {
-                newObjectiveScoreAddition = 15;
-                newSecond = 15;
-                windSustainTime = 3;
-                minimumDifferenceForEachWinds = 3;
-                windGenerationHeight = 40;
-                cannonShootingDelay = 2f;
-                break;
-            }
-            case (Difficulty.Difficult): {
-                newObjectiveScoreAddition = 20;
-                newSecond = 13;
-                windSustainTime = 3;
-                minimumDifferenceForEachWinds = 3;
-                windGenerationHeight = 30;
-                cannonShootingDelay = 1f;
-                break;
-            }
-            case (Difficulty.Extreme): {
-                newObjectiveScoreAddition = 20;
-                newSecond = 10;
-                windSustainTime = 3;
-                minimumDifferenceForEachWinds = 2;
-                windGenerationHeight = 25;
-                cannonShootingDelay = 0.5f;
-                break;
+        if (isServer == true) {
+            switch (LoadedPlayerData.playerData.difficulty) {
+                case (Difficulty.Sandbox): {
+                    newObjectiveScoreAddition = 10;
+                    newSecond = 60;
+                    windSustainTime = 1;
+                    minimumDifferenceForEachWinds = 5;
+                    windGenerationHeight = 50;
+                    cannonShootingDelay = 5f;
+                    break;
+                }
+                case (Difficulty.Easy): {
+                    newObjectiveScoreAddition = 10;
+                    newSecond = 15;
+                    windSustainTime = 2;
+                    minimumDifferenceForEachWinds = 5;
+                    windGenerationHeight = 50;
+                    cannonShootingDelay = 3f;
+                    break;
+                }
+                case (Difficulty.Moderate): {
+                    newObjectiveScoreAddition = 15;
+                    newSecond = 15;
+                    windSustainTime = 3;
+                    minimumDifferenceForEachWinds = 3;
+                    windGenerationHeight = 40;
+                    cannonShootingDelay = 2f;
+                    break;
+                }
+                case (Difficulty.Difficult): {
+                    newObjectiveScoreAddition = 20;
+                    newSecond = 13;
+                    windSustainTime = 3;
+                    minimumDifferenceForEachWinds = 3;
+                    windGenerationHeight = 30;
+                    cannonShootingDelay = 1f;
+                    break;
+                }
+                case (Difficulty.Extreme): {
+                    newObjectiveScoreAddition = 20;
+                    newSecond = 10;
+                    windSustainTime = 3;
+                    minimumDifferenceForEachWinds = 2;
+                    windGenerationHeight = 25;
+                    cannonShootingDelay = 0.5f;
+                    break;
+                }
             }
         }
-        second = newSecond;
+        if (isServer == true) {
+            StartCoroutine(countDown());
+        }
         generateObjective(true);
-        StartCoroutine(countDown());
         return;
     }
 
@@ -117,6 +129,7 @@ public class objectiveScript : MonoBehaviour {
             generateCannons(i, isFromAwake);
         }
         objectiveScore = newScore;
+        _heightScript.updateHeightText();
 
         generateWinds(isFromAwake);
         toggleWindsFunction = toggleWinds(isFromAwake);
@@ -297,12 +310,10 @@ public class objectiveScript : MonoBehaviour {
         bool needsToStopCoroutine = false;
         IEnumerator shootCannonsFunction = shootCannons(cannonShootingDelay);
         while (true) {
-            yield return new WaitForSeconds(1f);
-            timerText.text = ("Time left : " + second + ".");
             if (second > -1) {
                 if (needsToStopCoroutine == true) {
                     needsToStopCoroutine = false;
-                    StopCoroutine(shootCannonsFunction);
+                    clientRPCStopCannons(shootCannonsFunction);
                 }
                 if ((second == newSecond) && (hasCannonsEntered == true)) {
                     exitCannons();
@@ -316,7 +327,26 @@ public class objectiveScript : MonoBehaviour {
                 }
             }
             second--;
-            yield return null;
+            yield return new WaitForSeconds(1f);
         }
+    }
+
+    [ClientRpc]
+    private void clientRPCStopCannons(IEnumerator shootCannonsFunction) {
+        StopCoroutine(shootCannonsFunction);
+        return;
+    }
+
+    private void syncSecond(int oldSecond, int _newSecond) {
+        _ = oldSecond;
+        second = _newSecond;
+        timerText.text = ("Time left : " + second + ".");
+        return;
+    }
+
+    private void syncNewSecond(int oldSecond, int _newSecond) {
+        _ = oldSecond;
+        newSecond = _newSecond;
+        return;
     }
 }
