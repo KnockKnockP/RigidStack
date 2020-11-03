@@ -14,14 +14,16 @@ public class objectiveScript : NetworkBehaviour {
     //Variables for the basic gameplay.
     [SyncVar(hook = nameof(syncSecond))] private int second;
     [SyncVar(hook = nameof(syncNewSecond))] private int newSecond = 60;
-    [SyncVar] private int windSustainTime = 1, windGenerationHeight = 50;
-    [NonSerialized, SyncVar] public int newObjectiveScoreAddition = 10;
+    private int windSustainTime = 1, windGenerationHeight = 50;
+    [NonSerialized] public int newObjectiveScoreAddition = 10;
     [NonSerialized] public int objectiveScore = 0;
+    [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty;
     private heightScript _heightScript;
 
     //Variables for cannons.
     bool hasCannonsEntered = false;
     [SyncVar] private float cannonShootingDelay = 5f;
+    private IEnumerator shootCannonsFunction;
     [SerializeField] private Text timerText = null;
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
@@ -45,70 +47,84 @@ public class objectiveScript : NetworkBehaviour {
     private readonly List<GameObject> tempWinds = new List<GameObject>();
     private IEnumerator toggleWindsFunction;
 
-    public override void OnStartClient() {
-        base.OnStartClient();
-        _heightScript = FindObjectOfType<heightScript>();
+    private void Start() {
         if (isServer == true) {
-            switch (LoadedPlayerData.playerData.difficulty) {
-                case (Difficulty.Sandbox): {
-                    newObjectiveScoreAddition = 10;
-                    newSecond = 60;
-                    windSustainTime = 1;
-                    minimumDifferenceForEachWinds = 5;
-                    windGenerationHeight = 50;
-                    cannonShootingDelay = 5f;
-                    break;
-                }
-                case (Difficulty.Easy): {
-                    newObjectiveScoreAddition = 10;
-                    newSecond = 15;
-                    windSustainTime = 2;
-                    minimumDifferenceForEachWinds = 5;
-                    windGenerationHeight = 50;
-                    cannonShootingDelay = 3f;
-                    break;
-                }
-                case (Difficulty.Moderate): {
-                    newObjectiveScoreAddition = 15;
-                    newSecond = 15;
-                    windSustainTime = 3;
-                    minimumDifferenceForEachWinds = 3;
-                    windGenerationHeight = 40;
-                    cannonShootingDelay = 2f;
-                    break;
-                }
-                case (Difficulty.Difficult): {
-                    newObjectiveScoreAddition = 20;
-                    newSecond = 13;
-                    windSustainTime = 3;
-                    minimumDifferenceForEachWinds = 3;
-                    windGenerationHeight = 30;
-                    cannonShootingDelay = 1f;
-                    break;
-                }
-                case (Difficulty.Extreme): {
-                    newObjectiveScoreAddition = 20;
-                    newSecond = 10;
-                    windSustainTime = 3;
-                    minimumDifferenceForEachWinds = 2;
-                    windGenerationHeight = 25;
-                    cannonShootingDelay = 0.5f;
-                    break;
-                }
+            difficulty = LoadedPlayerData.playerData.difficulty;
+        }
+        return;
+    }
+
+    private void syncDifficulty(Difficulty oldDifficulty, Difficulty newDifficulty) {
+        _ = oldDifficulty;
+        difficulty = newDifficulty;
+        _heightScript = FindObjectOfType<heightScript>();
+        switch (difficulty) {
+            case (Difficulty.Sandbox): {
+                newObjectiveScoreAddition = 10;
+                newSecond = 60;
+                windSustainTime = 1;
+                minimumDifferenceForEachWinds = 5;
+                windGenerationHeight = 50;
+                cannonShootingDelay = 5f;
+                break;
+            }
+            case (Difficulty.Easy): {
+                newObjectiveScoreAddition = 10;
+                newSecond = 15;
+                windSustainTime = 2;
+                minimumDifferenceForEachWinds = 5;
+                windGenerationHeight = 50;
+                cannonShootingDelay = 3f;
+                break;
+            }
+            case (Difficulty.Moderate): {
+                newObjectiveScoreAddition = 15;
+                newSecond = 15;
+                windSustainTime = 3;
+                minimumDifferenceForEachWinds = 3;
+                windGenerationHeight = 40;
+                cannonShootingDelay = 2f;
+                break;
+            }
+            case (Difficulty.Difficult): {
+                newObjectiveScoreAddition = 20;
+                newSecond = 13;
+                windSustainTime = 3;
+                minimumDifferenceForEachWinds = 3;
+                windGenerationHeight = 30;
+                cannonShootingDelay = 1f;
+                break;
+            }
+            case (Difficulty.Extreme): {
+                newObjectiveScoreAddition = 20;
+                newSecond = 10;
+                windSustainTime = 3;
+                minimumDifferenceForEachWinds = 2;
+                windGenerationHeight = 25;
+                cannonShootingDelay = 0.5f;
+                break;
             }
         }
+        _heightScript.syncDifficulty(difficulty);
+        generateObjective(true);
+        setCannons();
         if (isServer == true) {
             StartCoroutine(countDown());
         }
-        generateObjective(true);
         return;
     }
 
     public void generateObjective(bool isFromAwake) {
         if (isFromAwake == false) {
             reset();
-            freezeAll();
-            removeCannons();
+            if (isServer == true) {
+                clientRPCFreezeAll();
+            }
+            /*
+                This isn't actually a ClientRPC function but I have named it that way.
+                Fix this later.
+            */
+            clientRPCRemoveCannons();
             removeWinds();
         }
 
@@ -131,13 +147,16 @@ public class objectiveScript : NetworkBehaviour {
         objectiveScore = newScore;
         _heightScript.updateHeightText();
 
-        generateWinds(isFromAwake);
-        toggleWindsFunction = toggleWinds(isFromAwake);
-        StartCoroutine(toggleWindsFunction);
+        if (isServer == true) {
+            generateWinds(isFromAwake);
+            toggleWindsFunction = toggleWinds(isFromAwake);
+            StartCoroutine(toggleWindsFunction);
+        }
         return;
     }
 
-    private void freezeAll() {
+    [ClientRpc]
+    private void clientRPCFreezeAll() {
         Color32 dimmedColor = new Color32(50, 50, 50, 255);
         foreach (GameObject placedObject in _heightScript.placedObjects) {
             placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
@@ -148,6 +167,7 @@ public class objectiveScript : NetworkBehaviour {
                 _televisionScript.videoPlayer.Pause();
             }
         }
+        _heightScript.resetLists();
         return;
     }
 
@@ -181,7 +201,12 @@ public class objectiveScript : NetworkBehaviour {
         return;
     }
 
-    private void removeCannons() {
+    private void setCannons() {
+        shootCannonsFunction = shootCannons(cannonShootingDelay);
+        return;
+    }
+
+    private void clientRPCRemoveCannons() {
         foreach (GameObject _cannon in cannonList) {
             if (_cannon != null) {
                 Destroy(_cannon);
@@ -213,11 +238,23 @@ public class objectiveScript : NetworkBehaviour {
         return;
     }
 
+    [ClientRpc]
+    private void clientRPCEnterCannons() {
+        enterCannons();
+        return;
+    }
+
     private void exitCannons() {
         hasCannonsEntered = false;
         foreach (Animator cannonAnimator in cannonsAnimator) {
             cannonAnimator.SetBool("enterScene", false);
         }
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCExitCannons() {
+        exitCannons();
         return;
     }
 
@@ -232,9 +269,22 @@ public class objectiveScript : NetworkBehaviour {
             yield return new WaitForSeconds(waitSecond);
         }
     }
+
+    [ClientRpc]
+    private void clientRPCStartCannons() {
+        StartCoroutine(shootCannonsFunction);
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCStopCannons() {
+        StopCoroutine(shootCannonsFunction);
+        return;
+    }
     #endregion
 
     #region Winds.
+    [Server]
     private void generateWinds(bool isFromAwake) {
         if (_heightScript.currentGameMaxHeight >= windGenerationHeight) {
             for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + UnityEngine.Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
@@ -255,6 +305,7 @@ public class objectiveScript : NetworkBehaviour {
                 } else {
                     tempWinds.Add(generatedWind);
                 }
+                NetworkServer.Spawn(generatedWind, connectionToClient);
             }
         }
         return;
@@ -308,33 +359,27 @@ public class objectiveScript : NetworkBehaviour {
 
     private IEnumerator countDown() {
         bool needsToStopCoroutine = false;
-        IEnumerator shootCannonsFunction = shootCannons(cannonShootingDelay);
+
         while (true) {
             if (second > -1) {
                 if (needsToStopCoroutine == true) {
                     needsToStopCoroutine = false;
-                    clientRPCStopCannons(shootCannonsFunction);
+                    clientRPCStopCannons();
                 }
                 if ((second == newSecond) && (hasCannonsEntered == true)) {
-                    exitCannons();
+                    clientRPCExitCannons();
                 } else if ((second < 6) && (hasCannonsEntered == false)) {
-                    enterCannons();
+                    clientRPCEnterCannons();
                 }
             } else {
                 if (needsToStopCoroutine == false) {
                     needsToStopCoroutine = true;
-                    StartCoroutine(shootCannonsFunction);
+                    clientRPCStartCannons();
                 }
             }
             second--;
             yield return new WaitForSeconds(1f);
         }
-    }
-
-    [ClientRpc]
-    private void clientRPCStopCannons(IEnumerator shootCannonsFunction) {
-        StopCoroutine(shootCannonsFunction);
-        return;
     }
 
     private void syncSecond(int oldSecond, int _newSecond) {

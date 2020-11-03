@@ -56,9 +56,11 @@ public class heightScript : NetworkBehaviour {
     //A variable for manual height checking.
     [SerializeField] private Button checkHeightButton = null;
 
-    private void Start() {
+    public void syncDifficulty(Difficulty syncedDifficulty) {
+        //Difficulty is synced on objectiveScript.cs.
         _objectScript = FindObjectOfType<objectScript>();
-        switch (LoadedPlayerData.playerData.difficulty) {
+        _objectiveScript = GetComponent<objectiveScript>();
+        switch (syncedDifficulty) {
             case (Difficulty.Sandbox): {
                 tolerance = 0.1f;
                 break;
@@ -81,21 +83,12 @@ public class heightScript : NetworkBehaviour {
             }
         }
         checkHeightButton.gameObject.SetActive(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        if (isServer == true) {
-            Invoke(nameof(updateScoreTextOnStart), 1f);
-        }
         if ((LoadedPlayerData.playerData.isManualCheckingEnabled == false) && (isServer == true)) {
             StartCoroutine(updateHeight());
         }
         if (isClientOnly == true) {
             checkHeightButton.gameObject.SetActive(false);
         }
-        return;
-    }
-
-    [Server]
-    private void updateScoreTextOnStart() {
-        heightText.text = ("Score : 0 / " + _objectiveScript.objectiveScore + ".");
         return;
     }
 
@@ -118,6 +111,7 @@ public class heightScript : NetworkBehaviour {
 
     [Server]
     public void checkHeight() {
+        //yPosition <= currentFrameMaxHeight <= currentScore <= currentGameMaxHeight <= PlayerData.maxHeight.
         if (endMenuManager.isGameEnded == true) {
             return;
         }
@@ -151,7 +145,6 @@ public class heightScript : NetworkBehaviour {
                 }
                 if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
                     _objectiveScript.generateObjective(false);
-                    resetLists();
                     if (isServer == true) {
                         _objectScript.giveMoreItems();
                     }
@@ -172,9 +165,6 @@ public class heightScript : NetworkBehaviour {
     }
 
     public void updateHeightText() {
-        if (_objectiveScript == null) {
-            _objectiveScript = GetComponent<objectiveScript>();
-        }
         heightText.text = ("Score : " + currentScore + " / " + _objectiveScript.objectiveScore + ".");
         return;
     }
@@ -183,7 +173,7 @@ public class heightScript : NetworkBehaviour {
         return ((StaticClass.isInBetweenOrEqualToTwoValues(placedObjectsRigidbody2D[i].velocity, -tolerance, tolerance)) || (placedObjectsRigidbody2D[i].velocity == Vector2.zero));
     }
 
-    private void resetLists() {
+    public void resetLists() {
         Rigidbody2D tempRigidbody2D = placedObjectsRigidbody2D[(placedObjectsRigidbody2D.Count - 1)];
         tempRigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
 
