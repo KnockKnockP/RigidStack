@@ -21,7 +21,7 @@ public static class LoadedPlayerData {
 public class PlayerData {
     public bool isManualCheckingEnabled = false;
     public int maxHeight = 0;
-    public string name = "";
+    public string name = "Unnamed player.";
     public Difficulty difficulty = Difficulty.Easy;
 }
 
