@@ -201,6 +201,11 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     }
 
     public void disableObjectEditingPanel() {
+        staticDisableObjectEditingPanel();
+        return;
+    }
+
+    public static void staticDisableObjectEditingPanel() {
         sharedMonobehaviour._sharedMonobehaviour.dockPanel.SetActive(true);
         sharedMonobehaviour._sharedMonobehaviour.objectEditingPanel.SetActive(false);
         return;

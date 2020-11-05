@@ -1,9 +1,4 @@
-﻿/*
-    I wish I wrote this entire game clean.
-    I need to deal with this super entangled spaghetti and I am confused as fuck.
-*/
-
-using Mirror;
+﻿using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,10 +15,13 @@ public class objectiveScript : NetworkBehaviour {
     [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty;
     private heightScript _heightScript;
 
+    //Variables for height canvases.
+    private float heightCanvasPivotX;
+    private RectTransform heightCanvasRectTransform;
+
     //Variables for cannons.
     bool hasCannonsEntered = false;
     [SyncVar] private float cannonShootingDelay = 5f;
-    private IEnumerator shootCannonsFunction;
     [SerializeField] private Text timerText = null;
     [SerializeField] private Transform heightTextsParent = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
@@ -54,10 +52,20 @@ public class objectiveScript : NetworkBehaviour {
         return;
     }
 
+    /*
+        This is where actual initialization of this script happenes.
+        It also links to heightScript since both scripts works very closely together.
+        Therefore, no seperate initialization methods such as Awake and Start on heightScript is needed.
+
+        Note :
+            Any methods that require networking does not work when doing initialization.
+    */
     private void syncDifficulty(Difficulty oldDifficulty, Difficulty newDifficulty) {
         _ = oldDifficulty;
         difficulty = newDifficulty;
         _heightScript = FindObjectOfType<heightScript>();
+        heightCanvasRectTransform = textCanvasTemplate.GetComponent<RectTransform>();
+        heightCanvasPivotX = heightCanvasRectTransform.pivot.x;
         switch (difficulty) {
             case (Difficulty.Sandbox): {
                 newObjectiveScoreAddition = 10;
@@ -105,26 +113,26 @@ public class objectiveScript : NetworkBehaviour {
                 break;
             }
         }
+
         _heightScript.syncDifficulty(difficulty);
         generateObjective(true);
-        setCannons();
         if (isServer == true) {
             StartCoroutine(countDown());
         }
         return;
     }
 
+    [ClientRpc]
+    public void clientRPCGenerateObjective(bool isFromAwake) {
+        generateObjective(isFromAwake);
+        return;
+    }
+
     public void generateObjective(bool isFromAwake) {
         if (isFromAwake == false) {
             reset();
-            if (isServer == true) {
-                clientRPCFreezeAll();
-            }
-            /*
-                This isn't actually a ClientRPC function but I have named it that way.
-                Fix this later.
-            */
-            clientRPCRemoveCannons();
+            freezeAll();
+            removeCannons();
             removeWinds();
         }
 
@@ -135,7 +143,8 @@ public class objectiveScript : NetworkBehaviour {
         second = newSecond;
 
         int newScore = (objectiveScore + newObjectiveScoreAddition);
-        float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x + textCanvasTemplate.GetComponent<RectTransform>().rect.width - textCanvasTemplate.transform.localScale.x);
+        float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x
+                          + heightCanvasPivotX);
         for (int i = objectiveScore; i <= newScore; i = (i + 5)) {
             Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(leftSide, i), Quaternion.identity, heightTextsParent);
             newCanvas.GetComponentInChildren<Text>().text = (newCanvas.transform.position.y.ToString() + ".");
@@ -147,18 +156,18 @@ public class objectiveScript : NetworkBehaviour {
         objectiveScore = newScore;
         _heightScript.updateHeightText();
 
+        generateWinds(isFromAwake);
         if (isServer == true) {
-            generateWinds(isFromAwake);
             toggleWindsFunction = toggleWinds(isFromAwake);
             StartCoroutine(toggleWindsFunction);
         }
         return;
     }
 
-    [ClientRpc]
-    private void clientRPCFreezeAll() {
+    private void freezeAll() {
         Color32 dimmedColor = new Color32(50, 50, 50, 255);
-        foreach (GameObject placedObject in _heightScript.placedObjects) {
+        for (int i = 0; i < (_heightScript.placedObjects.Count - 1); i++) {
+            GameObject placedObject = _heightScript.placedObjects[i];
             placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
             placedObject.GetComponent<SpriteRenderer>().color = dimmedColor;
             if (placedObject.name.Contains("television") == true) {
@@ -201,12 +210,7 @@ public class objectiveScript : NetworkBehaviour {
         return;
     }
 
-    private void setCannons() {
-        shootCannonsFunction = shootCannons(cannonShootingDelay);
-        return;
-    }
-
-    private void clientRPCRemoveCannons() {
+    private void removeCannons() {
         foreach (GameObject _cannon in cannonList) {
             if (_cannon != null) {
                 Destroy(_cannon);
@@ -260,45 +264,39 @@ public class objectiveScript : NetworkBehaviour {
 
     private IEnumerator shootCannons(float waitSecond) {
         while (true) {
-            yield return null;
             for (int i = 0; i < cannonList.Count; i++) {
                 Vector2 tipPosition = cannonInformationHolders[i].cannonTip.transform.position;
                 Vector3 position = new Vector3(tipPosition.x, tipPosition.y, 0);
-                Instantiate(cannonInformationHolders[i].cannonShell, position, cannonInformationHolders[i].cannonTip.transform.rotation, cannonList[i].transform).GetComponent<Rigidbody2D>().velocity = new Vector2(15, 0);
+                GameObject spawnedCannonShell = Instantiate(cannonInformationHolders[i].cannonShell, position, Quaternion.identity, cannonList[i].transform);
+                NetworkServer.Spawn(spawnedCannonShell);
+                clientRPCUpdateCannonShell(spawnedCannonShell, i);
+                spawnedCannonShell.GetComponent<Rigidbody2D>().velocity = new Vector2(15, 0);
             }
             yield return new WaitForSeconds(waitSecond);
         }
     }
 
     [ClientRpc]
-    private void clientRPCStartCannons() {
-        StartCoroutine(shootCannonsFunction);
-        return;
-    }
-
-    [ClientRpc]
-    private void clientRPCStopCannons() {
-        StopCoroutine(shootCannonsFunction);
+    private void clientRPCUpdateCannonShell(GameObject _gameObject, int i) {
+        if (isServer == true) {
+            return;
+        }
+        _gameObject.transform.parent = cannonList[i].transform;
+        _gameObject.transform.position = new Vector3(-500f, -500f, 0f);
+        Destroy(_gameObject.GetComponent<Rigidbody2D>());
+        Destroy(_gameObject.GetComponent<CircleCollider2D>());
         return;
     }
     #endregion
 
     #region Winds.
-    [Server]
     private void generateWinds(bool isFromAwake) {
         if (_heightScript.currentGameMaxHeight >= windGenerationHeight) {
             for (int i = (objectiveScore - newObjectiveScoreAddition + 1); i <= objectiveScore; i = (i + UnityEngine.Random.Range(minimumDifferenceForEachWinds, (newObjectiveScoreAddition + 1)))) {
                 float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x / 2.5f);
                 Vector3 windPosition = new Vector3(leftSide, i, 0);
-                GameObject generatedWind = Instantiate(windPrefab, windPosition, Quaternion.identity, windsEmptyObject.transform);
-
-                generatedWind.SetActive(false);
-                generatedWind.name = (i + " wind");
-
-                BoxCollider2D generatedWindBoxCollider2D = generatedWind.GetComponent<BoxCollider2D>();
-                float width = ((2f * sharedMonobehaviour._sharedMonobehaviour.mainCamera.orthographicSize) * sharedMonobehaviour._sharedMonobehaviour.mainCamera.aspect);
-                generatedWindBoxCollider2D.size = new Vector2(width, generatedWindBoxCollider2D.size.y);
-                generatedWindBoxCollider2D.offset = new Vector2((generatedWindBoxCollider2D.size.x / 2), generatedWindBoxCollider2D.offset.y);
+                //GameObject generatedWind = Instantiate(windPrefab, windPosition, Quaternion.identity, windsEmptyObject.transform);
+                GameObject generatedWind = Instantiate(windPrefab);
 
                 if (isFromAwake == true) {
                     winds.Add(generatedWind);
@@ -306,8 +304,32 @@ public class objectiveScript : NetworkBehaviour {
                     tempWinds.Add(generatedWind);
                 }
                 NetworkServer.Spawn(generatedWind, connectionToClient);
+                clientRPCParalyzeWind(generatedWind, isFromAwake, i, windPosition);
             }
         }
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCParalyzeWind(GameObject _gameObject, bool isFromAwake, int i, Vector3 position) {
+        if (isFromAwake == true) {
+            winds.Add(_gameObject);
+        } else {
+            tempWinds.Add(_gameObject);
+        }
+        _gameObject.SetActive(false);
+        _gameObject.transform.parent = windsEmptyObject.transform;
+        _gameObject.transform.position = position;
+        _gameObject.name = (i + " wind");
+        if (isServer == true) {
+            BoxCollider2D generatedWindBoxCollider2D = _gameObject.GetComponent<BoxCollider2D>();
+            float orthographicSize = sharedMonobehaviour._sharedMonobehaviour.mainCamera.orthographicSize, width = ((2f * orthographicSize) * sharedMonobehaviour._sharedMonobehaviour.mainCamera.aspect);
+            generatedWindBoxCollider2D.size = new Vector2(width, generatedWindBoxCollider2D.size.y);
+            generatedWindBoxCollider2D.offset = new Vector2((generatedWindBoxCollider2D.size.x / orthographicSize), generatedWindBoxCollider2D.offset.y);
+            return;
+        }
+        Destroy(_gameObject.GetComponent<windScript>());
+        Destroy(_gameObject.GetComponent<BoxCollider2D>());
         return;
     }
 
@@ -323,6 +345,7 @@ public class objectiveScript : NetworkBehaviour {
         return;
     }
 
+    [Server]
     private IEnumerator toggleWinds(bool isFromAwake) {
         List<GameObject> _winds;
         if (isFromAwake == true) {
@@ -344,38 +367,39 @@ public class objectiveScript : NetworkBehaviour {
         }
     }
 
+    [Server]
     private IEnumerator actuallyToggleWinds(GameObject _wind, int delay) {
         yield return new WaitForSeconds(delay);
-        if (_wind != null) {
-            if (_wind.activeInHierarchy == false) {
-                _wind.SetActive(true);
-            } else {
-                _wind.SetActive(false);
-            }
-        }
+        clientRPCActuallyToggleWinds(_wind);
         yield return null;
+    }
+
+    [ClientRpc]
+    private void clientRPCActuallyToggleWinds(GameObject _wind) {
+        if (_wind != null) {
+            _wind.SetActive(!_wind.activeInHierarchy);
+        }
+        return;
     }
     #endregion
 
     private IEnumerator countDown() {
         bool needsToStopCoroutine = false;
-
+        IEnumerator shootCannonsFunction = shootCannons(cannonShootingDelay);
         while (true) {
             if (second > -1) {
                 if (needsToStopCoroutine == true) {
                     needsToStopCoroutine = false;
-                    clientRPCStopCannons();
+                    StopCoroutine(shootCannonsFunction);
                 }
                 if ((second == newSecond) && (hasCannonsEntered == true)) {
                     clientRPCExitCannons();
                 } else if ((second < 6) && (hasCannonsEntered == false)) {
                     clientRPCEnterCannons();
                 }
-            } else {
-                if (needsToStopCoroutine == false) {
-                    needsToStopCoroutine = true;
-                    clientRPCStartCannons();
-                }
+            } else if (needsToStopCoroutine == false) {
+                needsToStopCoroutine = true;
+                StartCoroutine(shootCannonsFunction);
             }
             second--;
             yield return new WaitForSeconds(1f);

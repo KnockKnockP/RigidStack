@@ -1,29 +1,28 @@
 ﻿using UnityEngine;
 
 public class windScript : MonoBehaviour {
-    //A variable for the wind.
-    private float windStrength = 0.001f;
+    private float windStrength = 0.1f;
 
-    private void Start() {
+    private void Awake() {
         switch (LoadedPlayerData.playerData.difficulty) {
             case (Difficulty.Sandbox): {
-                windStrength = 0.001f;
+                windStrength = 0.02f;
                 break;
             }
             case (Difficulty.Easy): {
-                windStrength = 0.01f;
-                break;
-            }
-            case (Difficulty.Moderate): {
-                windStrength = 0.05f;
-                break;
-            }
-            case (Difficulty.Difficult): {
                 windStrength = 0.1f;
                 break;
             }
-            case (Difficulty.Extreme): {
+            case (Difficulty.Moderate): {
                 windStrength = 0.2f;
+                break;
+            }
+            case (Difficulty.Difficult): {
+                windStrength = 0.4f;
+                break;
+            }
+            case (Difficulty.Extreme): {
+                windStrength = 0.5f;
                 break;
             }
         }

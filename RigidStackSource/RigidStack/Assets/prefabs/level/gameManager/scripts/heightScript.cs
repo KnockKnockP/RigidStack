@@ -144,8 +144,9 @@ public class heightScript : NetworkBehaviour {
                     LoadedPlayerData.playerData.maxHeight = currentScore;
                 }
                 if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
-                    _objectiveScript.generateObjective(false);
+                    _objectiveScript.clientRPCGenerateObjective(false);
                     if (isServer == true) {
+                        clientRPCDisableObjectEditingPanel();
                         _objectScript.giveMoreItems();
                     }
                 }
@@ -154,6 +155,12 @@ public class heightScript : NetworkBehaviour {
                 frameCount = 0;
             }
         }
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCDisableObjectEditingPanel() {
+        dragAndDropScript.staticDisableObjectEditingPanel();
         return;
     }
 
