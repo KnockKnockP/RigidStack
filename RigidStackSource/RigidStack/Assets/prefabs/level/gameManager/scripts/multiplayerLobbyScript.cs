@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class multiplayerLobbyScript : NetworkBehaviour {
     //Variables for maintaining the lobby.
-    private bool lobbyStarted;
     [SyncVar(hook = nameof(syncPlayerCount))] private int playerCount;
     private string disconnectedReason = "No reason.";
     [NonSerialized] public string lobbyName = "Unnamed.";
@@ -24,14 +23,20 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [SerializeField] private Dropdown selectPlayerDropdownMenu = null, serverDropdownMenu = null;
     [SerializeField] private GameObject joinMultiplayerLobbyPanel = null, lobbyPanel = null;
 
-    private void Start() {
-        telepathyTransport = FindObjectOfType<TelepathyTransport>();
-        networkManager = FindObjectOfType<NetworkManager>();
-        customNetworkDiscovery = FindObjectOfType<CustomNetworkDiscovery>();
+    private void Awake () {
+        NetworkManager.SingletonReady += OnSingletonReady();
         return;
     }
 
+    private NetworkManager.Notify OnSingletonReady() {
+        networkManager = NetworkManager.singleton;
+        telepathyTransport = networkManager.gameObject.GetComponent<TelepathyTransport>();
+        customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
+        return null;
+    }
+
     public void createLobby() {
+        playerCount = 0;
         telepathyTransport.port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.StartHost();
@@ -151,7 +156,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         while (true) {
             if (DummyPlayerScript.loadedAllThings == true) {
                 commandNameCheck(LoadedPlayerData.playerData.name, DummyPlayerScript.networkIdentity);
-                commandCheckLobbyHasStarted(DummyPlayerScript.networkIdentity);
                 commandUpdatePlayerList(LoadedPlayerData.playerData.name);
                 yield break;
             }
@@ -166,14 +170,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
                 targetRPCDisconnect(networkIdentity.connectionToClient, "Duplicate name found in the lobby.");
                 return;
             }
-        }
-        return;
-    }
-
-    [Command(ignoreAuthority = true)]
-    private void commandCheckLobbyHasStarted(NetworkIdentity networkIdentity) {
-        if (lobbyStarted == true) {
-            targetRPCDisconnect(networkIdentity.connectionToClient, "The multiplayer lobby has already started.");
         }
         return;
     }
@@ -222,18 +218,26 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [Server]
     private void cancelMultiplayerLobby() {
         clientRPCCancelMultiplayerLobby();
-        while (playerCount != 1) {
-            //We wait until all players disconnect except for the host.
-        }
-        networkManager.StopHost();
-        lobbyPanel.SetActive(false);
+        StartCoroutine(waitUntilAllClientsDisconnect());
         return;
     }
 
-    [ClientRpc(excludeOwner = true)]
-    private void clientRPCCancelMultiplayerLobby() {
-        networkManager.StopClient();
+    [Server]
+    private IEnumerator waitUntilAllClientsDisconnect() {
+        while (playerCount != 1) {
+            yield return null;
+        }
+        networkManager.StopHost();
         lobbyPanel.SetActive(false);
+        yield break;
+    }
+
+    [ClientRpc]
+    private void clientRPCCancelMultiplayerLobby() {
+        if (isServer == true) {
+            return;
+        }
+        exitMultiplayerLobby();
         return;
     }
     #endregion
@@ -257,7 +261,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     #region Starting the multiplayer lobby.
     public void startMultiplayer() {
-        lobbyStarted = true;
+        customNetworkDiscovery.StopDiscovery();
         clientRPCChangeScene();
         networkManager.ServerChangeScene(SceneNames.Level);
         return;
