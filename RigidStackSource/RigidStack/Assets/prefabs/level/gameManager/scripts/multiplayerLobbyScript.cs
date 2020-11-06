@@ -225,6 +225,10 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [Server]
     private IEnumerator waitUntilAllClientsDisconnect() {
         while (playerCount != 1) {
+            /*
+                We wait until all players disconnect except for the host.
+                We are doing in a coroutine because the server needs to accept all commands.
+            */
             yield return null;
         }
         networkManager.StopHost();
