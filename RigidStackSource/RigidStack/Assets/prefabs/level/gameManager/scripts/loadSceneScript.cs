@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public static class SceneNames {
@@ -17,7 +18,11 @@ public class loadSceneScript : MonoBehaviour {
         if (_heightScript != null) {
             _heightScript.currentGameMaxHeight = 0;
         }
-        SceneManager.LoadScene(sceneName);
+        if (NetworkManagerScript.isMultiplayerGame == true) {
+            NetworkManager.singleton.ServerChangeScene(sceneName);
+        } else {
+            SceneManager.LoadScene(sceneName);
+        }
         return;
     }
 
