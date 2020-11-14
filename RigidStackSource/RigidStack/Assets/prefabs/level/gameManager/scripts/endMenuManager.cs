@@ -110,11 +110,35 @@ public class endMenuManager : NetworkBehaviour {
         return;
     }
 
+    #region Restarting the level.
     public void restart() {
-        _objectiveScript.objectiveScore = 0;
-        _heightScript.currentGameMaxHeight = 0;
-        FindObjectOfType<savingScript>().save();
-        FindObjectOfType<loadSceneScript>().loadLevel();
+        if (NetworkManagerScript.isMultiplayerGame == true) {
+            if (isClientOnly == true) {
+                if (isGameEnded == true) {
+                    commandRestart();
+                }
+            } else {
+                commandRestart();
+            }
+        } else {
+            commandRestart();
+        }
         return;
     }
+
+    [Command(ignoreAuthority = true)]
+    private void commandRestart() {
+        if (isServer == true) {
+            _objectiveScript.objectiveScore = 0;
+            _heightScript.currentGameMaxHeight = 0;
+        }
+        if (NetworkManagerScript.isMultiplayerGame == true) {
+            NetworkManager.singleton.ServerChangeScene(SceneNames.Level);
+        } else {
+            FindObjectOfType<savingScript>().save();
+            FindObjectOfType<loadSceneScript>().loadLevel();
+        }
+        return;
+    }
+    #endregion
 }
