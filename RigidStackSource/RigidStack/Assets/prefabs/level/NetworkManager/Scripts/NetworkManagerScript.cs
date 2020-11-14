@@ -9,10 +9,11 @@ public class NetworkManagerScript : MonoBehaviour {
     public static bool isMultiplayerGame = false;
 
     //A variable for setting up the main menu.
+    private static bool hasAddedAnEvent = false;
     [SerializeField] private GameObject scriptCrammer = null;
 
-    //A variable for managing scenes.
-    private static bool hasAddedAnEvent = false;
+    //A variable for finding the available port.
+    private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
 
     private void Awake() {
         if (hasAddedAnEvent == false) {
@@ -27,9 +28,6 @@ public class NetworkManagerScript : MonoBehaviour {
         if (sceneName == SceneNames.MainMenu) {
             scriptCrammer.SetActive(true);
         } else if (sceneName != SceneNames.Level) {
-            foreach (NetworkManager networkManager in FindObjectsOfType<NetworkManager>()) {
-                Destroy(networkManager.gameObject);
-            }
             scriptCrammer.SetActive(true);
             Destroy(gameObject);
         }
@@ -48,8 +46,10 @@ public class NetworkManagerScript : MonoBehaviour {
         return;
     }
 
-    //https://gist.github.com/jrusbatch/4211535#gistcomment-3437695
+    //https://www.stackoverflow.com/a/49408267/
     public static ushort getAvailablePort() {
-        return (ushort)(((IPEndPoint)(new UdpClient(0, AddressFamily.InterNetwork).Client.LocalEndPoint)).Port);
+        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        socket.Bind(DefaultLoopbackEndpoint);
+        return (ushort)(((IPEndPoint)socket.LocalEndPoint).Port);
     }
 }
