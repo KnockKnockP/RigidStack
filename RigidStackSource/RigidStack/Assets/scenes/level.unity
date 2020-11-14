@@ -11878,7 +11878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forceMorning: 0
   forceAfternoon: 0
-  forceNight: 0
+  forceNight: 1
   gridTransform: {fileID: 378434609}
   backgroundHolderEmptyObject: {fileID: 1342161716}
   dayBackgrounds: {fileID: 11400000, guid: efb770e8cf3ae734a96ed86867d803ee, type: 2}

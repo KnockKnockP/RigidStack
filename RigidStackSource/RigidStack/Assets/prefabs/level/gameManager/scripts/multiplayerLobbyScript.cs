@@ -16,14 +16,17 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     private NetworkManager networkManager;
     private CustomNetworkDiscovery customNetworkDiscovery;
 
-    //Variables for maintaining the lobby user interface.
+    [Header("Join multiplayer lobby panel.")]
+    [SerializeField] private GameObject multiplayerLobbyListScrollViewViewport = null, multiplayerLobbyListTemplate = null;
+
+    [Header("Multiplayer lobby.")]
     [SerializeField] private Text statusText = null;
     [SerializeField] private Button startButton = null, kickButton = null;
     [SerializeField] private InputField lobbyNameInputField = null;
-    [SerializeField] private Dropdown selectPlayerDropdownMenu = null, serverDropdownMenu = null;
+    [SerializeField] private Dropdown selectPlayerDropdownMenu = null;
     [SerializeField] private GameObject joinMultiplayerLobbyPanel = null, lobbyPanel = null;
 
-    private void Awake () {
+    private void Awake() {
         NetworkManager.SingletonReady += OnSingletonReady();
         return;
     }
@@ -106,15 +109,15 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #region Fetching servers.
     public void addServerResponce(DiscoveryResponse discoveryResponse) {
         discoveredServers.Add(discoveryResponse);
-        List<string> temp = new List<string> {
-            discoveryResponse.name
-        };
-        serverDropdownMenu.AddOptions(temp);
+        MultiplayerLobbyListScript multiplayerLobbyListScript = Instantiate(multiplayerLobbyListTemplate, multiplayerLobbyListScrollViewViewport.transform).GetComponent<MultiplayerLobbyListScript>();
+        multiplayerLobbyListScript.multiplayerLobbyNameText.text = discoveryResponse.name;
         return;
     }
 
     public void refreshServers() {
-        serverDropdownMenu.ClearOptions();
+        foreach (Transform _transform in multiplayerLobbyListScrollViewViewport.transform) {
+            Destroy(_transform.gameObject);
+        }
         discoveredServers.Clear();
         customNetworkDiscovery.StartDiscovery();
         return;
@@ -127,7 +130,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         foreach (NetworkIdentity networkIdentity in networkIdentities) {
             networkIdentity.gameObject.SetActive(false);
         }
-        networkManager.StartClient(discoveredServers[serverDropdownMenu.value].uri);
         return;
     }
 
