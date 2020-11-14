@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class multiplayerLobbyScript : NetworkBehaviour {
     //Variables for maintaining the lobby.
-    [SyncVar(hook = nameof(syncPlayerCount))] private int playerCount;
+    [NonSerialized, SyncVar(hook = nameof(syncPlayerCount))] public int playerCount;
     private string disconnectedReason = "No reason.";
     [NonSerialized] public string lobbyName = "Unnamed.";
     private List<string> playerNames = new List<string>();
@@ -110,7 +110,9 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     public void addServerResponce(DiscoveryResponse discoveryResponse) {
         discoveredServers.Add(discoveryResponse);
         MultiplayerLobbyListScript multiplayerLobbyListScript = Instantiate(multiplayerLobbyListTemplate, multiplayerLobbyListScrollViewViewport.transform).GetComponent<MultiplayerLobbyListScript>();
+        multiplayerLobbyListScript.index = (discoveredServers.Count - 1);
         multiplayerLobbyListScript.multiplayerLobbyNameText.text = discoveryResponse.name;
+        multiplayerLobbyListScript.multiplayerLobbyPlayerCountText.text = (discoveryResponse.currentPlayerCount + " / " + discoveryResponse.maxPlayerCount + ".");
         return;
     }
 
@@ -125,11 +127,12 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #endregion
 
     #region Joining the multiplayer lobby.
-    public void joinMultiplayerLobby() {
+    public void joinMultiplayerLobby(int index) {
         NetworkIdentity[] networkIdentities = FindObjectsOfType<NetworkIdentity>();
         foreach (NetworkIdentity networkIdentity in networkIdentities) {
             networkIdentity.gameObject.SetActive(false);
         }
+        networkManager.StartClient(discoveredServers[index].uri);
         return;
     }
 

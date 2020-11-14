@@ -10,6 +10,7 @@ public class DiscoveryRequest : MessageBase {
 
 public class DiscoveryResponse : MessageBase {
     //What the server sends.
+    public int currentPlayerCount, maxPlayerCount;
     public string name;
     public IPEndPoint _IPEndPoint {
         get; set;
@@ -29,6 +30,8 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
 
     protected override DiscoveryResponse ProcessRequest(DiscoveryRequest discoveryRequest, IPEndPoint _IPEndPoint) {
         return new DiscoveryResponse {
+            currentPlayerCount = _multiplayerLobbyScript.playerCount,
+            maxPlayerCount = NetworkManager.singleton.maxConnections,
             name = _multiplayerLobbyScript.lobbyName,
             uri = telepathyTransport.ServerUri()
         };
