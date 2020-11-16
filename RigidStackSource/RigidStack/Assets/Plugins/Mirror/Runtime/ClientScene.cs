@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Guid = System.Guid;
 using Object = UnityEngine.Object;
 
@@ -625,6 +626,7 @@ namespace Mirror {
             // list can modified either in UnSpawnHandler or in OnDisable/OnDestroy
             // we need the Try/Catch so that the rest of the shutdown does not get stopped
             try {
+                string sceneName = SceneManager.GetActiveScene().name;
                 foreach (NetworkIdentity identity in NetworkIdentity.spawned.Values) {
                     if (identity != null && identity.gameObject != null) {
                         bool wasUnspawned = InvokeUnSpawnHandler(identity.assetId, identity.gameObject);
@@ -633,7 +635,9 @@ namespace Mirror {
                                 Object.Destroy(identity.gameObject);
                             } else {
                                 identity.Reset();
-                                identity.gameObject.SetActive(false);
+                                if (sceneName != "mainMenu") {
+                                    identity.gameObject.SetActive(false);
+                                }
                             }
                         }
                     }

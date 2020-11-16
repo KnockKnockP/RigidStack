@@ -164,9 +164,6 @@ namespace Mirror {
         [FormerlySerializedAs("m_SpawnPrefabs"), HideInInspector]
         public List<GameObject> spawnPrefabs = new List<GameObject>();
 
-        public delegate void Notify();
-        public static event Notify SingletonReady;
-
         /// <summary>
         /// NetworkManager singleton
         /// </summary>
@@ -701,7 +698,6 @@ namespace Mirror {
             // so only if we didn't destroy ourselves.
             Transport.activeTransport = transport;
 
-            SingletonReady?.Invoke();
             return true;
         }
 

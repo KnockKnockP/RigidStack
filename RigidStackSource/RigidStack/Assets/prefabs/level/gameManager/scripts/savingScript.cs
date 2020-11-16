@@ -135,7 +135,7 @@ public class savingScript : MonoBehaviour {
     private void Start() {
         //Doing this useless operation to remove the unused variable warning.
         if (noticeText != null) {
-            noticeText.text = noticeText.text;
+            _ = noticeText.text;
         }
         if ((_universalRenderPipelineAssets != null) && (universalRenderPipelineAssets == null)) {
             universalRenderPipelineAssets = _universalRenderPipelineAssets;
@@ -144,7 +144,7 @@ public class savingScript : MonoBehaviour {
         if (Directory.Exists(savesFolderPath) == false) {
             Directory.CreateDirectory(savesFolderPath);
         }
-        if (SceneManager.GetActiveScene().name == SceneNames.preMainMenu) {
+        if (SceneManager.GetActiveScene().name == SceneNames.MainMenu) {
             if (File.Exists(getPath(false, true, false, null)) == false) {
                 makeNewProfile(defaultProfileName);
             } else if (hasLoadedProfileListOnStart == false) {

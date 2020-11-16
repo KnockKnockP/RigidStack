@@ -13,7 +13,7 @@ public class mainMenuScript : MonoBehaviour {
 
     private void Awake() {
         currentVersionText.text = ("v" + Application.version + ".");
-        if (SceneManager.GetActiveScene().name == SceneNames.preMainMenu) {
+        if (SceneManager.GetActiveScene().name == SceneNames.MainMenu) {
             limitFPS();
             disableDebugging();
             checkInternetConnection();

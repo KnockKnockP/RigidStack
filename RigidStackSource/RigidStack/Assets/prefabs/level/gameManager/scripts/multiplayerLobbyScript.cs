@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +18,9 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     private NetworkManager networkManager;
     private CustomNetworkDiscovery customNetworkDiscovery;
 
+    [Header("Select multiplayer panel.")]
+    [SerializeField] private Text selectMultiplayerText = null;
+
     [Header("Join multiplayer lobby panel.")]
     [SerializeField] private GameObject multiplayerLobbyListScrollViewViewport = null, multiplayerLobbyListTemplate = null;
 
@@ -26,16 +31,22 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [SerializeField] private Dropdown selectPlayerDropdownMenu = null;
     [SerializeField] private GameObject joinMultiplayerLobbyPanel = null, lobbyPanel = null;
 
-    private void Awake() {
-        NetworkManager.SingletonReady += OnSingletonReady();
+    private void Start() {
+        StartCoroutine(waitForSingleton());
         return;
     }
 
-    private NetworkManager.Notify OnSingletonReady() {
-        networkManager = NetworkManager.singleton;
-        telepathyTransport = networkManager.gameObject.GetComponent<TelepathyTransport>();
-        customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
-        return null;
+    private IEnumerator waitForSingleton() {
+        while (true) {
+            if (NetworkManager.singleton != null) {
+                networkManager = NetworkManager.singleton;
+                telepathyTransport = networkManager.gameObject.GetComponent<TelepathyTransport>();
+                customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
+                break;
+            }
+            yield return null;
+        }
+        yield break;
     }
 
     public void createLobby() {
@@ -44,7 +55,28 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.StartHost();
         customNetworkDiscovery.AdvertiseServer();
+        StartCoroutine(checkPort());
         return;
+    }
+
+    private IEnumerator checkPort() {
+        const int timeOut = 5;
+        for (int i = timeOut; i >= 0; i--) {
+            selectMultiplayerText.text = "Please wait for " + i + " seconds.";
+            yield return new WaitForSeconds(1);
+        }
+        if (telepathyTransport.ServerActive() == false) {
+            Debug.LogWarning("Something went wrong with creation of the multiplayer lobby.\r\n" +
+                             "Retrying.");
+            customNetworkDiscovery.StopDiscovery();
+            networkManager.StopHost();
+            createLobby();
+        } else {
+            selectMultiplayerText.text = "Select multiplayer.";
+            lobbyPanel.SetActive(true);
+            Debug.Log("Multiplayer lobby created successfully.");
+        }
+        yield break;
     }
 
     #region Updating lobby texts.
@@ -151,7 +183,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             StartCoroutine(waitForValidationsToEnd());
         }
         commandIncrementPlayerCount();
-        lobbyPanel.SetActive(true);
         //We only disable joinMultiplayerLobbyPanel when we successfully connect to the multiplayer lobby.
         joinMultiplayerLobbyPanel.SetActive(false);
         return;

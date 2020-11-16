@@ -19,9 +19,13 @@ public class DiscoveryResponse : MessageBase {
 }
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
-    [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript;
+    private multiplayerLobbyScript _multiplayerLobbyScript;
     [SerializeField] private TelepathyTransport telepathyTransport;
 
+    private void Awake() {
+        _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
+        return;
+    }
     #region Server.
     protected override void ProcessClientRequest(DiscoveryRequest discoveryRequest, IPEndPoint _IPEndPoint) {
         base.ProcessClientRequest(discoveryRequest, _IPEndPoint);

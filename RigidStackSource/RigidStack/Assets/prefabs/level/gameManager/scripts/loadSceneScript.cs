@@ -4,15 +4,17 @@ using UnityEngine.SceneManagement;
 
 public static class SceneNames {
     //Variables for managing scenes.
-    public static readonly string preMainMenu = "preMainMenu",
-                                  MainMenu = "mainMenu",
-                                  GameplaySettingsMenu = "gameplaySettingsMenu",
-                                  GraphicsSettingsMenu = "graphicsSettingsMenu",
-                                  Level = "level";
+    public const string MainMenu = "mainMenu",
+                        GameplaySettingsMenu = "gameplaySettingsMenu",
+                        GraphicsSettingsMenu = "graphicsSettingsMenu",
+                        Level = "level";
 }
 
 public class loadSceneScript : MonoBehaviour {
     public static void loadScene(string sceneName) {
+        if (sceneName != SceneNames.Level) {
+            Destroy(NetworkManager.singleton);
+        }
         Time.timeScale = 1f;
         heightScript _heightScript = FindObjectOfType<heightScript>();
         if (_heightScript != null) {
