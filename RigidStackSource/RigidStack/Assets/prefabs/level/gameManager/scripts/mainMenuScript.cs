@@ -30,7 +30,7 @@ public class mainMenuScript : MonoBehaviour {
 #if UNITY_EDITOR
         QualitySettings.vSyncCount = 0;
 #else
-            Application.targetFrameRate = (Screen.currentResolution.refreshRate * 2);
+        Application.targetFrameRate = (Screen.currentResolution.refreshRate * 2);
 #endif
         return;
     }
