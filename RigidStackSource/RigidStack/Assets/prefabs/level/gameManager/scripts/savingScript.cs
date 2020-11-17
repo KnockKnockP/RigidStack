@@ -21,7 +21,7 @@ public static class LoadedPlayerData {
 public class PlayerData {
     public bool isManualCheckingEnabled = false;
     public int maxHeight = 0;
-    public string name = "Unnamed player.";
+    public string name = savingScript.defaultProfileName;
     public Difficulty difficulty = Difficulty.Easy;
 }
 
@@ -115,7 +115,7 @@ public class savingScript : MonoBehaviour {
 
     //Variables for the profiles menu.
     private bool hasLoadedProfileListOnStart;
-    private const string defaultProfileName = "Default";
+    public const string defaultProfileName = "Default";
     private static string lastlySelectedProfileName = defaultProfileName;
     [Header("Profiles menu.")]
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
