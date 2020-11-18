@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum Difficulty : byte {
@@ -40,17 +39,13 @@ public class settingsScript : MonoBehaviour {
     [SerializeField] private Text backgroundEnabledText = null;
     [SerializeField] private Text backgroundScalingText = null;
 
-    private void Start() {
-        string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == SceneNames.GameplaySettingsMenu) {
-            updateDifficulty(LoadedPlayerData.playerData.difficulty);
-            updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        } else if (sceneName == SceneNames.GraphicsSettingsMenu) {
-            updateGraphics(LoadedPlayerData.playerGraphics.graphics);
-            updateVerticalSyncCount(LoadedPlayerData.playerGraphics.verticalSyncCount);
-            updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
-            updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
-        }
+    public void updateAll() {
+        updateDifficulty(LoadedPlayerData.playerData.difficulty);
+        updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
+        updateGraphics(LoadedPlayerData.playerGraphics.graphics);
+        updateVerticalSyncCount(LoadedPlayerData.playerGraphics.verticalSyncCount);
+        updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
+        updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
         return;
     }
 

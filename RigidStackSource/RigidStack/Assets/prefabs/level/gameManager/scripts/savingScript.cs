@@ -320,9 +320,6 @@ public class savingScript : MonoBehaviour {
             if (_loadGraphicsSettings == true) {
                 loadGraphicsSettings(profileName);
             }
-            if (SceneManager.GetActiveScene().name != "preMainMenu") {
-                updateAll();
-            }
         } catch (Exception exception) {
             catchException(exception);
         } finally {
@@ -491,15 +488,6 @@ public class savingScript : MonoBehaviour {
         return;
     }
     #endregion
-
-    private void updateAll() {
-        _settingsScript.updateManualChecking(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        _settingsScript.updateDifficulty(LoadedPlayerData.playerData.difficulty);
-        _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
-        _settingsScript.updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
-        _settingsScript.updateVerticalSyncCount(LoadedPlayerData.playerGraphics.verticalSyncCount);
-        return;
-    }
 
     private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, string playerName) {
 #if UNITY_EDITOR
