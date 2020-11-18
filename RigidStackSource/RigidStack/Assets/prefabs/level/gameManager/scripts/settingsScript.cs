@@ -27,26 +27,17 @@ public static class GraphicsLevel {
 public class settingsScript : MonoBehaviour {
     //Variables for setting up the scene.
     [Header("Gameplay settings.")]
-    [SerializeField] private Text difficultyText = null;
     [SerializeField] private Dropdown difficultyDropdown = null;
-
-
     [SerializeField] private Text manualCheckingText = null;
 
 
     [Header("Graphics settings.")]
-    [SerializeField] private Text graphicsText = null;
     [SerializeField] private Dropdown graphicsDropdown = null;
     [SerializeField] private savingScript _savingScript = null;
 
-
-    [SerializeField] private Text verticalSyncCountText = null;
     [SerializeField] private Dropdown verticalSyncCountDropdown = null;
 
-
     [SerializeField] private Text backgroundEnabledText = null;
-
-
     [SerializeField] private Text backgroundScalingText = null;
 
     private void Start() {
@@ -71,8 +62,7 @@ public class settingsScript : MonoBehaviour {
 
     public void updateDifficulty(Difficulty _difficulty) {
         LoadedPlayerData.playerData.difficulty = _difficulty;
-        if ((difficultyText != null) && (difficultyDropdown != null)) {
-            difficultyText.text = ("Difficulty : " + _difficulty + ".");
+        if (difficultyDropdown != null) {
             difficultyDropdown.value = (int)(_difficulty);
         }
         return;
@@ -88,7 +78,7 @@ public class settingsScript : MonoBehaviour {
     public void updateManualChecking(bool _isManualCheckingEnabled) {
         LoadedPlayerData.playerData.isManualCheckingEnabled = _isManualCheckingEnabled;
         if (manualCheckingText != null) {
-            manualCheckingText.text = ("Is manual height checking enabled : " + _isManualCheckingEnabled + ".");
+            manualCheckingText.text = ("Manual height checking : " + _isManualCheckingEnabled + ".");
         }
         return;
     }
@@ -103,9 +93,7 @@ public class settingsScript : MonoBehaviour {
     public void updateGraphics(int graphicsLevel) {
         QualitySettings.SetQualityLevel(graphicsLevel, true);
         LoadedPlayerData.playerGraphics.graphics = graphicsLevel;
-        string graphicsLevelString = GraphicsLevel.getGraphicsLevelString(graphicsLevel);
-        if ((graphicsText != null) && (graphicsDropdown != null)) {
-            graphicsText.text = ("Graphics : " + graphicsLevelString);
+        if (graphicsDropdown != null) {
             graphicsDropdown.value = graphicsLevel;
         }
         _savingScript.save();
@@ -122,8 +110,7 @@ public class settingsScript : MonoBehaviour {
     public void updateVerticalSyncCount(int _verticalSyncCount) {
         QualitySettings.vSyncCount = _verticalSyncCount;
         LoadedPlayerData.playerGraphics.verticalSyncCount = _verticalSyncCount;
-        if ((verticalSyncCountText != null) && (verticalSyncCountDropdown != null)) {
-            verticalSyncCountText.text = ("Vertical sync count : " + _verticalSyncCount + ".");
+        if (verticalSyncCountDropdown != null) {
             verticalSyncCountDropdown.value = _verticalSyncCount;
         }
         return;
