@@ -52,7 +52,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         telepathyTransport.port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.StartHost();
-        customNetworkDiscovery.AdvertiseServer();
         StartCoroutine(checkPort());
         return;
     }
@@ -60,7 +59,11 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     private IEnumerator checkPort() {
         const int timeOut = 5;
         for (int i = timeOut; i >= 0; i--) {
-            selectMultiplayerText.text = "Please wait for " + i + " seconds.";
+            string seconds = " seconds.";
+            if (i == 1) {
+                seconds = " second.";
+            }
+            selectMultiplayerText.text = "Please wait for " + i + seconds;
             yield return new WaitForSeconds(1);
         }
         if (telepathyTransport.ServerActive() == false) {
@@ -72,6 +75,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         } else {
             selectMultiplayerText.text = "Select multiplayer.";
             lobbyPanel.SetActive(true);
+            customNetworkDiscovery.AdvertiseServer();
             Debug.Log("Multiplayer lobby created successfully.");
         }
         yield break;
@@ -163,6 +167,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             networkIdentity.gameObject.SetActive(false);
         }
         networkManager.StartClient(discoveredServers[index].uri);
+        lobbyPanel.SetActive(true);
         return;
     }
 

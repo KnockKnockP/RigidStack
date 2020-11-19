@@ -135,10 +135,15 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
             isClientThatPlacedTheObject = false;
         }
 
+        Rigidbody2D rigidbody2D = _gameObject.GetComponent<Rigidbody2D>();
+        PolygonCollider2D polygonCollider2D = _gameObject.GetComponent<PolygonCollider2D>();
+        if (isClientOnly == true) {
+            Destroy(polygonCollider2D);
+            Destroy(rigidbody2D);
+        }
         _heightScript.placedObjects.Add(_gameObject);
         _heightScript.placedObjectsTransforms.Add(_gameObject.transform);
         _endMenuManager.allPlacedObjectsSpriteRenderers.Add(_gameObject.GetComponent<SpriteRenderer>());
-        Rigidbody2D rigidbody2D = _gameObject.GetComponent<Rigidbody2D>();
         _heightScript.placedObjectsRigidbody2D.Add(rigidbody2D);
 
         _gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;

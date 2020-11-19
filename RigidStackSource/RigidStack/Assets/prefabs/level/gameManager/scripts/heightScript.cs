@@ -182,7 +182,9 @@ public class heightScript : NetworkBehaviour {
 
     public void resetLists() {
         Rigidbody2D tempRigidbody2D = placedObjectsRigidbody2D[(placedObjectsRigidbody2D.Count - 1)];
-        tempRigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+        if (tempRigidbody2D != null) {
+            tempRigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
 
         for (int i = 0; i < (placedObjectsRigidbody2D.Count - 1); i++) {
             Destroy(placedObjectsRigidbody2D[i]);

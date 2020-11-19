@@ -168,7 +168,10 @@ public class objectiveScript : NetworkBehaviour {
         Color32 dimmedColor = new Color32(50, 50, 50, 255);
         for (int i = 0; i < (_heightScript.placedObjects.Count - 1); i++) {
             GameObject placedObject = _heightScript.placedObjects[i];
-            placedObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+            Rigidbody2D rigidbody2D = _heightScript.placedObjectsRigidbody2D[i];
+            if (rigidbody2D != null) {
+                rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+            }
             placedObject.GetComponent<SpriteRenderer>().color = dimmedColor;
             if (placedObject.name.Contains("television") == true) {
                 televisionScript _televisionScript = placedObject.GetComponent<televisionScript>();
