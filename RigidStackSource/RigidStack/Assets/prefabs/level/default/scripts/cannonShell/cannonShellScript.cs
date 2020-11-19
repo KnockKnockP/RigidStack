@@ -2,9 +2,11 @@
 using System.Collections;
 using UnityEngine;
 
-public class cannonShellScript : MonoBehaviour {
-    private void Awake() {
-        StartCoroutine(suicide());
+public class cannonShellScript : NetworkBehaviour {
+    private void Start() {
+        if (isServer == true) {
+            StartCoroutine(suicide());
+        }
         return;
     }
 
