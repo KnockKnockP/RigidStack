@@ -268,9 +268,7 @@ public class objectiveScript : NetworkBehaviour {
     private IEnumerator shootCannons(float waitSecond) {
         while (true) {
             for (int i = 0; i < cannonList.Count; i++) {
-                Vector2 tipPosition = cannonInformationHolders[i].cannonTip.transform.position;
-                Vector3 position = new Vector3(tipPosition.x, tipPosition.y, 0);
-                GameObject spawnedCannonShell = Instantiate(cannonInformationHolders[i].cannonShell, position, Quaternion.identity, cannonList[i].transform);
+                GameObject spawnedCannonShell = Instantiate(cannonInformationHolders[i].cannonShell, cannonInformationHolders[i].cannonTip.transform.position, Quaternion.identity, cannonList[i].transform);
                 NetworkServer.Spawn(spawnedCannonShell);
                 clientRPCUpdateCannonShell(spawnedCannonShell, i);
                 spawnedCannonShell.GetComponent<Rigidbody2D>().velocity = new Vector2(15, 0);
@@ -285,6 +283,7 @@ public class objectiveScript : NetworkBehaviour {
             return;
         }
         _gameObject.transform.parent = cannonList[i].transform;
+        //We do this so the cannon shell does not spawn in the middle of the screen.
         _gameObject.transform.position = new Vector3(-500f, -500f, 0f);
         Destroy(_gameObject.GetComponent<Rigidbody2D>());
         Destroy(_gameObject.GetComponent<CircleCollider2D>());
