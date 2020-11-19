@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-#if !UNITY_EDITOR
-    using UnityEngine.Experimental.Rendering.Universal;
-#endif
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class backgroundManager : MonoBehaviour {
     //Variables for testing backgrounds.
@@ -17,16 +15,14 @@ public class backgroundManager : MonoBehaviour {
     [SerializeField] private DayBackgrounds dayBackgrounds = null;
 
     private void Start() {
-#if !UNITY_EDITOR
-            if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
-                GameObject globalLight = new GameObject("Global light.");
-                Light2D light2D = globalLight.AddComponent<Light2D>();
-                light2D.lightType = Light2D.LightType.Global;
-                light2D.blendStyleIndex = 1;
-                Destroy(this);
-                return;
-            }
-#endif
+        if (LoadedPlayerData.playerGraphics.isBackgroundEnabled == false) {
+            GameObject globalLight = new GameObject("Global light.");
+            Light2D light2D = globalLight.AddComponent<Light2D>();
+            light2D.lightType = Light2D.LightType.Global;
+            light2D.blendStyleIndex = 1;
+            Destroy(this);
+            return;
+        }
         setBackground();
 #if UNITY_EDITOR
         if (forceMorning == true) {
