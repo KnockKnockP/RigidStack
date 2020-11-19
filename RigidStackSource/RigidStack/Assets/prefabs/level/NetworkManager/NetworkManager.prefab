@@ -50,7 +50,7 @@ MonoBehaviour:
   runInBackground: 0
   autoStartServerBuild: 0
   showDebugMessages: 0
-  serverTickRate: 10
+  serverTickRate: 30
   offlineScene: 
   onlineScene: 
   transport: {fileID: 6904283737170093564}
@@ -135,7 +135,6 @@ MonoBehaviour:
   serverBroadcastListenPort: 47777
   shouldRepeatDiscovery: 0
   ActiveDiscoveryInterval: 3
-  _multiplayerLobbyScript: {fileID: 0}
   telepathyTransport: {fileID: 6904283737170093564}
 --- !u!114 &5481702614048272607
 MonoBehaviour:
