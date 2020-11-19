@@ -5744,12 +5744,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 3762136330216739915}
-    - target: {fileID: 3111245224190693624, guid: 64e17827fa7174446b83303899202325,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetActive
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 3661474053495778458}
     - target: {fileID: 3111245224190693625, guid: 64e17827fa7174446b83303899202325,
         type: 3}
       propertyPath: m_Pivot.x
@@ -5859,11 +5854,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: closeButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 3111245225291461576, guid: 64e17827fa7174446b83303899202325,
-        type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64e17827fa7174446b83303899202325, type: 3}
