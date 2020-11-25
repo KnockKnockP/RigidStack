@@ -2,7 +2,8 @@ using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace Mirror {
+namespace Mirror
+{
     // Handles network messages on client and server
     public delegate void NetworkMessageDelegate(NetworkConnection conn, NetworkReader reader, int channelId);
 
@@ -14,25 +15,28 @@ namespace Mirror {
     // Handles requests to unspawn objects on the client
     public delegate void UnSpawnDelegate(GameObject spawned);
 
-    // invoke type for Cmd/Rpc/SyncEvents
-    public enum MirrorInvokeType {
+    // invoke type for Cmd/Rpc
+    public enum MirrorInvokeType
+    {
         Command,
-        ClientRpc,
-        SyncEvent
+        ClientRpc
     }
 
-    public enum Version {
+    public enum Version
+    {
         Current = 1
     }
 
-    public static class Channels {
+    public static class Channels
+    {
         public const int DefaultReliable = 0;
         public const int DefaultUnreliable = 1;
     }
 
     // -- helpers for float conversion without allocations --
     [StructLayout(LayoutKind.Explicit)]
-    internal struct UIntFloat {
+    internal struct UIntFloat
+    {
         [FieldOffset(0)]
         public float floatValue;
 
@@ -41,7 +45,8 @@ namespace Mirror {
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct UIntDouble {
+    internal struct UIntDouble
+    {
         [FieldOffset(0)]
         public double doubleValue;
 
@@ -50,7 +55,8 @@ namespace Mirror {
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct UIntDecimal {
+    internal struct UIntDecimal
+    {
         [FieldOffset(0)]
         public ulong longValue1;
 

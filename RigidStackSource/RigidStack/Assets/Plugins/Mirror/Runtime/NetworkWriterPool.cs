@@ -1,12 +1,15 @@
 using System;
 using UnityEngine;
 
-namespace Mirror {
+namespace Mirror
+{
     /// <summary>
     /// NetworkWriter to be used with <see cref="NetworkWriterPool">NetworkWriterPool</see>
     /// </summary>
-    public class PooledNetworkWriter : NetworkWriter, IDisposable {
-        public void Dispose() {
+    public class PooledNetworkWriter : NetworkWriter, IDisposable
+    {
+        public void Dispose()
+        {
             NetworkWriterPool.Recycle(this);
         }
     }
@@ -16,7 +19,8 @@ namespace Mirror {
     /// <para>Use this pool instead of <see cref="NetworkWriter">NetworkWriter</see> to reduce memory allocation</para>
     /// <para>Use <see cref="Capacity">Capacity</see> to change size of pool</para>
     /// </summary>
-    public static class NetworkWriterPool {
+    public static class NetworkWriterPool
+    {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkWriterPool), LogType.Error);
 
         /// <summary>
@@ -24,9 +28,11 @@ namespace Mirror {
         /// <para>If pool is too small getting writers will causes memory allocation</para>
         /// <para>Default value: 100 </para>
         /// </summary>
-        public static int Capacity {
+        public static int Capacity
+        {
             get => pool.Length;
-            set {
+            set
+            {
                 // resize the array
                 Array.Resize(ref pool, value);
 
@@ -56,8 +62,10 @@ namespace Mirror {
         /// Get the next writer in the pool
         /// <para>If pool is empty, creates a new Writer</para>
         /// </summary>
-        public static PooledNetworkWriter GetWriter() {
-            if (next == -1) {
+        public static PooledNetworkWriter GetWriter()
+        {
+            if (next == -1)
+            {
                 return new PooledNetworkWriter();
             }
 
@@ -74,11 +82,15 @@ namespace Mirror {
         /// Puts writer back into pool
         /// <para>When pool is full, the extra writer is left for the GC</para>
         /// </summary>
-        public static void Recycle(PooledNetworkWriter writer) {
-            if (next < pool.Length - 1) {
+        public static void Recycle(PooledNetworkWriter writer)
+        {
+            if (next < pool.Length - 1)
+            {
                 next++;
                 pool[next] = writer;
-            } else {
+            }
+            else
+            {
                 logger.LogWarning("NetworkWriterPool.Recycle, Pool was full leaving extra writer for GC");
             }
         }

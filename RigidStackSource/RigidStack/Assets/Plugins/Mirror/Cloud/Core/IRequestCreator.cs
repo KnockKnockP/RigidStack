@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine.Networking;
 
-namespace Mirror.Cloud {
+namespace Mirror.Cloud
+{
     public delegate void RequestSuccess(string responseBody);
 
     public delegate void RequestFail(string responseBody);
@@ -9,13 +10,13 @@ namespace Mirror.Cloud {
     /// <summary>
     /// Objects that can be sent to the Api must have this interface
     /// </summary>
-    public interface ICanBeJson {
-    }
+    public interface ICanBeJson { }
 
     /// <summary>
     /// Methods to create and send UnityWebRequest
     /// </summary>
-    public interface IRequestCreator {
+    public interface IRequestCreator
+    {
         UnityWebRequest Delete(string page);
         UnityWebRequest Get(string page);
         UnityWebRequest Patch<T>(string page, T json) where T : struct, ICanBeJson;

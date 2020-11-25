@@ -1,15 +1,24 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
-namespace ParrelSync {
-    public class FileUtilities : MonoBehaviour {
-        public static bool IsFileLocked(string path) {
+namespace ParrelSync
+{
+    public class FileUtilities : MonoBehaviour
+    {
+        public static bool IsFileLocked(string path)
+        {
             FileInfo file = new FileInfo(path);
-            try {
-                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)) {
+            try
+            {
+                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                {
                     stream.Close();
                 }
-            } catch (IOException) {
+            }
+            catch (IOException)
+            {
                 //the file is unavailable because it is:
                 //still being written to
                 //or being processed by another thread

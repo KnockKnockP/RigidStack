@@ -1,16 +1,19 @@
 using Mono.CecilX;
 using Mono.CecilX.Cil;
 
-namespace Mirror.Weaver {
+namespace Mirror.Weaver
+{
     /// <summary>
     /// Processes [Rpc] methods in NetworkBehaviour
     /// </summary>
-    public static class RpcProcessor {
-        public static MethodDefinition ProcessRpcInvoke(TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc) {
+    public static class RpcProcessor
+    {
+        public static MethodDefinition ProcessRpcInvoke(TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc)
+        {
             MethodDefinition rpc = new MethodDefinition(
                 Weaver.InvokeRpcPrefix + md.Name,
                 MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
-                WeaverTypes.voidType);
+                WeaverTypes.Import(typeof(void)));
 
             ILProcessor worker = rpc.Body.GetILProcessor();
             Instruction label = worker.Create(OpCodes.Nop);
@@ -55,14 +58,16 @@ namespace Mirror.Weaver {
             This way we do not need to modify the code anywhere else,  and this works
             correctly in dependent assemblies
         */
-        public static MethodDefinition ProcessRpcCall(TypeDefinition td, MethodDefinition md, CustomAttribute clientRpcAttr) {
+        public static MethodDefinition ProcessRpcCall(TypeDefinition td, MethodDefinition md, CustomAttribute clientRpcAttr)
+        {
             MethodDefinition rpc = MethodProcessor.SubstituteMethod(td, md);
 
             ILProcessor worker = md.Body.GetILProcessor();
 
             NetworkBehaviourProcessor.WriteSetupLocals(worker);
 
-            if (Weaver.GenerateLogErrors) {
+            if (Weaver.GenerateLogErrors)
+            {
                 worker.Append(worker.Create(OpCodes.Ldstr, "Call ClientRpc function " + md.Name));
                 worker.Append(worker.Create(OpCodes.Call, WeaverTypes.logErrorReference));
             }

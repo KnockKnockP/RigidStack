@@ -1,22 +1,26 @@
 using Mono.CecilX;
 using Mono.CecilX.Cil;
 
-namespace Mirror.Weaver {
+namespace Mirror.Weaver
+{
     /// <summary>
     /// Processes [TargetRpc] methods in NetworkBehaviour
     /// </summary>
-    public static class TargetRpcProcessor {
+    public static class TargetRpcProcessor
+    {
         // helper functions to check if the method has a NetworkConnection parameter
-        public static bool HasNetworkConnectionParameter(MethodDefinition md) {
+        public static bool HasNetworkConnectionParameter(MethodDefinition md)
+        {
             return md.Parameters.Count > 0 &&
-                   md.Parameters[0].ParameterType.FullName == WeaverTypes.NetworkConnectionType.FullName;
+                   md.Parameters[0].ParameterType.Is<NetworkConnection>();
         }
 
-        public static MethodDefinition ProcessTargetRpcInvoke(TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc) {
+        public static MethodDefinition ProcessTargetRpcInvoke(TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc)
+        {
             MethodDefinition rpc = new MethodDefinition(Weaver.InvokeRpcPrefix + md.Name, MethodAttributes.Family |
                     MethodAttributes.Static |
                     MethodAttributes.HideBySig,
-                WeaverTypes.voidType);
+                WeaverTypes.Import(typeof(void)));
 
             ILProcessor worker = rpc.Body.GetILProcessor();
             Instruction label = worker.Create(OpCodes.Nop);
@@ -28,7 +32,8 @@ namespace Mirror.Weaver {
             worker.Append(worker.Create(OpCodes.Castclass, td));
 
             // NetworkConnection parameter is optional
-            if (HasNetworkConnectionParameter(md)) {
+            if (HasNetworkConnectionParameter(md))
+            {
                 // if call has NetworkConnection write clients connection as first arg
                 //ClientScene.readyconnection
                 worker.Append(worker.Create(OpCodes.Call, WeaverTypes.ReadyConnectionReference));
@@ -80,7 +85,8 @@ namespace Mirror.Weaver {
             correctly in dependent assemblies
 
         */
-        public static MethodDefinition ProcessTargetRpcCall(TypeDefinition td, MethodDefinition md, CustomAttribute targetRpcAttr) {
+        public static MethodDefinition ProcessTargetRpcCall(TypeDefinition td, MethodDefinition md, CustomAttribute targetRpcAttr)
+        {
             MethodDefinition rpc = MethodProcessor.SubstituteMethod(td, md);
 
             ILProcessor worker = md.Body.GetILProcessor();
@@ -99,10 +105,13 @@ namespace Mirror.Weaver {
             // invoke SendInternal and return
             // this
             worker.Append(worker.Create(OpCodes.Ldarg_0));
-            if (HasNetworkConnectionParameter(md)) {
+            if (HasNetworkConnectionParameter(md))
+            {
                 // connection
                 worker.Append(worker.Create(OpCodes.Ldarg_1));
-            } else {
+            }
+            else
+            {
                 // null
                 worker.Append(worker.Create(OpCodes.Ldnull));
             }

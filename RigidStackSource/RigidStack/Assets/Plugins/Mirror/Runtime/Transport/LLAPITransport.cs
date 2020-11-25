@@ -7,16 +7,16 @@
 #if !(UNITY_WSA || UNITY_WSA_10_0 || UNITY_WINRT || UNITY_WINRT_10_0 || NETFX_CORE)
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Net;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Types;
 
-namespace Mirror {
-    [EditorBrowsable(EditorBrowsableState.Never), Obsolete("LLAPI is obsolete and will be removed from future versions of Unity")]
-    public class LLAPITransport : Transport {
+namespace Mirror
+{
+    [Obsolete("LLAPI is obsolete and will be removed from future versions of Unity")]
+    public class LLAPITransport : Transport
+    {
         public const string Scheme = "unet";
 
         public ushort port = 7777;
@@ -25,7 +25,8 @@ namespace Mirror {
         public bool useWebsockets;
 
         // settings copied from uMMORPG configuration for best results
-        public ConnectionConfig connectionConfig = new ConnectionConfig {
+        public ConnectionConfig connectionConfig = new ConnectionConfig
+        {
             PacketSize = 1500,
             FragmentSize = 500,
             ResendTimeout = 1200,
@@ -51,7 +52,8 @@ namespace Mirror {
         };
 
         // settings copied from uMMORPG configuration for best results
-        public GlobalConfig globalConfig = new GlobalConfig {
+        public GlobalConfig globalConfig = new GlobalConfig
+        {
             ReactorModel = ReactorModel.SelectReactor,
             ThreadAwakeTimeout = 1,
             ReactorMaximumSentMessages = 4096,
@@ -76,9 +78,11 @@ namespace Mirror {
         readonly byte[] serverReceiveBuffer = new byte[4096];
         byte[] serverSendBuffer;
 
-        void OnValidate() {
+        void OnValidate()
+        {
             // add connectionconfig channels if none
-            if (connectionConfig.Channels.Count == 0) {
+            if (connectionConfig.Channels.Count == 0)
+            {
                 // channel 0 is reliable fragmented sequenced
                 connectionConfig.AddChannel(QosType.ReliableFragmentedSequenced);
                 // channel 1 is unreliable
@@ -86,7 +90,8 @@ namespace Mirror {
             }
         }
 
-        void Awake() {
+        void Awake()
+        {
             NetworkTransport.Init(globalConfig);
             Debug.Log("LLAPITransport initialized!");
 
@@ -95,22 +100,24 @@ namespace Mirror {
             serverSendBuffer = new byte[globalConfig.MaxPacketSize];
         }
 
-        public override bool Available() {
+        public override bool Available()
+        {
             // LLAPI runs on all platforms, including webgl
             return true;
         }
 
         #region client
-        public override bool ClientConnected() {
+        public override bool ClientConnected()
+        {
             return clientConnectionId != -1;
         }
 
 
 
-        void ClientConnect(string address, int port) {
+        void ClientConnect(string address, int port)
+        {
             // LLAPI can't handle 'localhost'
-            if (address.ToLower() == "localhost")
-                address = "127.0.0.1";
+            if (address.ToLower() == "localhost") address = "127.0.0.1";
 
             HostTopology hostTopology = new HostTopology(connectionConfig, 1);
 
@@ -121,17 +128,20 @@ namespace Mirror {
 
             clientConnectionId = NetworkTransport.Connect(clientId, address, port, 0, out error);
             NetworkError networkError = (NetworkError)error;
-            if (networkError != NetworkError.Ok) {
+            if (networkError != NetworkError.Ok)
+            {
                 Debug.LogWarning("NetworkTransport.Connect failed: clientId=" + clientId + " address= " + address + " port=" + port + " error=" + error);
                 clientConnectionId = -1;
             }
         }
 
-        public override void ClientConnect(string address) {
+        public override void ClientConnect(string address)
+        {
             ClientConnect(address, port);
         }
 
-        public override void ClientConnect(Uri uri) {
+        public override void ClientConnect(Uri uri)
+        {
             if (uri.Scheme != Scheme)
                 throw new ArgumentException($"Invalid url {uri}, use {Scheme}://host:port instead", nameof(uri));
 
@@ -140,20 +150,22 @@ namespace Mirror {
             ClientConnect(uri.Host, serverPort);
         }
 
-        public override bool ClientSend(int channelId, ArraySegment<byte> segment) {
+        public override void ClientSend(int channelId, ArraySegment<byte> segment)
+        {
             // Send buffer is copied internally, so we can get rid of segment
             // immediately after returning and it still works.
             // -> BUT segment has an offset, Send doesn't. we need to manually
             //    copy it into a 0-offset array
-            if (segment.Count <= clientSendBuffer.Length) {
+            if (segment.Count <= clientSendBuffer.Length)
+            {
                 Array.Copy(segment.Array, segment.Offset, clientSendBuffer, 0, segment.Count);
-                return NetworkTransport.Send(clientId, clientConnectionId, channelId, clientSendBuffer, segment.Count, out error);
+                NetworkTransport.Send(clientId, clientConnectionId, channelId, clientSendBuffer, segment.Count, out error);
             }
-            Debug.LogError("LLAPI.ClientSend: buffer( " + clientSendBuffer.Length + ") too small for: " + segment.Count);
-            return false;
+            else Debug.LogError("LLAPI.ClientSend: buffer( " + clientSendBuffer.Length + ") too small for: " + segment.Count);
         }
 
-        public bool ProcessClientMessage() {
+        public bool ProcessClientMessage()
+        {
             if (clientId == -1)
                 return false;
 
@@ -166,13 +178,15 @@ namespace Mirror {
             // DO NOT return after error != 0. otherwise Disconnect won't be
             // registered.
             NetworkError networkError = (NetworkError)error;
-            if (networkError != NetworkError.Ok) {
+            if (networkError != NetworkError.Ok)
+            {
                 string message = "NetworkTransport.Receive failed: hostid=" + clientId + " connId=" + connectionId + " channelId=" + channel + " error=" + networkError;
                 OnClientError.Invoke(new Exception(message));
             }
 
             // raise events
-            switch (networkEvent) {
+            switch (networkEvent)
+            {
                 case NetworkEventType.ConnectEvent:
                     OnClientConnected.Invoke();
                     break;
@@ -190,13 +204,16 @@ namespace Mirror {
             return true;
         }
 
-        public string ClientGetAddress() {
+        public string ClientGetAddress()
+        {
             NetworkTransport.GetConnectionInfo(serverHostId, clientId, out string address, out int port, out NetworkID networkId, out NodeID node, out error);
             return address;
         }
 
-        public override void ClientDisconnect() {
-            if (clientId != -1) {
+        public override void ClientDisconnect()
+        {
+            if (clientId != -1)
+            {
                 NetworkTransport.RemoveHost(clientId);
                 clientId = -1;
             }
@@ -207,7 +224,8 @@ namespace Mirror {
 
         // right now this just returns the first available uri,
         // should we return the list of all available uri?
-        public override Uri ServerUri() {
+        public override Uri ServerUri()
+        {
             UriBuilder builder = new UriBuilder();
             builder.Scheme = Scheme;
             builder.Host = Dns.GetHostName();
@@ -215,43 +233,46 @@ namespace Mirror {
             return builder.Uri;
         }
 
-        public override bool ServerActive() {
+        public override bool ServerActive()
+        {
             return serverHostId != -1;
         }
 
-        public override void ServerStart() {
-            if (useWebsockets) {
+        public override void ServerStart()
+        {
+            if (useWebsockets)
+            {
                 HostTopology topology = new HostTopology(connectionConfig, ushort.MaxValue - 1);
                 serverHostId = NetworkTransport.AddWebsocketHost(topology, port);
                 //Debug.Log("LLAPITransport.ServerStartWebsockets port=" + port + " max=" + maxConnections + " hostid=" + serverHostId);
-            } else {
+            }
+            else
+            {
                 HostTopology topology = new HostTopology(connectionConfig, ushort.MaxValue - 1);
                 serverHostId = NetworkTransport.AddHost(topology, port);
                 //Debug.Log("LLAPITransport.ServerStart port=" + port + " max=" + maxConnections + " hostid=" + serverHostId);
             }
         }
 
-        public override bool ServerSend(List<int> connectionIds, int channelId, ArraySegment<byte> segment) {
+        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment)
+        {
             // Send buffer is copied internally, so we can get rid of segment
             // immediately after returning and it still works.
             // -> BUT segment has an offset, Send doesn't. we need to manually
             //    copy it into a 0-offset array
-            if (segment.Count <= serverSendBuffer.Length) {
+            if (segment.Count <= serverSendBuffer.Length)
+            {
                 // copy to 0-offset
                 Array.Copy(segment.Array, segment.Offset, serverSendBuffer, 0, segment.Count);
 
-                // send to all
-                bool result = true;
-                foreach (int connectionId in connectionIds) {
-                    result &= NetworkTransport.Send(serverHostId, connectionId, channelId, serverSendBuffer, segment.Count, out error);
-                }
-                return result;
+                // send
+                NetworkTransport.Send(serverHostId, connectionId, channelId, serverSendBuffer, segment.Count, out error);
             }
-            Debug.LogError("LLAPI.ServerSend: buffer( " + serverSendBuffer.Length + ") too small for: " + segment.Count);
-            return false;
+            else Debug.LogError("LLAPI.ServerSend: buffer( " + serverSendBuffer.Length + ") too small for: " + segment.Count);
         }
 
-        public bool ProcessServerMessage() {
+        public bool ProcessServerMessage()
+        {
             if (serverHostId == -1)
                 return false;
 
@@ -264,7 +285,8 @@ namespace Mirror {
             // DO NOT return after error != 0. otherwise Disconnect won't be
             // registered.
             NetworkError networkError = (NetworkError)error;
-            if (networkError != NetworkError.Ok) {
+            if (networkError != NetworkError.Ok)
+            {
                 string message = "NetworkTransport.Receive failed: hostid=" + serverHostId + " connId=" + connectionId + " channelId=" + channel + " error=" + networkError;
 
                 // TODO write a TransportException or better
@@ -278,7 +300,8 @@ namespace Mirror {
                 return false;
             }*/
 
-            switch (networkEvent) {
+            switch (networkEvent)
+            {
                 case NetworkEventType.ConnectEvent:
                     OnServerConnected.Invoke(connectionId);
                     break;
@@ -297,16 +320,19 @@ namespace Mirror {
             return true;
         }
 
-        public override bool ServerDisconnect(int connectionId) {
+        public override bool ServerDisconnect(int connectionId)
+        {
             return NetworkTransport.Disconnect(serverHostId, connectionId, out error);
         }
 
-        public override string ServerGetClientAddress(int connectionId) {
+        public override string ServerGetClientAddress(int connectionId)
+        {
             NetworkTransport.GetConnectionInfo(serverHostId, connectionId, out string address, out int port, out NetworkID networkId, out NodeID node, out error);
             return address;
         }
 
-        public override void ServerStop() {
+        public override void ServerStop()
+        {
             NetworkTransport.RemoveHost(serverHostId);
             serverHostId = -1;
             Debug.Log("LLAPITransport.ServerStop");
@@ -319,29 +345,34 @@ namespace Mirror {
         //            e.g. in uSurvival Transport would apply Cmds before
         //            ShoulderRotation.LateUpdate, resulting in projectile
         //            spawns at the point before shoulder rotation.
-        public void LateUpdate() {
+        public void LateUpdate()
+        {
             // process all messages
-            while (ProcessClientMessage()) {
-            }
-            while (ProcessServerMessage()) {
-            }
+            while (ProcessClientMessage()) { }
+            while (ProcessServerMessage()) { }
         }
 
-        public override void Shutdown() {
+        public override void Shutdown()
+        {
             NetworkTransport.Shutdown();
             serverHostId = -1;
             clientConnectionId = -1;
             Debug.Log("LLAPITransport.Shutdown");
         }
 
-        public override int GetMaxPacketSize(int channelId) {
+        public override int GetMaxPacketSize(int channelId)
+        {
             return globalConfig.MaxPacketSize;
         }
 
-        public override string ToString() {
-            if (ServerActive()) {
+        public override string ToString()
+        {
+            if (ServerActive())
+            {
                 return "LLAPI Server port: " + port;
-            } else if (ClientConnected()) {
+            }
+            else if (ClientConnected())
+            {
                 string ip = ClientGetAddress();
                 return "LLAPI Client ip: " + ip + " port: " + port;
             }

@@ -1,11 +1,13 @@
 using Mono.CecilX;
 using Mono.CecilX.Cil;
 
-namespace Mirror.Weaver {
+namespace Mirror.Weaver
+{
     /// <summary>
     /// Processes [Command] methods in NetworkBehaviour
     /// </summary>
-    public static class CommandProcessor {
+    public static class CommandProcessor
+    {
         /*
             // generates code like:
             public void CmdThrust(float thrusting, int spin)
@@ -29,7 +31,8 @@ namespace Mirror.Weaver {
             This way we do not need to modify the code anywhere else,  and this works
             correctly in dependent assemblies
         */
-        public static MethodDefinition ProcessCommandCall(TypeDefinition td, MethodDefinition md, CustomAttribute commandAttr) {
+        public static MethodDefinition ProcessCommandCall(TypeDefinition td, MethodDefinition md, CustomAttribute commandAttr)
+        {
             MethodDefinition cmd = MethodProcessor.SubstituteMethod(td, md);
 
             ILProcessor worker = md.Body.GetILProcessor();
@@ -78,10 +81,11 @@ namespace Mirror.Weaver {
                 ((ShipControl)obj).CmdThrust(reader.ReadSingle(), (int)reader.ReadPackedUInt32());
             }
         */
-        public static MethodDefinition ProcessCommandInvoke(TypeDefinition td, MethodDefinition method, MethodDefinition cmdCallFunc) {
+        public static MethodDefinition ProcessCommandInvoke(TypeDefinition td, MethodDefinition method, MethodDefinition cmdCallFunc)
+        {
             MethodDefinition cmd = new MethodDefinition(Weaver.InvokeRpcPrefix + method.Name,
                 MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
-                WeaverTypes.voidType);
+                WeaverTypes.Import(typeof(void)));
 
             ILProcessor worker = cmd.Body.GetILProcessor();
             Instruction label = worker.Create(OpCodes.Nop);
@@ -107,9 +111,12 @@ namespace Mirror.Weaver {
             return cmd;
         }
 
-        static void AddSenderConnection(MethodDefinition method, ILProcessor worker) {
-            foreach (ParameterDefinition param in method.Parameters) {
-                if (NetworkBehaviourProcessor.IsSenderConnection(param, RemoteCallType.Command)) {
+        static void AddSenderConnection(MethodDefinition method, ILProcessor worker)
+        {
+            foreach (ParameterDefinition param in method.Parameters)
+            {
+                if (NetworkBehaviourProcessor.IsSenderConnection(param, RemoteCallType.Command))
+                {
                     // NetworkConnection is 3nd arg (arg0 is "obj" not "this" because method is static)
                     // exmaple: static void InvokeCmdCmdSendCommand(NetworkBehaviour obj, NetworkReader reader, NetworkConnection connection)
                     worker.Append(worker.Create(OpCodes.Ldarg_2));

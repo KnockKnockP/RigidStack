@@ -8,7 +8,8 @@ using UnityEngine;
 // forked from https://github.com/in0finite/MirrorNetworkDiscovery
 // Both are MIT Licensed
 
-namespace Mirror.Discovery {
+namespace Mirror.Discovery
+{
     /// <summary>
     /// Base implementation for Network Discovery.  Extend this component
     /// to provide custom discovery with game specific data
@@ -17,13 +18,10 @@ namespace Mirror.Discovery {
     [DisallowMultipleComponent]
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkDiscovery.html")]
     public abstract class NetworkDiscoveryBase<Request, Response> : MonoBehaviour
-        where Request : IMessageBase, new()
-        where Response : IMessageBase, new() {
-        public static bool SupportedOnThisPlatform {
-            get {
-                return Application.platform != RuntimePlatform.WebGLPlayer;
-            }
-        }
+        where Request : NetworkMessage
+        where Response : NetworkMessage
+    {
+        public static bool SupportedOnThisPlatform { get { return Application.platform != RuntimePlatform.WebGLPlayer; } }
 
         // each game should have a random unique handshake,  this way you can tell if this is the same game or not
         [HideInInspector]
@@ -34,10 +32,6 @@ namespace Mirror.Discovery {
         protected int serverBroadcastListenPort = 47777;
 
         [SerializeField]
-        [Tooltip("Repeat discovery?")]
-        bool shouldRepeatDiscovery;
-
-        [SerializeField]
         [Tooltip("Time in seconds between multi-cast messages")]
         [Range(1, 60)]
         float ActiveDiscoveryInterval = 3;
@@ -46,15 +40,18 @@ namespace Mirror.Discovery {
         protected UdpClient clientUdpClient;
 
 #if UNITY_EDITOR
-        void OnValidate() {
-            if (secretHandshake == 0) {
+        void OnValidate()
+        {
+            if (secretHandshake == 0)
+            {
                 secretHandshake = RandomLong();
                 UnityEditor.Undo.RecordObject(this, "Set secret handshake");
             }
         }
 #endif
 
-        public static long RandomLong() {
+        public static long RandomLong()
+        {
             int value1 = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             int value2 = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             return value1 + ((long)value2 << 32);
@@ -63,7 +60,8 @@ namespace Mirror.Discovery {
         /// <summary>
         /// virtual so that inheriting classes' Start() can call base.Start() too
         /// </summary>
-        public virtual void Start() {
+        public virtual void Start()
+        {
             // Server mode? then start advertising
 #if UNITY_SERVER
             AdvertiseServer();
@@ -71,25 +69,35 @@ namespace Mirror.Discovery {
         }
 
         // Ensure the ports are cleared no matter when Game/Unity UI exits
-        void OnApplicationQuit() {
+        void OnApplicationQuit()
+        {
             Shutdown();
         }
 
-        void Shutdown() {
-            if (serverUdpClient != null) {
-                try {
+        void Shutdown()
+        {
+            if (serverUdpClient != null)
+            {
+                try
+                {
                     serverUdpClient.Close();
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                     // it is just close, swallow the error
                 }
 
                 serverUdpClient = null;
             }
 
-            if (clientUdpClient != null) {
-                try {
+            if (clientUdpClient != null)
+            {
+                try
+                {
                     clientUdpClient.Close();
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                     // it is just close, swallow the error
                 }
 
@@ -104,14 +112,16 @@ namespace Mirror.Discovery {
         /// <summary>
         /// Advertise this server in the local network
         /// </summary>
-        public void AdvertiseServer() {
+        public void AdvertiseServer()
+        {
             if (!SupportedOnThisPlatform)
                 throw new PlatformNotSupportedException("Network discovery not supported in this platform");
 
             StopDiscovery();
 
             // Setup port -- may throw exception
-            serverUdpClient = new UdpClient(serverBroadcastListenPort) {
+            serverUdpClient = new UdpClient(serverBroadcastListenPort)
+            {
                 EnableBroadcast = true,
                 MulticastLoopback = false
             };
@@ -120,33 +130,42 @@ namespace Mirror.Discovery {
             _ = ServerListenAsync();
         }
 
-        public async Task ServerListenAsync() {
-            while (true) {
-                try {
+        public async Task ServerListenAsync()
+        {
+            while (true)
+            {
+                try
+                {
                     await ReceiveRequestAsync(serverUdpClient);
-                } catch (ObjectDisposedException) {
+                }
+                catch (ObjectDisposedException)
+                {
                     // socket has been closed
                     break;
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                 }
             }
         }
 
-        async Task ReceiveRequestAsync(UdpClient udpClient) {
+        async Task ReceiveRequestAsync(UdpClient udpClient)
+        {
             // only proceed if there is available data in network buffer, or otherwise Receive() will block
             // average time for UdpClient.Available : 10 us
 
             UdpReceiveResult udpReceiveResult = await udpClient.ReceiveAsync();
 
-            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(udpReceiveResult.Buffer)) {
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(udpReceiveResult.Buffer))
+            {
                 long handshake = networkReader.ReadInt64();
-                if (handshake != secretHandshake) {
+                if (handshake != secretHandshake)
+                {
                     // message is not for us
                     throw new ProtocolViolationException("Invalid handshake");
                 }
 
-                Request request = new Request();
-                request.Deserialize(networkReader);
+                Request request = networkReader.Read<Request>();
 
                 ProcessClientRequest(request, udpReceiveResult.RemoteEndPoint);
             }
@@ -161,23 +180,28 @@ namespace Mirror.Discovery {
         /// </remarks>
         /// <param name="request">Request comming from client</param>
         /// <param name="endpoint">Address of the client that sent the request</param>
-        protected virtual void ProcessClientRequest(Request request, IPEndPoint endpoint) {
+        protected virtual void ProcessClientRequest(Request request, IPEndPoint endpoint)
+        {
             Response info = ProcessRequest(request, endpoint);
 
             if (info == null)
                 return;
 
-            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
-                try {
+            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
+            {
+                try
+                {
                     writer.WriteInt64(secretHandshake);
 
-                    info.Serialize(writer);
+                    writer.Write(info);
 
                     ArraySegment<byte> data = writer.ToArraySegment();
                     // signature matches
                     // send response
                     serverUdpClient.Send(data.Array, data.Count, endpoint);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Debug.LogException(ex, this);
                 }
             }
@@ -202,19 +226,24 @@ namespace Mirror.Discovery {
         /// <summary>
         /// Start Active Discovery
         /// </summary>
-        public void StartDiscovery() {
+        public void StartDiscovery()
+        {
             if (!SupportedOnThisPlatform)
                 throw new PlatformNotSupportedException("Network discovery not supported in this platform");
 
             StopDiscovery();
 
-            try {
+            try
+            {
                 // Setup port
-                clientUdpClient = new UdpClient(0) {
+                clientUdpClient = new UdpClient(0)
+                {
                     EnableBroadcast = true,
                     MulticastLoopback = false
                 };
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 // Free the port if we took it
                 Shutdown();
                 throw;
@@ -222,16 +251,14 @@ namespace Mirror.Discovery {
 
             _ = ClientListenAsync();
 
-            if (shouldRepeatDiscovery)
-                InvokeRepeating(nameof(BroadcastDiscoveryRequest), 0, ActiveDiscoveryInterval);
-            else
-                BroadcastDiscoveryRequest();
+            InvokeRepeating(nameof(BroadcastDiscoveryRequest), 0, ActiveDiscoveryInterval);
         }
 
         /// <summary>
         /// Stop Active Discovery
         /// </summary>
-        public void StopDiscovery() {
+        public void StopDiscovery()
+        {
             Shutdown();
         }
 
@@ -239,14 +266,21 @@ namespace Mirror.Discovery {
         /// Awaits for server response
         /// </summary>
         /// <returns>ClientListenAsync Task</returns>
-        public async Task ClientListenAsync() {
-            while (true) {
-                try {
+        public async Task ClientListenAsync()
+        {
+            while (true)
+            {
+                try
+                {
                     await ReceiveGameBroadcastAsync(clientUdpClient);
-                } catch (ObjectDisposedException) {
+                }
+                catch (ObjectDisposedException)
+                {
                     // socket was closed, no problem
                     return;
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Debug.LogException(ex);
                 }
             }
@@ -255,24 +289,29 @@ namespace Mirror.Discovery {
         /// <summary>
         /// Sends discovery request from client
         /// </summary>
-        public void BroadcastDiscoveryRequest() {
+        public void BroadcastDiscoveryRequest()
+        {
             if (clientUdpClient == null)
                 return;
 
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Broadcast, serverBroadcastListenPort);
 
-            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
+            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
+            {
                 writer.WriteInt64(secretHandshake);
 
-                try {
+                try
+                {
                     Request request = GetRequest();
 
-                    request.Serialize(writer);
+                    writer.Write(request);
 
                     ArraySegment<byte> data = writer.ToArraySegment();
 
                     clientUdpClient.SendAsync(data.Array, data.Count, endPoint);
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                     // It is ok if we can't broadcast to one of the addresses
                 }
             }
@@ -285,20 +324,21 @@ namespace Mirror.Discovery {
         /// Override if you wish to include additional data in the discovery message
         /// such as desired game mode, language, difficulty, etc... </remarks>
         /// <returns>An instance of ServerRequest with data to be broadcasted</returns>
-        protected virtual Request GetRequest() => new Request();
+        protected virtual Request GetRequest() => default;
 
-        async Task ReceiveGameBroadcastAsync(UdpClient udpClient) {
+        async Task ReceiveGameBroadcastAsync(UdpClient udpClient)
+        {
             // only proceed if there is available data in network buffer, or otherwise Receive() will block
             // average time for UdpClient.Available : 10 us
 
             UdpReceiveResult udpReceiveResult = await udpClient.ReceiveAsync();
 
-            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(udpReceiveResult.Buffer)) {
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(udpReceiveResult.Buffer))
+            {
                 if (networkReader.ReadInt64() != secretHandshake)
                     return;
 
-                Response response = new Response();
-                response.Deserialize(networkReader);
+                Response response = networkReader.Read<Response>();
 
                 ProcessResponse(response, udpReceiveResult.RemoteEndPoint);
             }

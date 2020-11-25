@@ -1,14 +1,14 @@
 using Mirror.Cloud.ListServerService;
 using UnityEngine;
 
-namespace Mirror.Cloud {
+namespace Mirror.Cloud
+{
     /// <summary>
     /// Used to requests and responses from the mirror api
     /// </summary>
-    public interface IApiConnector {
-        ListServer ListServer {
-            get;
-        }
+    public interface IApiConnector
+    {
+        ListServer ListServer { get; }
     }
 
     /// <summary>
@@ -17,7 +17,8 @@ namespace Mirror.Cloud {
     [DisallowMultipleComponent]
     [AddComponentMenu("Network/CloudServices/ApiConnector")]
     [HelpURL("https://mirror-networking.com/docs/CloudServices/ApiConnector.html")]
-    public class ApiConnector : MonoBehaviour, IApiConnector, ICoroutineRunner {
+    public class ApiConnector : MonoBehaviour, IApiConnector, ICoroutineRunner
+    {
         #region Inspector
         [Header("Settings")]
 
@@ -35,25 +36,26 @@ namespace Mirror.Cloud {
 
         IRequestCreator requestCreator;
 
-        public ListServer ListServer {
-            get; private set;
-        }
+        public ListServer ListServer { get; private set; }
 
-        void Awake() {
+        void Awake()
+        {
             requestCreator = new RequestCreator(ApiAddress, ApiKey, this);
 
             InitListServer();
         }
 
-        void InitListServer() {
+        void InitListServer()
+        {
             IListServerServerApi serverApi = new ListServerServerApi(this, requestCreator);
             IListServerClientApi clientApi = new ListServerClientApi(this, requestCreator, _onServerListUpdated);
             ListServer = new ListServer(serverApi, clientApi);
         }
 
-        public void OnDestroy() {
-            ListServer.ServerApi.Shutdown();
-            ListServer.ClientApi.Shutdown();
+        public void OnDestroy()
+        {
+            ListServer?.ServerApi.Shutdown();
+            ListServer?.ClientApi.Shutdown();
         }
     }
 }

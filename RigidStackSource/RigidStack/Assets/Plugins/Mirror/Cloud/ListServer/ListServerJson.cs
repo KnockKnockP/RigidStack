@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mirror.Cloud.ListServerService {
+namespace Mirror.Cloud.ListServerService
+{
     [Serializable]
-    public struct ServerCollectionJson : ICanBeJson {
+    public struct ServerCollectionJson : ICanBeJson
+    {
         public ServerJson[] servers;
     }
 
     [Serializable]
-    public struct ServerJson : ICanBeJson {
+    public struct ServerJson : ICanBeJson
+    {
         public string protocol;
         public int port;
         public int playerCount;
@@ -55,29 +58,37 @@ namespace Mirror.Cloud.ListServerService {
         /// Updates the customData array
         /// </summary>
         /// <param name="data"></param>
-        public void SetCustomData(Dictionary<string, string> data) {
-            if (data == null) {
+        public void SetCustomData(Dictionary<string, string> data)
+        {
+            if (data == null)
+            {
                 customData = null;
-            } else {
+            }
+            else
+            {
                 customData = data.ToKeyValueArray();
                 CustomDataHelper.ValidateCustomData(customData);
             }
         }
 
-        public bool Validate() {
+        public bool Validate()
+        {
             CustomDataHelper.ValidateCustomData(customData);
 
-            if (string.IsNullOrEmpty(protocol)) {
+            if (string.IsNullOrEmpty(protocol))
+            {
                 Logger.LogError("ServerJson should not have empty protocol");
                 return false;
             }
 
-            if (port == 0) {
+            if (port == 0)
+            {
                 Logger.LogError("ServerJson should not have port equal 0");
                 return false;
             }
 
-            if (maxPlayerCount == 0) {
+            if (maxPlayerCount == 0)
+            {
                 Logger.LogError("ServerJson should not have maxPlayerCount equal 0");
                 return false;
             }
@@ -87,7 +98,8 @@ namespace Mirror.Cloud.ListServerService {
     }
 
     [Serializable]
-    public struct PartialServerJson : ICanBeJson {
+    public struct PartialServerJson : ICanBeJson
+    {
         /// <summary>
         /// optional
         /// </summary>
@@ -110,66 +122,83 @@ namespace Mirror.Cloud.ListServerService {
         public KeyValue[] customData;
 
 
-        public void SetCustomData(Dictionary<string, string> data) {
-            if (data == null) {
+        public void SetCustomData(Dictionary<string, string> data)
+        {
+            if (data == null)
+            {
                 customData = null;
-            } else {
+            }
+            else
+            {
                 customData = data.ToKeyValueArray();
                 CustomDataHelper.ValidateCustomData(customData);
             }
         }
 
-        public void Validate() {
+        public void Validate()
+        {
             CustomDataHelper.ValidateCustomData(customData);
         }
     }
 
-    public static class CustomDataHelper {
+    public static class CustomDataHelper
+    {
         const int MaxCustomData = 16;
 
-        public static Dictionary<string, string> ToDictionary(this KeyValue[] keyValues) {
+        public static Dictionary<string, string> ToDictionary(this KeyValue[] keyValues)
+        {
             return keyValues.ToDictionary(x => x.key, x => x.value);
         }
-        public static KeyValue[] ToKeyValueArray(this Dictionary<string, string> dictionary) {
+        public static KeyValue[] ToKeyValueArray(this Dictionary<string, string> dictionary)
+        {
             return dictionary.Select(kvp => new KeyValue(kvp.Key, kvp.Value)).ToArray();
         }
 
-        public static void ValidateCustomData(KeyValue[] customData) {
-            if (customData == null) {
+        public static void ValidateCustomData(KeyValue[] customData)
+        {
+            if (customData == null)
+            {
                 return;
             }
 
-            if (customData.Length > MaxCustomData) {
+            if (customData.Length > MaxCustomData)
+            {
                 Logger.LogError($"There can only be {MaxCustomData} custom data but there was {customData.Length} values given");
                 Array.Resize(ref customData, MaxCustomData);
             }
 
-            foreach (KeyValue item in customData) {
+            foreach (KeyValue item in customData)
+            {
                 item.Validate();
             }
         }
     }
 
     [Serializable]
-    public struct KeyValue {
+    public struct KeyValue
+    {
         const int MaxKeySize = 32;
         const int MaxValueSize = 256;
 
         public string key;
         public string value;
 
-        public KeyValue(string key, string value) {
+        public KeyValue(string key, string value)
+        {
             this.key = key;
             this.value = value;
         }
 
-        public void Validate() {
-            if (key.Length > MaxKeySize) {
+        public void Validate()
+        {
+            if (key.Length > MaxKeySize)
+            {
                 Logger.LogError($"Custom Data must have key with length less than {MaxKeySize}");
                 key = key.Substring(0, MaxKeySize);
             }
 
-            if (value.Length > MaxValueSize) {
+            if (value.Length > MaxValueSize)
+            {
                 Logger.LogError($"Custom Data must have value with length less than {MaxValueSize}");
                 value = value.Substring(0, MaxValueSize);
             }

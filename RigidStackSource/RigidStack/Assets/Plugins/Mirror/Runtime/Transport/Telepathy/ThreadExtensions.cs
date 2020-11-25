@@ -1,9 +1,12 @@
 using System.Threading;
 
-namespace Telepathy {
-    public static class ThreadExtensions {
+namespace Telepathy
+{
+    public static class ThreadExtensions
+    {
         // helper function to abort a thread and not return until it's fully done
-        public static void AbortAndJoin(this Thread thread) {
+        public static void AbortAndJoin(this Thread thread)
+        {
             // kill thread at all costs
             // -> calling .Join would sometimes wait forever
             // -> calling .Interrupt only interrupts certain states.

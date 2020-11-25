@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using kcp2k;
+using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [NonSerialized] public string lobbyName = "Unnamed.";
     private List<string> playerNames = new List<string>();
     private readonly List<DiscoveryResponse> discoveredServers = new List<DiscoveryResponse>();
-    private TelepathyTransport telepathyTransport;
+    private KcpTransport kcpTransport;
     private NetworkManager networkManager;
     private CustomNetworkDiscovery customNetworkDiscovery;
 
@@ -34,7 +35,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         while (true) {
             if (NetworkManager.singleton != null) {
                 networkManager = NetworkManager.singleton;
-                telepathyTransport = networkManager.gameObject.GetComponent<TelepathyTransport>();
+                kcpTransport = networkManager.gameObject.GetComponent<KcpTransport>();
                 customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
                 yield break;
             }
@@ -44,7 +45,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     public void createLobby() {
         playerCount = 0;
-        telepathyTransport.port = NetworkManagerScript.getAvailablePort();
+        kcpTransport.Port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.StartHost();
         StartCoroutine(nameof(checkPort));
@@ -55,10 +56,9 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         const int timeOut = 5;
         for (int i = timeOut; i >= 0; i--) {
             selectMultiplayerText.text = ("Please wait for " + i + ((i == 1) ? " second." : " seconds."));
-            Debug.LogWarning("Here 1.");
             yield return new WaitForSeconds(1);
         }
-        if (telepathyTransport.ServerActive() == false) {
+        if (kcpTransport.ServerActive() == false) {
             Debug.LogWarning("Something went wrong with creation of the multiplayer lobby.\r\n" +
                              "Retrying.");
             customNetworkDiscovery.StopDiscovery();

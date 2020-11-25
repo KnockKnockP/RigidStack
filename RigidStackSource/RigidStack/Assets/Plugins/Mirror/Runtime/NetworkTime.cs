@@ -2,11 +2,13 @@ using System;
 using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
-namespace Mirror {
+namespace Mirror
+{
     /// <summary>
     /// Synchronize time between the server and the clients
     /// </summary>
-    public static class NetworkTime {
+    public static class NetworkTime
+    {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkTime));
 
         /// <summary>
@@ -25,7 +27,8 @@ namespace Mirror {
         // Date and time when the application started
         static readonly Stopwatch stopwatch = new Stopwatch();
 
-        static NetworkTime() {
+        static NetworkTime()
+        {
             stopwatch.Start();
         }
 
@@ -37,19 +40,23 @@ namespace Mirror {
         static double offsetMax = double.MaxValue;
 
         // returns the clock time _in this system_
-        static double LocalTime() {
+        static double LocalTime()
+        {
             return stopwatch.Elapsed.TotalSeconds;
         }
 
-        public static void Reset() {
+        public static void Reset()
+        {
             _rtt = new ExponentialMovingAverage(PingWindowSize);
             _offset = new ExponentialMovingAverage(PingWindowSize);
             offsetMin = double.MinValue;
             offsetMax = double.MaxValue;
         }
 
-        internal static void UpdateClient() {
-            if (Time.time - lastPingTime >= PingFrequency) {
+        internal static void UpdateClient()
+        {
+            if (Time.time - lastPingTime >= PingFrequency)
+            {
                 NetworkPingMessage pingMessage = new NetworkPingMessage(LocalTime());
                 NetworkClient.Send(pingMessage);
                 lastPingTime = Time.time;
@@ -59,11 +66,12 @@ namespace Mirror {
         // executed at the server when we receive a ping message
         // reply with a pong containing the time from the client
         // and time from the server
-        internal static void OnServerPing(NetworkConnection conn, NetworkPingMessage msg) {
-            if (logger.LogEnabled())
-                logger.Log("OnPingServerMessage  conn=" + conn);
+        internal static void OnServerPing(NetworkConnection conn, NetworkPingMessage msg)
+        {
+            if (logger.LogEnabled()) logger.Log("OnPingServerMessage  conn=" + conn);
 
-            NetworkPongMessage pongMsg = new NetworkPongMessage {
+            NetworkPongMessage pongMsg = new NetworkPongMessage
+            {
                 clientTime = msg.clientTime,
                 serverTime = LocalTime()
             };
@@ -74,7 +82,8 @@ namespace Mirror {
         // Executed at the client when we receive a Pong message
         // find out how long it took since we sent the Ping
         // and update time offset
-        internal static void OnClientPong(NetworkPongMessage msg) {
+        internal static void OnClientPong(NetworkPongMessage msg)
+        {
             double now = LocalTime();
 
             // how long did this message take to come back
@@ -91,11 +100,14 @@ namespace Mirror {
             offsetMin = Math.Max(offsetMin, newOffsetMin);
             offsetMax = Math.Min(offsetMax, newOffsetMax);
 
-            if (_offset.Value < offsetMin || _offset.Value > offsetMax) {
+            if (_offset.Value < offsetMin || _offset.Value > offsetMax)
+            {
                 // the old offset was offrange,  throw it away and use new one
                 _offset = new ExponentialMovingAverage(PingWindowSize);
                 _offset.Add(newOffset);
-            } else if (newOffset >= offsetMin || newOffset <= offsetMax) {
+            }
+            else if (newOffset >= offsetMin || newOffset <= offsetMax)
+            {
                 // new offset looks reasonable,  add to the average
                 _offset.Add(newOffset);
             }
@@ -104,32 +116,15 @@ namespace Mirror {
         /// <summary>
         /// The time in seconds since the server started.
         /// </summary>
-        /// <remarks>
-        /// <para>Note this value works in the client and the server
-        /// the value is synchronized accross the network with high accuracy</para>
-        /// <para>You should not cast this down to a float because the it loses too much accuracy
-        /// when the server is up for a while</para>
-        /// <para>I measured the accuracy of float and I got this:</para>
-        /// <list type="bullet">
-        ///     <item>
-        ///         <description>for the same day,  accuracy is better than 1 ms</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>after 1 day,  accuracy goes down to 7 ms</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>after 10 days, accuracy is 61 ms</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>after 30 days , accuracy is 238 ms</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>after 60 days, accuracy is 454 ms</description>
-        ///     </item>
-        /// </list>
-        /// <para>in other words,  if the server is running for 2 months,
-        /// and you cast down to float,  then the time will jump in 0.4s intervals.</para>
-        /// </remarks>
+        //
+        // I measured the accuracy of float and I got this:
+        // for the same day,  accuracy is better than 1 ms
+        // after 1 day,  accuracy goes down to 7 ms
+        // after 10 days, accuracy is 61 ms
+        // after 30 days , accuracy is 238 ms
+        // after 60 days, accuracy is 454 ms
+        // in other words,  if the server is running for 2 months,
+        // and you cast down to float,  then the time will jump in 0.4s intervals.
         public static double time => LocalTime() - _offset.Value;
 
         /// <summary>

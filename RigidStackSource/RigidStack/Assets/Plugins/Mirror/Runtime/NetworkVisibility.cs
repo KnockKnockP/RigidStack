@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror {
+namespace Mirror
+{
     // the name NetworkProximityCheck implies that it's only about objects in
     // proximity to the player. But we might have room based, guild based,
     // instanced based checks too, so NetworkVisibility is more fitting.
@@ -9,7 +10,8 @@ namespace Mirror {
     // note: we inherit from NetworkBehaviour so we can reuse .netIdentity, etc.
     // note: unlike UNET, we only allow 1 proximity checker per NetworkIdentity.
     [DisallowMultipleComponent]
-    public abstract class NetworkVisibility : NetworkBehaviour {
+    public abstract class NetworkVisibility : NetworkBehaviour
+    {
         /// <summary>
         /// Callback used by the visibility system to determine if an observer (player) can see this object.
         /// <para>If this function returns true, the network connection will be added as an observer.</para>
@@ -31,7 +33,8 @@ namespace Mirror {
         /// <para>Objects on a host (with a local client) cannot be disabled or destroyed when they are not visible to the local client. So this function is called to allow custom code to hide these objects. A typical implementation will disable renderer components on the object. This is only called on local clients on a host.</para>
         /// </summary>
         /// <param name="visible">New visibility state.</param>
-        public virtual void OnSetHostVisibility(bool visible) {
+        public virtual void OnSetHostVisibility(bool visible)
+        {
             foreach (Renderer rend in GetComponentsInChildren<Renderer>())
                 rend.enabled = visible;
         }

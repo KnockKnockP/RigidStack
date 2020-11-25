@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror {
+namespace Mirror
+{
     /// <summary>
     /// Component that controls visibility of networked objects for players.
     /// <para>Any object with this component on it will not be visible to players more than a (configurable) distance away.</para>
@@ -9,7 +10,8 @@ namespace Mirror {
     [AddComponentMenu("Network/NetworkProximityChecker")]
     [RequireComponent(typeof(NetworkIdentity))]
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkProximityChecker.html")]
-    public class NetworkProximityChecker : NetworkVisibility {
+    public class NetworkProximityChecker : NetworkVisibility
+    {
         /// <summary>
         /// The maximim range that objects will be visible at.
         /// </summary>
@@ -30,14 +32,17 @@ namespace Mirror {
         public bool forceHidden;
 
 
-        public override void OnStartServer() {
+        public override void OnStartServer()
+        {
             InvokeRepeating(nameof(RebuildObservers), 0, visUpdateInterval);
         }
-        public override void OnStopServer() {
+        public override void OnStopServer()
+        {
             CancelInvoke(nameof(RebuildObservers));
         }
 
-        void RebuildObservers() {
+        void RebuildObservers()
+        {
             netIdentity.RebuildObservers(false);
         }
 
@@ -47,7 +52,8 @@ namespace Mirror {
         /// </summary>
         /// <param name="conn">Network connection of a player.</param>
         /// <returns>True if the player can see this object.</returns>
-        public override bool OnCheckObserver(NetworkConnection conn) {
+        public override bool OnCheckObserver(NetworkConnection conn)
+        {
             if (forceHidden)
                 return false;
 
@@ -60,7 +66,8 @@ namespace Mirror {
         /// </summary>
         /// <param name="observers">The new set of observers for this object.</param>
         /// <param name="initialize">True if the set of observers is being built for the first time.</param>
-        public override void OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize) {
+        public override void OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize)
+        {
             // if force hidden then return without adding any observers.
             if (forceHidden)
                 return;
@@ -75,10 +82,13 @@ namespace Mirror {
             //    magnitude faster. if we have 10k monsters and run a sphere
             //    cast 10k times, we will see a noticeable lag even with physics
             //    layers. but checking to every connection is fast.
-            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values) {
-                if (conn != null && conn.identity != null) {
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+            {
+                if (conn != null && conn.identity != null)
+                {
                     // check distance
-                    if (Vector3.Distance(conn.identity.transform.position, position) < visRange) {
+                    if (Vector3.Distance(conn.identity.transform.position, position) < visRange)
+                    {
                         observers.Add(conn);
                     }
                 }

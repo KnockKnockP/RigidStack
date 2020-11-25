@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror {
+namespace Mirror
+{
     /// <summary>
     /// A High level network connection. This is used for connections from client-to-server and for connection from server-to-client.
     /// </summary>
@@ -13,7 +14,8 @@ namespace Mirror {
     /// <para>NetworkConnection objects also act as observers for networked objects. When a connection is an observer of a networked object with a NetworkIdentity, then the object will be visible to corresponding client for the connection, and incremental state changes will be sent to the client.</para>
     /// <para>There are many virtual functions on NetworkConnection that allow its behaviour to be customized. NetworkClient and NetworkServer can both be made to instantiate custom classes derived from NetworkConnection by setting their networkConnectionClass member variable.</para>
     /// </remarks>
-    public abstract class NetworkConnection : IDisposable {
+    public abstract class NetworkConnection
+    {
         public const int LocalConnectionId = 0;
         static readonly ILogger logger = LogFactory.GetLogger<NetworkConnection>();
 
@@ -54,9 +56,7 @@ namespace Mirror {
         /// The IP address / URL / FQDN associated with the connection.
         /// Can be useful for a game master to do IP Bans etc.
         /// </summary>
-        public abstract string address {
-            get;
-        }
+        public abstract string address { get; }
 
         /// <summary>
         /// The last time that a message was received on this connection.
@@ -67,9 +67,7 @@ namespace Mirror {
         /// <summary>
         /// The NetworkIdentity for this connection.
         /// </summary>
-        public NetworkIdentity identity {
-            get; internal set;
-        }
+        public NetworkIdentity identity { get; internal set; }
 
         /// <summary>
         /// A list of the NetworkIdentity objects owned by this connection. This list is read-only.
@@ -81,21 +79,11 @@ namespace Mirror {
         public readonly HashSet<NetworkIdentity> clientOwnedObjects = new HashSet<NetworkIdentity>();
 
         /// <summary>
-        /// Setting this to true will log the contents of network message to the console.
-        /// </summary>
-        /// <remarks>
-        /// <para>Warning: this can be a lot of data and can be very slow. Both incoming and outgoing messages are logged. The format of the logs is:</para>
-        /// <para>ConnectionSend con:1 bytes:11 msgId:5 FB59D743FD120000000000 ConnectionRecv con:1 bytes:27 msgId:8 14F21000000000016800AC3FE090C240437846403CDDC0BD3B0000</para>
-        /// <para>Note that these are application-level network messages, not protocol-level packets. There will typically be multiple network messages combined in a single protocol packet.</para>
-        /// </remarks>
-        [Obsolete("Set logger to Log level instead")]
-        public bool logNetworkMessages;
-
-        /// <summary>
         /// Creates a new NetworkConnection
         /// </summary>
-        internal NetworkConnection() {
-            // set lastTime to current time when creating connection to make sure it isn't instantly kicked for inactivity 
+        internal NetworkConnection()
+        {
+            // set lastTime to current time when creating connection to make sure it isn't instantly kicked for inactivity
             lastMessageTime = Time.time;
         }
 
@@ -103,27 +91,9 @@ namespace Mirror {
         /// Creates a new NetworkConnection with the specified connectionId
         /// </summary>
         /// <param name="networkConnectionId"></param>
-        internal NetworkConnection(int networkConnectionId) : this() {
+        internal NetworkConnection(int networkConnectionId) : this()
+        {
             connectionId = networkConnectionId;
-        }
-
-        ~NetworkConnection() {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes of this connection, releasing channel buffers that it holds.
-        /// </summary>
-        public void Dispose() {
-            Dispose(true);
-            // Take yourself off the Finalization queue
-            // to prevent finalization code for this object
-            // from executing a second time.
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing) {
-            clientOwnedObjects.Clear();
         }
 
         /// <summary>
@@ -131,7 +101,8 @@ namespace Mirror {
         /// </summary>
         public abstract void Disconnect();
 
-        internal void SetHandlers(Dictionary<int, NetworkMessageDelegate> handlers) {
+        internal void SetHandlers(Dictionary<int, NetworkMessageDelegate> handlers)
+        {
             messageHandlers = handlers;
         }
 
@@ -141,13 +112,14 @@ namespace Mirror {
         /// <typeparam name="T">The message type to unregister.</typeparam>
         /// <param name="msg">The message to send.</param>
         /// <param name="channelId">The transport layer channel to send on.</param>
-        /// <returns></returns>
-        public bool Send<T>(T msg, int channelId = Channels.DefaultReliable) where T : IMessageBase {
-            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
+        public void Send<T>(T msg, int channelId = Channels.DefaultReliable) where T : NetworkMessage
+        {
+            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
+            {
                 // pack message and send allocation free
                 MessagePacker.Pack(msg, writer);
                 NetworkDiagnostics.OnSend(msg, channelId, writer.Position, 1);
-                return Send(writer.ToArraySegment(), channelId);
+                Send(writer.ToArraySegment(), channelId);
             }
         }
 
@@ -156,13 +128,16 @@ namespace Mirror {
         //    would check max size and show errors internally. best to do it
         //    in one place in hlapi.
         // => it's important to log errors, so the user knows what went wrong.
-        protected internal static bool ValidatePacketSize(ArraySegment<byte> segment, int channelId) {
-            if (segment.Count > Transport.activeTransport.GetMaxPacketSize(channelId)) {
+        protected internal static bool ValidatePacketSize(ArraySegment<byte> segment, int channelId)
+        {
+            if (segment.Count > Transport.activeTransport.GetMaxPacketSize(channelId))
+            {
                 logger.LogError("NetworkConnection.ValidatePacketSize: cannot send packet larger than " + Transport.activeTransport.GetMaxPacketSize(channelId) + " bytes");
                 return false;
             }
 
-            if (segment.Count == 0) {
+            if (segment.Count == 0)
+            {
                 // zero length packets getting into the packet queues are bad.
                 logger.LogError("NetworkConnection.ValidatePacketSize: cannot send zero bytes");
                 return false;
@@ -174,42 +149,49 @@ namespace Mirror {
 
         // internal because no one except Mirror should send bytes directly to
         // the client. they would be detected as a message. send messages instead.
-        internal abstract bool Send(ArraySegment<byte> segment, int channelId = Channels.DefaultReliable);
+        internal abstract void Send(ArraySegment<byte> segment, int channelId = Channels.DefaultReliable);
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return $"connection({connectionId})";
         }
 
-        internal void AddToVisList(NetworkIdentity identity) {
+        internal void AddToVisList(NetworkIdentity identity)
+        {
             visList.Add(identity);
 
             // spawn identity for this conn
             NetworkServer.ShowForConnection(identity, this);
         }
 
-        internal void RemoveFromVisList(NetworkIdentity identity, bool isDestroyed) {
+        internal void RemoveFromVisList(NetworkIdentity identity, bool isDestroyed)
+        {
             visList.Remove(identity);
 
-            if (!isDestroyed) {
+            if (!isDestroyed)
+            {
                 // hide identity for this conn
                 NetworkServer.HideForConnection(identity, this);
             }
         }
 
-        internal void RemoveObservers() {
-            foreach (NetworkIdentity identity in visList) {
+        internal void RemoveObservers()
+        {
+            foreach (NetworkIdentity identity in visList)
+            {
                 identity.RemoveObserverInternal(this);
             }
             visList.Clear();
         }
 
-        internal bool InvokeHandler(int msgType, NetworkReader reader, int channelId) {
-            if (messageHandlers.TryGetValue(msgType, out NetworkMessageDelegate msgDelegate)) {
+        internal bool InvokeHandler(int msgType, NetworkReader reader, int channelId)
+        {
+            if (messageHandlers.TryGetValue(msgType, out NetworkMessageDelegate msgDelegate))
+            {
                 msgDelegate(this, reader, channelId);
                 return true;
             }
-            if (logger.LogEnabled())
-                logger.Log("Unknown message ID " + msgType + " " + this + ". May be due to no existing RegisterHandler for this message.");
+            if (logger.LogEnabled()) logger.Log("Unknown message ID " + msgType + " " + this + ". May be due to no existing RegisterHandler for this message.");
             return false;
         }
 
@@ -220,12 +202,13 @@ namespace Mirror {
         /// <typeparam name="T">The message type to unregister.</typeparam>
         /// <param name="msg">The message object to process.</param>
         /// <returns>Returns true if the handler was successfully invoked</returns>
-        public bool InvokeHandler<T>(T msg, int channelId) where T : IMessageBase {
-            // get writer from pool
-            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
+        public bool InvokeHandler<T>(T msg, int channelId) where T : NetworkMessage
+        {
+            using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter())
+            {
                 // if it is a value type,  just use typeof(T) to avoid boxing
                 // this works because value types cannot be derived
-                // if it is a reference type (for example IMessageBase),
+                // if it is a reference type (for example NetworkMessage),
                 // ask the message for the real type
                 int msgType = MessagePacker.GetId(default(T) != null ? typeof(T) : msg.GetType());
 
@@ -246,48 +229,67 @@ namespace Mirror {
         /// This function allows custom network connection classes to process data from the network before it is passed to the application.
         /// </summary>
         /// <param name="buffer">The data received.</param>
-        internal void TransportReceive(ArraySegment<byte> buffer, int channelId) {
+        internal void TransportReceive(ArraySegment<byte> buffer, int channelId)
+        {
+            if (buffer.Count == 0)
+            {
+                logger.LogError($"ConnectionRecv {this} Message was empty");
+                return;
+            }
+
             // unpack message
-            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(buffer)) {
-                if (MessagePacker.UnpackMessage(networkReader, out int msgType)) {
+            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(buffer))
+            {
+                if (MessagePacker.UnpackMessage(networkReader, out int msgType))
+                {
                     // logging
-                    if (logger.LogEnabled())
-                        logger.Log("ConnectionRecv " + this + " msgType:" + msgType + " content:" + BitConverter.ToString(buffer.Array, buffer.Offset, buffer.Count));
+                    if (logger.LogEnabled()) logger.Log("ConnectionRecv " + this + " msgType:" + msgType + " content:" + BitConverter.ToString(buffer.Array, buffer.Offset, buffer.Count));
 
                     // try to invoke the handler for that message
-                    if (InvokeHandler(msgType, networkReader, channelId)) {
+                    if (InvokeHandler(msgType, networkReader, channelId))
+                    {
                         lastMessageTime = Time.time;
                     }
-                } else {
+                }
+                else
+                {
                     logger.LogError("Closed connection: " + this + ". Invalid message header.");
                     Disconnect();
                 }
             }
         }
 
-        // Failsafe to kick clients that have stopped sending anything to the server.
-        // Clients Ping the server every 2 seconds but transports are unreliable
-        // when it comes to properly generating Disconnect messages to the server.
-        // This cannot be abstract because then NetworkConnectionToServer
-        // would require and override that would never be called
-        // This is overriden in NetworkConnectionToClient.
-        internal virtual bool IsClientAlive() {
-            return true;
-        }
+        /// <summary>
+        /// Checks if cliet has sent a message within timeout
+        /// <para>
+        /// Some transports are unreliable at sending disconnect message to the server
+        /// so this acts as a failsafe to make sure clients are kicked
+        /// </para>
+        /// <para>
+        /// Client should send ping message to server every 2 seconds to keep this alive
+        /// </para>
+        /// </summary>
+        /// <returns>True if server has recently recieved a message</returns>
+        internal virtual bool IsAlive(float timeout) => Time.time - lastMessageTime < timeout;
 
-        internal void AddOwnedObject(NetworkIdentity obj) {
+        internal void AddOwnedObject(NetworkIdentity obj)
+        {
             clientOwnedObjects.Add(obj);
         }
 
-        internal void RemoveOwnedObject(NetworkIdentity obj) {
+        internal void RemoveOwnedObject(NetworkIdentity obj)
+        {
             clientOwnedObjects.Remove(obj);
         }
 
-        internal void DestroyOwnedObjects() {
+        internal void DestroyOwnedObjects()
+        {
             // create a copy because the list might be modified when destroying
             HashSet<NetworkIdentity> tmp = new HashSet<NetworkIdentity>(clientOwnedObjects);
-            foreach (NetworkIdentity netIdentity in tmp) {
-                if (netIdentity != null) {
+            foreach (NetworkIdentity netIdentity in tmp)
+            {
+                if (netIdentity != null)
+                {
                     NetworkServer.Destroy(netIdentity.gameObject);
                 }
             }

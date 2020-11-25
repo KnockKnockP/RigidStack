@@ -1,16 +1,19 @@
 using System;
 using UnityEngine;
 
-namespace Mirror {
+namespace Mirror
+{
     /// <summary>
     /// NetworkReader to be used with <see cref="NetworkReaderPool">NetworkReaderPool</see>
     /// </summary>
-    public class PooledNetworkReader : NetworkReader, IDisposable {
+    public class PooledNetworkReader : NetworkReader, IDisposable
+    {
         internal PooledNetworkReader(byte[] bytes) : base(bytes) { }
 
         internal PooledNetworkReader(ArraySegment<byte> segment) : base(segment) { }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             NetworkReaderPool.Recycle(this);
         }
     }
@@ -20,7 +23,8 @@ namespace Mirror {
     /// <para>Use this pool instead of <see cref="NetworkReader">NetworkReader</see> to reduce memory allocation</para>
     /// <para>Use <see cref="Capacity">Capacity</see> to change size of pool</para>
     /// </summary>
-    public static class NetworkReaderPool {
+    public static class NetworkReaderPool
+    {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkReaderPool), LogType.Error);
 
         /// <summary>
@@ -28,9 +32,11 @@ namespace Mirror {
         /// <para>If pool is too small getting readers will causes memory allocation</para>
         /// <para>Default value: 100</para>
         /// </summary>
-        public static int Capacity {
+        public static int Capacity
+        {
             get => pool.Length;
-            set {
+            set
+            {
                 // resize the array
                 Array.Resize(ref pool, value);
 
@@ -60,8 +66,10 @@ namespace Mirror {
         /// Get the next reader in the pool
         /// <para>If pool is empty, creates a new Reader</para>
         /// </summary>
-        public static PooledNetworkReader GetReader(byte[] bytes) {
-            if (next == -1) {
+        public static PooledNetworkReader GetReader(byte[] bytes)
+        {
+            if (next == -1)
+            {
                 return new PooledNetworkReader(bytes);
             }
 
@@ -78,8 +86,10 @@ namespace Mirror {
         /// Get the next reader in the pool
         /// <para>If pool is empty, creates a new Reader</para>
         /// </summary>
-        public static PooledNetworkReader GetReader(ArraySegment<byte> segment) {
-            if (next == -1) {
+        public static PooledNetworkReader GetReader(ArraySegment<byte> segment)
+        {
+            if (next == -1)
+            {
                 return new PooledNetworkReader(segment);
             }
 
@@ -96,22 +106,28 @@ namespace Mirror {
         /// Puts reader back into pool
         /// <para>When pool is full, the extra reader is left for the GC</para>
         /// </summary>
-        public static void Recycle(PooledNetworkReader reader) {
-            if (next < pool.Length - 1) {
+        public static void Recycle(PooledNetworkReader reader)
+        {
+            if (next < pool.Length - 1)
+            {
                 next++;
                 pool[next] = reader;
-            } else {
+            }
+            else
+            {
                 logger.LogWarning("NetworkReaderPool.Recycle, Pool was full leaving extra reader for GC");
             }
         }
 
         // SetBuffer methods mirror constructor for ReaderPool
-        static void SetBuffer(NetworkReader reader, byte[] bytes) {
+        static void SetBuffer(NetworkReader reader, byte[] bytes)
+        {
             reader.buffer = new ArraySegment<byte>(bytes);
             reader.Position = 0;
         }
 
-        static void SetBuffer(NetworkReader reader, ArraySegment<byte> segment) {
+        static void SetBuffer(NetworkReader reader, ArraySegment<byte> segment)
+        {
             reader.buffer = segment;
             reader.Position = 0;
         }

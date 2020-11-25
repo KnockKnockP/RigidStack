@@ -13,13 +13,11 @@ public class floorScript : NetworkBehaviour {
         return;
     }
 
-    private void OnTriggerEnter2D() {
-        postDragAndDropScript.isCollisionFishy = true;
-        return;
-    }
-
-    private void OnTriggerExit2D() {
-        postDragAndDropScript.isCollisionFishy = false;
+    private void OnCollisionStay2D(Collision2D collision) {
+        if ((isServer == true) && (collision.gameObject.CompareTag("platform") == false)) {
+            _endMenuManager.endGame();
+            Destroy(this);
+        }
         return;
     }
     #endregion

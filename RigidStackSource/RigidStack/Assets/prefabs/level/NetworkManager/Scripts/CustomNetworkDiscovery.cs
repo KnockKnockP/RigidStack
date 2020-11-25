@@ -1,14 +1,15 @@
+using kcp2k;
 using Mirror;
 using Mirror.Discovery;
 using System;
 using System.Net;
 using UnityEngine;
 
-public class DiscoveryRequest : MessageBase {
+public class DiscoveryRequest : NetworkMessage {
     //What the client sends.
 }
 
-public class DiscoveryResponse : MessageBase {
+public class DiscoveryResponse : NetworkMessage {
     //What the server sends.
     public int currentPlayerCount, maxPlayerCount;
     public string name;
@@ -20,7 +21,15 @@ public class DiscoveryResponse : MessageBase {
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
     private multiplayerLobbyScript _multiplayerLobbyScript;
-    [SerializeField] private TelepathyTransport telepathyTransport = null;
+    [SerializeField] private KcpTransport kcpTransport = null;
+
+    private void OnValidate() {
+        kcpTransport = GetComponent<KcpTransport>();
+        if (kcpTransport == null) {
+            Debug.LogWarning(nameof(KcpTransport) + " not found.");
+        }
+        return;
+    }
 
     private void Awake() {
         _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
@@ -38,7 +47,7 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
             currentPlayerCount = _multiplayerLobbyScript.playerCount,
             maxPlayerCount = NetworkManager.singleton.maxConnections,
             name = _multiplayerLobbyScript.lobbyName,
-            uri = telepathyTransport.ServerUri()
+            uri = kcpTransport.ServerUri()
         };
     }
     #endregion

@@ -4,11 +4,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Mirror.Cloud {
+namespace Mirror.Cloud
+{
     /// <summary>
     /// Methods to create and send UnityWebRequest
     /// </summary>
-    public class RequestCreator : IRequestCreator {
+    public class RequestCreator : IRequestCreator
+    {
         const string GET = "GET";
         const string POST = "POST";
         const string PATCH = "PATCH";
@@ -18,12 +20,15 @@ namespace Mirror.Cloud {
         public readonly string apiKey;
         readonly ICoroutineRunner runner;
 
-        public RequestCreator(string baseAddress, string apiKey, ICoroutineRunner coroutineRunner) {
-            if (string.IsNullOrEmpty(baseAddress)) {
+        public RequestCreator(string baseAddress, string apiKey, ICoroutineRunner coroutineRunner)
+        {
+            if (string.IsNullOrEmpty(baseAddress))
+            {
                 throw new ArgumentNullException(nameof(baseAddress));
             }
 
-            if (string.IsNullOrEmpty(apiKey)) {
+            if (string.IsNullOrEmpty(apiKey))
+            {
                 throw new ArgumentNullException(nameof(apiKey));
             }
 
@@ -34,17 +39,20 @@ namespace Mirror.Cloud {
         }
 
 
-        Uri CreateUri(string page) {
+        Uri CreateUri(string page)
+        {
             return new Uri(string.Format("{0}/{1}?key={2}", baseAddress, page, apiKey));
         }
 
-        UnityWebRequest CreateWebRequest(string page, string method, string json = null) {
+        UnityWebRequest CreateWebRequest(string page, string method, string json = null)
+        {
             bool hasJson = !string.IsNullOrEmpty(json);
             Logger.LogRequest(page, method, hasJson, json);
 
             UnityWebRequest request = new UnityWebRequest(CreateUri(page));
             request.method = method;
-            if (hasJson) {
+            if (hasJson)
+            {
                 request.SetRequestHeader("Content-Type", "application/json");
             }
 
@@ -66,7 +74,8 @@ namespace Mirror.Cloud {
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public UnityWebRequest Get(string page) {
+        public UnityWebRequest Get(string page)
+        {
             return CreateWebRequest(page, GET);
         }
 
@@ -77,7 +86,8 @@ namespace Mirror.Cloud {
         /// <param name="page"></param>
         /// <param name="json"></param>
         /// <returns></returns>
-        public UnityWebRequest Post<T>(string page, T json) where T : struct, ICanBeJson {
+        public UnityWebRequest Post<T>(string page, T json) where T : struct, ICanBeJson
+        {
             string jsonString = JsonUtility.ToJson(json);
             return CreateWebRequest(page, POST, jsonString);
         }
@@ -89,7 +99,8 @@ namespace Mirror.Cloud {
         /// <param name="page"></param>
         /// <param name="json"></param>
         /// <returns></returns>
-        public UnityWebRequest Patch<T>(string page, T json) where T : struct, ICanBeJson {
+        public UnityWebRequest Patch<T>(string page, T json) where T : struct, ICanBeJson
+        {
             string jsonString = JsonUtility.ToJson(json);
             return CreateWebRequest(page, PATCH, jsonString);
         }
@@ -99,25 +110,32 @@ namespace Mirror.Cloud {
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public UnityWebRequest Delete(string page) {
+        public UnityWebRequest Delete(string page)
+        {
             return CreateWebRequest(page, DELETE);
         }
 
 
-        public void SendRequest(UnityWebRequest request, RequestSuccess onSuccess = null, RequestFail onFail = null) {
+        public void SendRequest(UnityWebRequest request, RequestSuccess onSuccess = null, RequestFail onFail = null)
+        {
             runner.StartCoroutine(SendRequestEnumerator(request, onSuccess, onFail));
         }
 
-        public IEnumerator SendRequestEnumerator(UnityWebRequest request, RequestSuccess onSuccess = null, RequestFail onFail = null) {
-            using (UnityWebRequest webRequest = request) {
+        public IEnumerator SendRequestEnumerator(UnityWebRequest request, RequestSuccess onSuccess = null, RequestFail onFail = null)
+        {
+            using (UnityWebRequest webRequest = request)
+            {
                 yield return webRequest.SendWebRequest();
                 Logger.LogResponse(webRequest);
 
                 string text = webRequest.downloadHandler.text;
                 Logger.Verbose(text);
-                if (webRequest.IsOk()) {
+                if (webRequest.IsOk())
+                {
                     onSuccess?.Invoke(text);
-                } else {
+                }
+                else
+                {
                     onFail?.Invoke(text);
                 }
             }

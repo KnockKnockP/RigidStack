@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror {
-    public static class LogFactory {
+namespace Mirror
+{
+    public static class LogFactory
+    {
         internal static readonly SortedDictionary<string, ILogger> loggers = new SortedDictionary<string, ILogger>();
 
         public static SortedDictionary<string, ILogger>.ValueCollection AllLoggers => loggers.Values;
@@ -17,20 +19,25 @@ namespace Mirror {
         /// </summary>
         static bool debugMode = false;
 
-        public static ILogger GetLogger<T>(LogType defaultLogLevel = LogType.Warning) {
+        public static ILogger GetLogger<T>(LogType defaultLogLevel = LogType.Warning)
+        {
             return GetLogger(typeof(T).Name, defaultLogLevel);
         }
 
-        public static ILogger GetLogger(System.Type type, LogType defaultLogLevel = LogType.Warning) {
+        public static ILogger GetLogger(System.Type type, LogType defaultLogLevel = LogType.Warning)
+        {
             return GetLogger(type.Name, defaultLogLevel);
         }
 
-        public static ILogger GetLogger(string loggerName, LogType defaultLogLevel = LogType.Warning) {
-            if (loggers.TryGetValue(loggerName, out ILogger logger)) {
+        public static ILogger GetLogger(string loggerName, LogType defaultLogLevel = LogType.Warning)
+        {
+            if (loggers.TryGetValue(loggerName, out ILogger logger))
+            {
                 return logger;
             }
 
-            logger = new Logger(defaultLogHandler) {
+            logger = new Logger(defaultLogHandler)
+            {
                 // by default, log warnings and up
                 filterLogType = debugMode ? LogType.Log : defaultLogLevel
             };
@@ -42,10 +49,12 @@ namespace Mirror {
         /// <summary>
         /// Makes all log levels LogType.Log, this is so that NetworkManger.showDebugMessages can still be used
         /// </summary>
-        public static void EnableDebugMode() {
+        public static void EnableDebugMode()
+        {
             debugMode = true;
 
-            foreach (ILogger logger in loggers.Values) {
+            foreach (ILogger logger in loggers.Values)
+            {
                 logger.filterLogType = LogType.Log;
             }
         }
@@ -54,27 +63,33 @@ namespace Mirror {
         /// Replacing log handler for all existing loggers and sets defaultLogHandler for new loggers
         /// </summary>
         /// <param name="logHandler"></param>
-        public static void ReplaceLogHandler(ILogHandler logHandler) {
+        public static void ReplaceLogHandler(ILogHandler logHandler)
+        {
             defaultLogHandler = logHandler;
 
-            foreach (ILogger logger in loggers.Values) {
+            foreach (ILogger logger in loggers.Values)
+            {
                 logger.logHandler = logHandler;
             }
         }
     }
 
 
-    public static class ILoggerExtensions {
-        public static void LogError(this ILogger logger, object message) {
+    public static class ILoggerExtensions
+    {
+        public static void LogError(this ILogger logger, object message)
+        {
             logger.Log(LogType.Error, message);
         }
 
-        public static void Assert(this ILogger logger, bool condition, string message) {
+        public static void Assert(this ILogger logger, bool condition, string message)
+        {
             if (!condition)
                 logger.Log(LogType.Assert, message);
         }
 
-        public static void LogWarning(this ILogger logger, object message) {
+        public static void LogWarning(this ILogger logger, object message)
+        {
             logger.Log(LogType.Warning, message);
         }
 

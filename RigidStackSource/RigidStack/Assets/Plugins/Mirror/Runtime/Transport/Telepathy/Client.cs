@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Telepathy {
-    public class Client : Common {
+namespace Telepathy
+{
+    public class Client : Common
+    {
         public TcpClient client;
         Thread receiveThread;
         Thread sendThread;
@@ -42,10 +44,12 @@ namespace Telepathy {
         ManualResetEvent sendPending = new ManualResetEvent(false);
 
         // the thread function
-        void ReceiveThreadFunction(string ip, int port) {
+        void ReceiveThreadFunction(string ip, int port)
+        {
             // absolutely must wrap with try/catch, otherwise thread
             // exceptions are silent
-            try {
+            try
+            {
                 // connect (blocking)
                 client.Connect(ip, port);
                 _Connecting = false;
@@ -62,7 +66,9 @@ namespace Telepathy {
 
                 // run the receive loop
                 ReceiveLoop(0, client, receiveQueue, MaxMessageSize);
-            } catch (SocketException exception) {
+            }
+            catch (SocketException exception)
+            {
                 // this happens if (for example) the ip address is correct
                 // but there is no server running on that ip/port
                 Logger.LogError($"Client Recv: failed to connect to ip={ip} port={port} reason={exception}");
@@ -70,11 +76,17 @@ namespace Telepathy {
                 // add 'Disconnected' event to message queue so that the caller
                 // knows that the Connect failed. otherwise they will never know
                 receiveQueue.Enqueue(new Message(0, EventType.Disconnected, null));
-            } catch (ThreadInterruptedException) {
+            }
+            catch (ThreadInterruptedException)
+            {
                 // expected if Disconnect() aborts it
-            } catch (ThreadAbortException) {
+            }
+            catch (ThreadAbortException)
+            {
                 // expected if Disconnect() aborts it
-            } catch (Exception exception) {
+            }
+            catch (Exception exception)
+            {
                 // something went wrong. probably important.
                 Logger.LogError($"Client Recv Exception: {exception}");
             }
@@ -97,9 +109,11 @@ namespace Telepathy {
             client?.Close();
         }
 
-        public void Connect(string ip, int port) {
+        public void Connect(string ip, int port)
+        {
             // not if already started
-            if (Connecting || Connected) {
+            if (Connecting || Connected)
+            {
                 Logger.LogWarning("Telepathy Client can not create connection because an existing connection is connecting or connected");
                 return;
             }
@@ -145,9 +159,11 @@ namespace Telepathy {
             receiveThread.Start();
         }
 
-        public void Disconnect() {
+        public void Disconnect()
+        {
             // only if started
-            if (Connecting || Connected) {
+            if (Connecting || Connected)
+            {
                 // close client
                 client.Close();
 
@@ -172,10 +188,13 @@ namespace Telepathy {
             }
         }
 
-        public bool Send(byte[] data) {
-            if (Connected) {
+        public bool Send(byte[] data)
+        {
+            if (Connected)
+            {
                 // respect max message size to avoid allocation attacks.
-                if (data.Length <= MaxMessageSize) {
+                if (data.Length <= MaxMessageSize)
+                {
                     // add to send queue and return immediately.
                     // calling Send here would be blocking (sometimes for long times
                     // if other side lags or wire was disconnected)

@@ -1,32 +1,36 @@
-﻿using UnityEditor;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-namespace ParrelSync {
+namespace ParrelSync
+{
     /// <summary>
     /// To add value caching for <see cref="EditorPrefs"/> functions
     /// </summary>
-    public class BoolPreference {
-        public string key {
-            get; private set;
-        }
-        public bool defaultValue {
-            get; private set;
-        }
-        public BoolPreference(string key, bool defaultValue) {
+    public class BoolPreference
+    {
+        public string key { get; private set; }
+        public bool defaultValue { get; private set; }
+        public BoolPreference(string key, bool defaultValue)
+        {
             this.key = key;
             this.defaultValue = defaultValue;
         }
 
         private bool? valueCache = null;
 
-        public bool Value {
-            get {
+        public bool Value
+        {
+            get
+            {
                 if (valueCache == null)
                     valueCache = EditorPrefs.GetBool(key, defaultValue);
 
                 return (bool)valueCache;
             }
-            set {
+            set
+            {
                 if (valueCache == value)
                     return;
 
@@ -36,15 +40,18 @@ namespace ParrelSync {
             }
         }
 
-        public void ClearValue() {
+        public void ClearValue()
+        {
             EditorPrefs.DeleteKey(key);
             valueCache = null;
         }
     }
 
-    public class Preferences : EditorWindow {
+    public class Preferences : EditorWindow
+    {
         [MenuItem("ParrelSync/Preferences", priority = 1)]
-        private static void InitWindow() {
+        private static void InitWindow()
+        {
             Preferences window = (Preferences)EditorWindow.GetWindow(typeof(Preferences));
             window.titleContent = new GUIContent(ClonesManager.ProjectName + " Preferences");
             window.Show();
@@ -61,8 +68,10 @@ namespace ParrelSync {
         /// </summary>
         public static BoolPreference AlsoCheckUnityLockFileStaPref = new BoolPreference("ParrelSync_CheckUnityLockFileOpenStatus", true);
 
-        private void OnGUI() {
-            if (ClonesManager.IsClone()) {
+        private void OnGUI()
+        {
+            if (ClonesManager.IsClone())
+            {
                 EditorGUILayout.HelpBox(
                         "This is a clone project. Please use the original project editor to change preferences.",
                         MessageType.Info);
@@ -80,7 +89,8 @@ namespace ParrelSync {
                 ),
                 AssetModPref.Value);
 
-            if (Application.platform == RuntimePlatform.WindowsEditor) {
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
                 AlsoCheckUnityLockFileStaPref.Value = EditorGUILayout.ToggleLeft(
                     new GUIContent(
                         "Also check UnityLockFile lock status while checking clone projects running status",
@@ -90,7 +100,8 @@ namespace ParrelSync {
                     AlsoCheckUnityLockFileStaPref.Value);
             }
             GUILayout.EndVertical();
-            if (GUILayout.Button("Reset to default")) {
+            if (GUILayout.Button("Reset to default"))
+            {
                 AssetModPref.ClearValue();
                 AlsoCheckUnityLockFileStaPref.ClearValue();
                 Debug.Log("Editor preferences cleared");
