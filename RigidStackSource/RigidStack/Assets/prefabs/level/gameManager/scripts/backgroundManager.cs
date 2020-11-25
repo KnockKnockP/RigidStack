@@ -4,10 +4,8 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 
 public class backgroundManager : MonoBehaviour {
-    //Variables for testing backgrounds.
-    [SerializeField] private bool forceMorning = false, forceAfternoon = false, forceNight = false;
+    [Header("Variables for testing backgrounds."), SerializeField] private bool forceMorning = false, forceAfternoon = false, forceNight = false;
 
-    //Variables for generating backgrounds.
     private float maximumHeightOfGeneratedBackgrounds;
     [SerializeField] private Transform gridTransform = null, backgroundHolderEmptyObject = null;
     private GameObject previousBackground;
@@ -20,7 +18,7 @@ public class backgroundManager : MonoBehaviour {
             Light2D light2D = globalLight.AddComponent<Light2D>();
             light2D.lightType = Light2D.LightType.Global;
             light2D.blendStyleIndex = 1;
-            Destroy(this);
+            enabled = false;
             return;
         }
         setBackground();
@@ -34,7 +32,25 @@ public class backgroundManager : MonoBehaviour {
         }
 #endif
         generateStaticBackgrounds();
-        StartCoroutine(generateDynamicBackgrounds());
+        return;
+    }
+
+    //TODO : Optimize this.
+    private void Update() {
+        if (sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - sharedMonobehaviour.orthographicSize)) {
+            //Doing this causes shit ton of fucking GC allocation. (224 bytes.).
+            GameObject generatedBackground = Instantiate(background.dynamicBackgrounds[UnityEngine.Random.Range(0, background.dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
+            resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio, sharedMonobehaviour._sharedMonobehaviour.mainCamera);
+            Vector3 backgroundPosition;
+            if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
+                backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
+            } else {
+                backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (sharedMonobehaviour.orthographicSize * 2)), 0f);
+            }
+            previousBackground = generatedBackground;
+            generatedBackground.transform.position = backgroundPosition;
+            maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
+        }
         return;
     }
 
@@ -65,7 +81,7 @@ public class backgroundManager : MonoBehaviour {
                 if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
                     backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
                 } else {
-                    backgroundPosition = new Vector3(0f, (previousBackground.transform.position.y + (sharedMonobehaviour._sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
+                    backgroundPosition = new Vector3(0f, (previousBackground.transform.position.y + (sharedMonobehaviour.orthographicSize * 2)), 0f);
                 }
             }
             previousBackground = generatedBackground;
@@ -73,25 +89,6 @@ public class backgroundManager : MonoBehaviour {
             maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
         }
         return;
-    }
-
-    private IEnumerator generateDynamicBackgrounds() {
-        while (true) {
-            yield return null;
-            if (sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.y > (maximumHeightOfGeneratedBackgrounds - sharedMonobehaviour._sharedMonobehaviour.mainCamera.orthographicSize)) {
-                GameObject generatedBackground = Instantiate(background.dynamicBackgrounds[UnityEngine.Random.Range(0, background.dynamicBackgrounds.Length)], Vector3.zero, Quaternion.identity, backgroundHolderEmptyObject);
-                resizeBackground(generatedBackground, LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio, sharedMonobehaviour._sharedMonobehaviour.mainCamera);
-                Vector3 backgroundPosition;
-                if (LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio == true) {
-                    backgroundPosition = new Vector3(0f, ((previousBackground.GetComponent<SpriteRenderer>().sprite.bounds.size.y * generatedBackground.transform.localScale.y) + previousBackground.transform.position.y), 0f);
-                } else {
-                    backgroundPosition = new Vector3(0f, (maximumHeightOfGeneratedBackgrounds + (sharedMonobehaviour._sharedMonobehaviour.mainCamera.orthographicSize * 2)), 0f);
-                }
-                previousBackground = generatedBackground;
-                generatedBackground.transform.position = backgroundPosition;
-                maximumHeightOfGeneratedBackgrounds = backgroundPosition.y;
-            }
-        }
     }
 
     //https://answers.unity.com/answers/620736/view.html

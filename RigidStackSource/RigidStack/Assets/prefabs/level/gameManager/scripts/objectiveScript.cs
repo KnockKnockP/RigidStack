@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class objectiveScript : NetworkBehaviour {
-    //Variables for the basic gameplay.
     [SyncVar(hook = nameof(syncSecond))] private int second;
     [SyncVar(hook = nameof(syncNewSecond))] private int newSecond = 60;
     private int windSustainTime = 1, windGenerationHeight = 50;
@@ -15,31 +14,25 @@ public class objectiveScript : NetworkBehaviour {
     [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty;
     private heightScript _heightScript;
 
-    //Variables for height canvases.
+    [Header("Variables for height canvases.")]
     private float heightCanvasPivotX;
     private RectTransform heightCanvasRectTransform;
+    [SerializeField] private Canvas textCanvasTemplate = null;
+    private readonly List<Canvas> textCanvases = new List<Canvas>();
 
-    //Variables for cannons.
+    [Header("Variables for cannons.")]
     bool hasCannonsEntered = false;
     [SyncVar] private float cannonShootingDelay = 5f;
     [SerializeField] private Text timerText = null;
     [SerializeField] private Transform heightTextsParent = null;
-    [SerializeField] private Canvas textCanvasTemplate = null;
-    private readonly List<Canvas> textCanvases = new List<Canvas>();
 
-    private readonly List<cannonInformationHolder> tempCannonInformationHolders = new List<cannonInformationHolder>();
-    private List<cannonInformationHolder> cannonInformationHolders = new List<cannonInformationHolder>();
-
-    private readonly List<Animator> tempCannonsAnimator = new List<Animator>();
-    private List<Animator> cannonsAnimator = new List<Animator>();
-
-    private readonly List<GameObject> tempCannonList = new List<GameObject>();
-    private List<GameObject> cannonList = new List<GameObject>();
+    private readonly List<cannonInformationHolder> cannonInformationHolders = new List<cannonInformationHolder>();
+    private readonly List<Animator> cannonsAnimator = new List<Animator>();
+    private readonly List<GameObject> cannonList = new List<GameObject>();
 
     [SerializeField] private GameObject cannonGrouperObject = null, cannon = null;
 
-    //Variables for winds.
-    [SyncVar] public int minimumDifferenceForEachWinds = 5;
+    [Header("Variables for winds."), SyncVar] public int minimumDifferenceForEachWinds = 5;
     [SerializeField] private GameObject windPrefab = null, windsEmptyObject = null;
     private List<GameObject> winds = new List<GameObject>();
     private readonly List<GameObject> tempWinds = new List<GameObject>();
@@ -61,8 +54,6 @@ public class objectiveScript : NetworkBehaviour {
             Any methods that require networking does not work when doing initialization.
     */
     private void syncDifficulty(Difficulty oldDifficulty, Difficulty newDifficulty) {
-        _ = oldDifficulty;
-        difficulty = newDifficulty;
         _heightScript = FindObjectOfType<heightScript>();
         heightCanvasRectTransform = textCanvasTemplate.GetComponent<RectTransform>();
         heightCanvasPivotX = heightCanvasRectTransform.pivot.x;
@@ -113,7 +104,6 @@ public class objectiveScript : NetworkBehaviour {
                 break;
             }
         }
-
         _heightScript.syncDifficulty(difficulty);
         generateObjective(true);
         if (isServer == true) {
@@ -130,9 +120,7 @@ public class objectiveScript : NetworkBehaviour {
 
     public void generateObjective(bool isFromAwake) {
         if (isFromAwake == false) {
-            reset();
             freezeAll();
-            removeCannons();
             removeWinds();
         }
 
@@ -143,15 +131,23 @@ public class objectiveScript : NetworkBehaviour {
         second = newSecond;
 
         int newScore = (objectiveScore + newObjectiveScoreAddition);
-        float leftSide = (sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x
-                          + heightCanvasPivotX);
-        for (int i = objectiveScore; i <= newScore; i = (i + 5)) {
-            Canvas newCanvas = Instantiate(textCanvasTemplate, new Vector2(leftSide, i), Quaternion.identity, heightTextsParent);
-            newCanvas.GetComponentInChildren<Text>().text = (newCanvas.transform.position.y.ToString() + ".");
-            newCanvas.gameObject.SetActive(true);
-            textCanvases.Add(newCanvas);
+        float leftSide = (sharedMonobehaviour.leftSide + heightCanvasPivotX);
 
-            generateCannons(i, isFromAwake);
+        const int step = 5;
+        int index = 0;
+        for (int i = objectiveScore; i <= newScore; i = (i + step)) {
+            generateCannons(index, i, isFromAwake);
+            Canvas newCanvas;
+            if (isFromAwake == true) {
+                newCanvas = Instantiate(textCanvasTemplate, new Vector2(leftSide, i), Quaternion.identity, heightTextsParent);
+                textCanvases.Add(newCanvas);
+            } else {
+                newCanvas = textCanvases[index].GetComponent<Canvas>();
+                index++;
+            }
+            Transform canvasTransform = newCanvas.transform;
+            canvasTransform.position = new Vector2(leftSide, i);
+            newCanvas.GetComponentInChildren<Text>().text = (canvasTransform.position.y.ToString() + ".");
         }
         objectiveScore = newScore;
         _heightScript.updateHeightText();
@@ -183,57 +179,20 @@ public class objectiveScript : NetworkBehaviour {
         return;
     }
 
-    private void reset() {
-        foreach (Canvas _textCanvas in textCanvases) {
-            Destroy(_textCanvas.gameObject);
-        }
-        textCanvases.Clear();
-        return;
-    }
-
     #region Cannons.
-    private void generateCannons(int height, bool isFromAwake) {
-        float leftSide = sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
-        Vector3 position = new Vector3((leftSide - 1f), height, 0f);
-        GameObject generatedCannon = Instantiate(cannon, position, Quaternion.identity, cannonGrouperObject.transform);
-        generatedCannon.name = (height.ToString() + " cannon");
-
-        cannonInformationHolder generatedCannonInformationHolder = generatedCannon.GetComponent<cannonInformationHolder>();
-        Animator generatedCannonAnimator = generatedCannon.GetComponent<Animator>();
-
+    private void generateCannons(int index, int height, bool isFromAwake) {
+        Vector3 position = new Vector3((sharedMonobehaviour.leftSide - 1f), height);
+        GameObject generatedCannon;
         if (isFromAwake == true) {
+            generatedCannon = Instantiate(cannon, position, Quaternion.identity, cannonGrouperObject.transform);
             cannonList.Add(generatedCannon);
-            cannonInformationHolders.Add(generatedCannonInformationHolder);
-            cannonsAnimator.Add(generatedCannonAnimator);
+            cannonInformationHolders.Add(generatedCannon.GetComponent<cannonInformationHolder>());
+            cannonsAnimator.Add(generatedCannon.GetComponent<Animator>());
         } else {
-            tempCannonList.Add(generatedCannon);
-            tempCannonInformationHolders.Add(generatedCannonInformationHolder);
-            tempCannonsAnimator.Add(generatedCannonAnimator);
+            generatedCannon = cannonList[index];
+            generatedCannon.transform.position = position;
         }
-        return;
-    }
-
-    private void removeCannons() {
-        foreach (GameObject _cannon in cannonList) {
-            if (_cannon != null) {
-                Destroy(_cannon);
-            }
-        }
-
-
-        cannonList.Clear();
-        cannonsAnimator.Clear();
-        cannonInformationHolders.Clear();
-
-
-        cannonList = tempCannonList;
-        tempCannonList.Clear();
-
-        cannonsAnimator = tempCannonsAnimator;
-        tempCannonsAnimator.Clear();
-
-        cannonInformationHolders = tempCannonInformationHolders;
-        tempCannonInformationHolders.Clear();
+        generatedCannon.name = height.ToString();
         return;
     }
 
@@ -330,8 +289,8 @@ public class objectiveScript : NetworkBehaviour {
             generatedWindBoxCollider2D.offset = new Vector2((generatedWindBoxCollider2D.size.x / orthographicSize), generatedWindBoxCollider2D.offset.y);
             return;
         }
-        Destroy(_gameObject.GetComponent<windScript>());
-        Destroy(_gameObject.GetComponent<BoxCollider2D>());
+        _gameObject.GetComponent<windScript>().enabled = false;
+        _gameObject.GetComponent<BoxCollider2D>().enabled = false;
         return;
     }
 

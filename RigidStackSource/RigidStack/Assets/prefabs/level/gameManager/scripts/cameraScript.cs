@@ -2,7 +2,6 @@
 using UnityEngine;
 
 public class cameraScript : MonoBehaviour {
-    //Variables for moving the camera.
     public static bool shouldMoveCameraUp, shouldMoveCameraDown;
     public static float cameraMovementSpeed = 10f;
     [SerializeField] private endMenuManager _endMenuManager = null;

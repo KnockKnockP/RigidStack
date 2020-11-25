@@ -18,7 +18,7 @@ public class DummyPlayerScript : NetworkBehaviour {
         if (_networkIdentity.isLocalPlayer == true) {
             dummyPlayerScript = this;
             player = gameObject;
-            player.name = (LoadedPlayerData.playerData.name + "'s player.");
+            player.name = LoadedPlayerData.playerData.name;
             networkIdentity = _networkIdentity;
             loadedAllThings = true;
         }

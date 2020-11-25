@@ -6,16 +6,22 @@ using UnityEngine.UI;
 public class objectScript : NetworkBehaviour {
     //A variable for syncing dragAndDropObjects.
     private bool isSynced = false;
-    //Variables for drag and dropping objects.
+
+    [Header("Variables for drag and dropping objects.")]
+    private readonly dragAndDropScript[] dragAndDropScripts = new dragAndDropScript[5];
     private readonly dragAndDropImageScript[] dragAndDropImageScripts = new dragAndDropImageScript[5];
+    private readonly Image[] dragAndDropImages = new Image[5];
     [SerializeField] private GameObject[] dragAndDropObjects = null;
-    //We are going to use this array to check for duplicates.
+
+    [Header("Variables for checking if the duplicates exist.")]
     private readonly Sprite[] sprites = new Sprite[5];
     [SerializeField] private GameObject[] objects = null;
 
     private void Start() {
         for (short i = 0; i < dragAndDropObjects.Length; i++) {
+            dragAndDropScripts[i] = dragAndDropObjects[i].GetComponent<dragAndDropScript>();
             dragAndDropImageScripts[i] = dragAndDropObjects[i].GetComponent<dragAndDropImageScript>();
+            dragAndDropImages[i] = dragAndDropObjects[i].GetComponent<Image>();
         }
         if (isServer == true) {
             resetRandomization();
@@ -48,7 +54,7 @@ public class objectScript : NetworkBehaviour {
     [Server]
     public void giveMoreItems() {
         for (short i = 0; i < sprites.Length; i++) {
-            dragAndDropObjects[i].GetComponent<Image>().sprite = null;
+            dragAndDropImages[i].sprite = null;
             sprites[i] = null;
         }
         shuffleItems();
@@ -74,12 +80,12 @@ public class objectScript : NetworkBehaviour {
                 }
             }
             if (isDuplicate == false) {
-                Image image = dragAndDropObjects[i].GetComponent<Image>();
+                Image image = dragAndDropImages[i];
                 image.sprite = randomSprite;
                 sprites[i] = image.sprite;
                 objectInformation selectedObjectsObjectInformation = objects[random].GetComponent<objectInformation>();
                 dragAndDropImageScripts[i].objectCount = (short)(UnityEngine.Random.Range(selectedObjectsObjectInformation.minimumAmount, (selectedObjectsObjectInformation.maximumAmount + 1)));
-                dragAndDropObjects[i].GetComponent<dragAndDropScript>().objectToPlace = objects[random];
+                dragAndDropScripts[i].objectToPlace = objects[random];
                 updateDock(i, random, dragAndDropImageScripts[i].objectCount);
             }
         }
@@ -96,9 +102,9 @@ public class objectScript : NetworkBehaviour {
 
     [ClientRpc]
     private void updateDock(int dragAndDropObjectIndex, int objectIndex, short objectCount) {
-        dragAndDropObjects[dragAndDropObjectIndex].GetComponent<Image>().sprite = objects[objectIndex].GetComponent<SpriteRenderer>().sprite;
-        dragAndDropObjects[dragAndDropObjectIndex].GetComponent<dragAndDropImageScript>().objectCount = objectCount;
-        dragAndDropObjects[dragAndDropObjectIndex].GetComponent<dragAndDropScript>().objectToPlace = objects[objectIndex];
+        dragAndDropScripts[dragAndDropObjectIndex].objectToPlace = objects[objectIndex];
+        dragAndDropImageScripts[dragAndDropObjectIndex].objectCount = objectCount;
+        dragAndDropImages[dragAndDropObjectIndex].sprite = objects[objectCount].GetComponent<SpriteRenderer>().sprite;
         return;
     }
 }

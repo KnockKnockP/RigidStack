@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
 public class sharedMonobehaviour : MonoBehaviour {
-    //Shared variables.
+    public static float leftSide, orthographicSize;
     public Camera mainCamera;
-    //Used for dragAndDropScript.cs.
     public GameObject dockPanel, objectEditingPanel;
     public static sharedMonobehaviour _sharedMonobehaviour = null;
 
@@ -13,6 +12,8 @@ public class sharedMonobehaviour : MonoBehaviour {
         } else {
             _sharedMonobehaviour = this;
         }
+        leftSide = mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
+        orthographicSize = mainCamera.orthographicSize;
         return;
     }
 }

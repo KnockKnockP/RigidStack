@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class multiplayerLobbyScript : NetworkBehaviour {
-    //Variables for maintaining the lobby.
     [NonSerialized, SyncVar(hook = nameof(syncPlayerCount))] public int playerCount;
     private string disconnectedReason = "No reason.";
     [NonSerialized] public string lobbyName = "Unnamed.";
@@ -16,14 +15,11 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     private NetworkManager networkManager;
     private CustomNetworkDiscovery customNetworkDiscovery;
 
-    [Header("Select multiplayer panel.")]
-    [SerializeField] private Text selectMultiplayerText = null;
+    [Header("Select multiplayer panel."), SerializeField] private Text selectMultiplayerText = null;
 
-    [Header("Join multiplayer lobby panel.")]
-    [SerializeField] private GameObject multiplayerLobbyListScrollViewViewport = null, multiplayerLobbyListTemplate = null;
+    [Header("Join multiplayer lobby panel."), SerializeField] private GameObject multiplayerLobbyListScrollViewViewport = null, multiplayerLobbyListTemplate = null;
 
-    [Header("Multiplayer lobby.")]
-    [SerializeField] private Text statusText = null;
+    [Header("Multiplayer lobby."), SerializeField] private Text statusText = null;
     [SerializeField] private Button startButton = null, kickButton = null;
     [SerializeField] private InputField lobbyNameInputField = null;
     [SerializeField] private Dropdown selectPlayerDropdownMenu = null;
@@ -40,11 +36,10 @@ public class multiplayerLobbyScript : NetworkBehaviour {
                 networkManager = NetworkManager.singleton;
                 telepathyTransport = networkManager.gameObject.GetComponent<TelepathyTransport>();
                 customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
-                break;
+                yield break;
             }
             yield return null;
         }
-        yield break;
     }
 
     public void createLobby() {
@@ -52,18 +47,15 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         telepathyTransport.port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.StartHost();
-        StartCoroutine(checkPort());
+        StartCoroutine(nameof(checkPort));
         return;
     }
 
     private IEnumerator checkPort() {
         const int timeOut = 5;
         for (int i = timeOut; i >= 0; i--) {
-            string seconds = " seconds.";
-            if (i == 1) {
-                seconds = " second.";
-            }
-            selectMultiplayerText.text = "Please wait for " + i + seconds;
+            selectMultiplayerText.text = ("Please wait for " + i + ((i == 1) ? " second." : " seconds."));
+            Debug.LogWarning("Here 1.");
             yield return new WaitForSeconds(1);
         }
         if (telepathyTransport.ServerActive() == false) {
@@ -73,7 +65,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             networkManager.StopHost();
             createLobby();
         } else {
-            selectMultiplayerText.text = "Select multiplayer.";
+            selectMultiplayerText.text = "";
             lobbyPanel.SetActive(true);
             customNetworkDiscovery.AdvertiseServer();
             Debug.Log("Multiplayer lobby created successfully.");
@@ -95,8 +87,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     }
 
     private void syncPlayerCount(int oldPlayerCount, int newPlayerCount) {
-        _ = oldPlayerCount;
-        playerCount = newPlayerCount;
         if (playerCount > 1) {
             startButton.interactable = true;
             statusText.text = ("Ready to start. (" + playerCount + " / " + networkManager.maxConnections + ".).");
@@ -217,7 +207,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #region Exiting the multiplayer lobby.
     [TargetRpc]
     private void targetRPCDisconnect(NetworkConnection networkConnection, string reason) {
-        _ = networkConnection;
         disconnectedReason = reason;
         exitMultiplayerLobby();
         lobbyPanel.SetActive(false);
@@ -254,6 +243,13 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #endregion
 
     #region Cancelling the multiplayer lobby.
+    [Server]
+    public void cancelMakingTheMultiplayerLobby() {
+        StopCoroutine(nameof(checkPort));
+        selectMultiplayerText.text = "";
+        return;
+    }
+
     [Server]
     private void cancelMultiplayerLobby() {
         clientRPCCancelMultiplayerLobby();

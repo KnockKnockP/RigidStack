@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class objectInformation : NetworkBehaviour {
-    //Variables for determining how many objects the player should get.
+    [Header("Variables for determining how many objects the player should get.")]
     public int minimumAmount = 0, maximumAmount = 0;
 
     //A variable to check if the object has been placed down.

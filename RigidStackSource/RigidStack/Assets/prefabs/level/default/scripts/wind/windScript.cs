@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class windScript : MonoBehaviour {
-    private float windStrength = 0.1f;
+    private float windStrength;
 
     private void Awake() {
         switch (LoadedPlayerData.playerData.difficulty) {
@@ -32,8 +32,7 @@ public class windScript : MonoBehaviour {
     private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.CompareTag("object") == true) {
             Rigidbody2D rigidbody2D = collision.gameObject.GetComponent<Rigidbody2D>();
-            Vector3 newVelocity = new Vector3((rigidbody2D.velocity.x + windStrength), rigidbody2D.velocity.y);
-            rigidbody2D.velocity = newVelocity;
+            rigidbody2D.velocity = new Vector3((rigidbody2D.velocity.x + windStrength), rigidbody2D.velocity.y);
         }
         return;
     }

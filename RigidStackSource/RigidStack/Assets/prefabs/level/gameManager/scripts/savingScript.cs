@@ -97,27 +97,19 @@ public class PlayerGraphics {
 }
 
 public class savingScript : MonoBehaviour {
-    //Common variables.
-    private static byte count = 0;
-    [Header("Common.")]
-    [SerializeField] private UniversalRenderPipelineAsset[] _universalRenderPipelineAssets = null;
+    [Header("Common."), SerializeField] private UniversalRenderPipelineAsset[] _universalRenderPipelineAssets = null;
     public static UniversalRenderPipelineAsset[] universalRenderPipelineAssets;
     [SerializeField] private settingsScript _settingsScript = null;
 
-    //Variables for the pre main menu.
-    [Header("Pre main menu.")]
-    [SerializeField] private Text noticeText = null;
+    [Header("Main menu."), SerializeField] private Text noticeText = null;
 
-    //Variables for the settings menu.
-    [Header("Settings menu.")]
-    [SerializeField] private Text savingText = null;
+    [Header("Settings menu."), SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
 
-    //Variables for the profiles menu.
+    [Header("Profiles menu.")]
     private bool hasLoadedProfileListOnStart;
     public const string defaultProfileName = "Default";
     private static string lastlySelectedProfileName = defaultProfileName;
-    [Header("Profiles menu.")]
     [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
@@ -134,9 +126,8 @@ public class savingScript : MonoBehaviour {
 
     private void Start() {
         //Doing this useless operation to remove the unused variable warning.
-        if (noticeText != null) {
-            _ = noticeText.text;
-        }
+        _ = noticeText;
+
         if ((_universalRenderPipelineAssets != null) && (universalRenderPipelineAssets == null)) {
             universalRenderPipelineAssets = _universalRenderPipelineAssets;
         }
@@ -155,6 +146,7 @@ public class savingScript : MonoBehaviour {
                 selectProfile(lastlySelectedProfileName);
             }
         }
+        GC.Collect();
         return;
     }
 
@@ -220,10 +212,7 @@ public class savingScript : MonoBehaviour {
                 break;
             }
         }
-        deleteButton.interactable = true;
-        if (LoadedPlayerData.playerData.name == defaultProfileName) {
-            deleteButton.interactable = false;
-        }
+        deleteButton.interactable = (LoadedPlayerData.profiles.Count > 1);
         return;
     }
     #endregion
@@ -345,8 +334,8 @@ public class savingScript : MonoBehaviour {
                     }
                     continue;
                 }
-                streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i] + " = ");
                 string variableName = LoadedPlayerData.playerGraphics.graphicsVariablesNames[i];
+                streamWriter.Write(variableName + " = ");
                 object objectToWrite = "Something went wrong.";
                 TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
                     new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
@@ -390,11 +379,6 @@ public class savingScript : MonoBehaviour {
             IL2CPPWarning("Loading");
             return;
 #endif
-        if (count == 2) {
-            count = 0;
-            return;
-        }
-        count++;
         try {
             StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
             //UniversalRenderPipelineAsset universalRenderPipelineAsset = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();

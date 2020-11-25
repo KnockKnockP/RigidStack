@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class objectEditingScript : MonoBehaviour {
-    //Variables for angle management.
     [NonSerialized] public static byte angle = 1;
     [SerializeField] private Text angleText = null;
     public Button confirmButton = null;
@@ -62,7 +61,7 @@ public class objectEditingScript : MonoBehaviour {
         } else if (angle < 100) {
             angleText.text = "0";
         }
-        angleText.text = (angleText.text + angle.ToString());
+        angleText.text = (angleText.text + angle);
         return;
     }
     #endregion

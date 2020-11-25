@@ -11787,6 +11787,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.5
+  _objectScript: {fileID: 7619175099963299229}
+  _objectiveScript: {fileID: 7619175099963299233}
   heightText: {fileID: 688816209}
   checkHeightButton: {fileID: 1501594755}
 --- !u!114 &7619175099963299233
@@ -11861,6 +11863,7 @@ MonoBehaviour:
   _cameraScript: {fileID: 7619175099963299231}
   endMenuScoreText: {fileID: 1096650041}
   _objectiveScript: {fileID: 7619175099963299233}
+  _heightScript: {fileID: 7619175099963299232}
   endMenu: {fileID: 1786818563}
   dock: {fileID: 1402084107}
   objectEditingPanel: {fileID: 758157996}

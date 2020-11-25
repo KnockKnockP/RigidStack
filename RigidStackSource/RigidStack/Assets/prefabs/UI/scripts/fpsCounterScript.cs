@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 
 public class fpsCounterScript : MonoBehaviour {
+    private int oldValue;
     private Text fpsCounterText;
 
     private void Awake() {
@@ -11,6 +12,10 @@ public class fpsCounterScript : MonoBehaviour {
 
     //https://forum.unity.com/threads/fps-counter.505495/
     private void Update() {
-        fpsCounterText.text = ("FPS : " + (int)(1f / Time.unscaledDeltaTime) + ".");
+        int newValue = (int)(1f / Time.unscaledDeltaTime);
+        if (oldValue != newValue) {
+            oldValue = newValue;
+            fpsCounterText.text = ("FPS : " + newValue + ".");
+        }
     }
 }

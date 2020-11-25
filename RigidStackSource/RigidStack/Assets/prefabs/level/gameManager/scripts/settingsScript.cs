@@ -24,14 +24,11 @@ public static class GraphicsLevel {
 }
 
 public class settingsScript : MonoBehaviour {
-    //Variables for setting up the scene.
-    [Header("Gameplay settings.")]
-    [SerializeField] private Dropdown difficultyDropdown = null;
+    [Header("Gameplay settings."), SerializeField] private Dropdown difficultyDropdown = null;
     [SerializeField] private Text manualCheckingText = null;
 
 
-    [Header("Graphics settings.")]
-    [SerializeField] private Dropdown graphicsDropdown = null;
+    [Header("Graphics settings."), SerializeField] private Dropdown graphicsDropdown = null;
     [SerializeField] private savingScript _savingScript = null;
 
     [SerializeField] private Dropdown verticalSyncCountDropdown = null;

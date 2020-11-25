@@ -5,44 +5,37 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class endMenuManager : NetworkBehaviour {
-    //Variables for slowing down time.
+    [Header("Variables for slowing down time.")]
     private bool shouldSlowDownTime;
     [NonSerialized] public bool shouldMoveTheCamera;
     [SyncVar(hook = nameof(syncTimeScale))] private float timeScale = 1f;
     [SerializeField] private cameraScript _cameraScript = null;
 
-    //Variables for the end menu.
-    [SerializeField] private Text endMenuScoreText = null;
+    [Header("Variables for the end menu."), SerializeField] private Text endMenuScoreText = null;
     [SerializeField] private objectiveScript _objectiveScript = null;
-    private heightScript _heightScript;
+    [SerializeField] private heightScript _heightScript;
     [SerializeField] private GameObject endMenu = null;
 
-    //Variables for gameplay panels.
+    [Header("Variables for gameplay panels.")]
     [SerializeField] private GameObject dock = null, objectEditingPanel = null;
 
-    //A variable for determining if the game has ended.
     public static bool isGameEnded;
 
-    //Variables for dimming and undimming objects
     private bool isObjectUndimmed;
     [NonSerialized] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
-
-    private void Start() {
-        _heightScript = FindObjectOfType<heightScript>();
-    }
 
     private void Update() {
         if (shouldMoveTheCamera == true) {
             Vector3 newPosition = sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position;
             newPosition.y = Mathf.SmoothStep(newPosition.y, _cameraScript.originalCameraPosition.y, Time.fixedUnscaledDeltaTime);
             sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position = newPosition;
-            if (((sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.x - _cameraScript.originalCameraPosition.x) < 0.01f) && ((sharedMonobehaviour._sharedMonobehaviour.mainCamera.transform.position.y - _cameraScript.originalCameraPosition.y) < 0.01f)) {
+            if (((newPosition.x - _cameraScript.originalCameraPosition.x) < 0.01f) && ((newPosition.y - _cameraScript.originalCameraPosition.y) < 0.01f)) {
                 shouldMoveTheCamera = false;
             }
         }
         if (shouldSlowDownTime == true) {
             timeScale = Mathf.SmoothStep(timeScale, 0f, Time.unscaledDeltaTime);
-            if (timeScale < 0.001f) {
+            if (timeScale < 0.01f) {
                 timeScale = 0f;
                 shouldSlowDownTime = false;
             }
@@ -105,7 +98,6 @@ public class endMenuManager : NetworkBehaviour {
     }
 
     private void syncTimeScale(float oldTimeScale, float newTimeScale) {
-        _ = oldTimeScale;
         Time.timeScale = newTimeScale;
         return;
     }

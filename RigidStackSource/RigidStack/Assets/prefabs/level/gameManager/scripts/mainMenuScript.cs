@@ -6,78 +6,23 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class mainMenuScript : MonoBehaviour {
-    //Variables for preparing the pre main menu scene.
-    private string exceptionMessage1, exceptionMessage2;
     [SerializeField] private Text currentVersionText = null, updateText = null, noticeText = null;
     [SerializeField] private GameObject inGameConsole = null;
 
     private void Awake() {
         currentVersionText.text = ("v" + Application.version + ".");
         if (SceneManager.GetActiveScene().name == SceneNames.MainMenu) {
-            limitFPS();
-            disableDebugging();
-            checkInternetConnection();
-            if (Debug.isDebugBuild) {
-                inGameConsole.SetActive(true);
-            } else {
-                inGameConsole.SetActive(false);
+            Debug.unityLogger.logEnabled = Debug.isDebugBuild;
+            try {
+                checkForUpdate();
+                checkNoticeText();
+            } catch (Exception exception) {
+                //We log it as a warning since it's nothing so serious about not being able to check the version.
+                Debug.LogWarning(exception.Message);
             }
+            inGameConsole.SetActive(Debug.isDebugBuild);
         }
         return;
-    }
-
-    private void limitFPS() {
-#if UNITY_EDITOR
-        QualitySettings.vSyncCount = 0;
-#else
-        Application.targetFrameRate = (Screen.currentResolution.refreshRate * 2);
-#endif
-        return;
-    }
-
-    private void disableDebugging() {
-        Debug.unityLogger.logEnabled = Debug.isDebugBuild;
-        return;
-    }
-
-    private void checkInternetConnection() {
-        noticeText.text = "Checking internet connection.";
-        if (checkInternetConnectability() == true) {
-            noticeText.text = "Connected to the internet";
-            checkForUpdate();
-            checkNoticeText();
-        } else {
-            noticeText.color = Color.red;
-            noticeText.text = ("Failed to connect to the internet (Two attempts.).\r\n" +
-                               exceptionMessage1 + ",\r\n" +
-                               exceptionMessage2);
-        }
-        return;
-    }
-
-    //https://www.stackoverflow.com/a/2031831/
-    private bool checkInternetConnectability() {
-        try {
-            WebClient webClient = new WebClient();
-            webClient.OpenRead("https://www.google.com/generate_204");
-            //webClient.OpenRead("https://www.goog975679576947965976567579le.com/6497659859497646756generate_204");
-            return true;
-        } catch (Exception exception) {
-            exceptionMessage1 = exception.Message;
-            exceptionMessage1.TrimEnd('.');
-        }
-        try {
-            WebClient webClient = new WebClient();
-            webClient.OpenRead("https://www.baidu.com/");
-            //webClient.OpenRead("https://www.baidu65765768567596756735636596756978567.co576569759656759675m/");
-            return true;
-        } catch (Exception exception) {
-            exceptionMessage2 = exception.Message;
-            if (exceptionMessage2.EndsWith(".") == false) {
-                exceptionMessage2 = (exceptionMessage2 + ".");
-            }
-            return false;
-        }
     }
 
     private void checkForUpdate() {

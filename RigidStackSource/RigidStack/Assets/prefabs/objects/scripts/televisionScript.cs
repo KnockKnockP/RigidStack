@@ -9,7 +9,7 @@ public class televisionScript : MonoBehaviour {
 
     private void Awake() {
         videoPlayer = GetComponentInChildren<VideoPlayer>();
-        videoPlayerSpriteRenderer = videoPlayer.gameObject.GetComponent<SpriteRenderer>();
+        videoPlayerSpriteRenderer = videoPlayer.GetComponent<SpriteRenderer>();
         return;
     }
 
@@ -17,7 +17,7 @@ public class televisionScript : MonoBehaviour {
         videoPlayer.playbackSpeed = Time.timeScale;
         if (Time.timeScale == 0f) {
             videoPlayer.Pause();
-            Destroy(this);
+            enabled = false;
         }
         return;
     }

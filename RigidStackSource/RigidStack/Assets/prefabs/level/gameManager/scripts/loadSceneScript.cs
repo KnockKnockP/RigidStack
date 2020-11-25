@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 public static class SceneNames {
     //Variables for managing scenes.
     public const string MainMenu = "mainMenu",
-                        GameplaySettingsMenu = "gameplaySettingsMenu",
-                        GraphicsSettingsMenu = "graphicsSettingsMenu",
                         Level = "level";
 }
 

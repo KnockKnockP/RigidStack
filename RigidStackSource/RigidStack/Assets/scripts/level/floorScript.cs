@@ -2,8 +2,7 @@
 using UnityEngine;
 
 public class floorScript : NetworkBehaviour {
-    //A variable for ending the game.
-    [SerializeField] private endMenuManager _endMenuManager = null;
+    [Header("A variable for ending the game."), SerializeField] private endMenuManager _endMenuManager = null;
 
     #region Checking the collision.
     private void OnCollisionEnter2D(Collision2D collision) {

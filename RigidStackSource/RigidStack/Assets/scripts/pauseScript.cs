@@ -3,11 +3,8 @@ using System;
 using UnityEngine;
 
 public class pauseScript : NetworkBehaviour {
-    //Variables for pausing the game.
     private bool isPaused;
     [SerializeField] private GameObject pauseMenuPanel = null;
-
-    //A variable for enabling and diabling the end menu.
     [SerializeField] private endMenuManager _endMenuManager = null;
 
     public void pauseOrResume() {

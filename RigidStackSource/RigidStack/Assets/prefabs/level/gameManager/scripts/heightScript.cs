@@ -1,24 +1,4 @@
-﻿/*
-    I fucking hate working on this script and I want to stop working on it.
-    Hopefully this is the last time I would ever touch this script and see no bugs from it.
-    2020-10-08 02:10 PM.
-
-    Well, fuck.
-    I need to touch this stupid script again to implement multiplayer.
-    This is going to take some while to get it right.
-    2020-10-10 05:47 PM.
-
-    Fucking hell.
-    This motherfucking script just wont fucking stupid ass sucking work for fucks sake.
-    How many times do I have to stare at this stupid script just to make this motherfucking simple height checking working?
-    This is madness, there are fuck ton of bugs that I need to fix because it does not happen in the editor.
-    Every time I try to debug this shit it magically fixes it self.
-    Jesus fucking chirst.
-    This script is fucking cursed.
-    2020-10-11 03:31 PM.
-*/
-
-using Mirror;
+﻿using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,12 +6,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class heightScript : NetworkBehaviour {
-    //Variables for height counting.
+    [Header("Variables for height checking.")]
+    private bool _isServer;
     private readonly byte maxFrameChecking = 5;
     private byte frameCount;
     [NonSerialized] public float tolerance = 0.1f;
     /*
-        PlayerData.maxHeight is the maximum score for the account's life time, it is also equal to the old objective score.
+        PlayerData.maxHeight is the maximum score for the account's life time.
         currentGameMaxHeight is the maximum score for the single session of the game.
         currentScore is the current score that is displayed on the text.
         When the player dies, currentGameMaxHeight gets resetted.
@@ -41,25 +22,20 @@ public class heightScript : NetworkBehaviour {
     */
     [NonSerialized, SyncVar(hook = nameof(syncScore))] public int currentScore;
     [NonSerialized] public int currentGameMaxHeight;
-    private objectScript _objectScript;
+    [SerializeField] private objectScript _objectScript;
 
-    //Variables for tracking placed objects.
     private GameObject previousFrameGameObject;
     [NonSerialized] public List<Transform> placedObjectsTransforms = new List<Transform>();
     [NonSerialized] public List<Rigidbody2D> placedObjectsRigidbody2D = new List<Rigidbody2D>();
     [NonSerialized] public List<GameObject> placedObjects = new List<GameObject>();
 
-    //Variables for showing the height.
-    private objectiveScript _objectiveScript;
+    [Header("Variables for showing the height."), SerializeField] private objectiveScript _objectiveScript;
     [SerializeField] private Text heightText = null;
 
-    //A variable for manual height checking.
-    [SerializeField] private Button checkHeightButton = null;
+    [Header("A variable for manual height checking."), SerializeField] private Button checkHeightButton = null;
 
     public void syncDifficulty(Difficulty syncedDifficulty) {
         //Difficulty is synced on objectiveScript.cs.
-        _objectScript = FindObjectOfType<objectScript>();
-        _objectiveScript = GetComponent<objectiveScript>();
         switch (syncedDifficulty) {
             case (Difficulty.Sandbox): {
                 tolerance = 0.1f;
@@ -82,21 +58,14 @@ public class heightScript : NetworkBehaviour {
                 break;
             }
         }
-        checkHeightButton.gameObject.SetActive(LoadedPlayerData.playerData.isManualCheckingEnabled);
-        if ((LoadedPlayerData.playerData.isManualCheckingEnabled == false) && (isServer == true)) {
-            StartCoroutine(updateHeight());
-        }
-        if (isClientOnly == true) {
-            checkHeightButton.gameObject.SetActive(false);
-        }
+        _isServer = isServer;
+        checkHeightButton.gameObject.SetActive(LoadedPlayerData.playerData.isManualCheckingEnabled && _isServer);
         return;
     }
 
-    [Server]
-    private IEnumerator updateHeight() {
-        while (true) {
+    private void Update() {
+        if ((LoadedPlayerData.playerData.isManualCheckingEnabled == false) && (_isServer == true)) {
             checkHeight();
-            yield return null;
         }
     }
 
@@ -165,8 +134,6 @@ public class heightScript : NetworkBehaviour {
     }
 
     private void syncScore(int oldScore, int newScore) {
-        _ = oldScore;
-        currentScore = newScore;
         updateHeightText();
         return;
     }
@@ -177,7 +144,8 @@ public class heightScript : NetworkBehaviour {
     }
 
     private bool checkValues(int i) {
-        return ((StaticClass.isInBetweenOrEqualToTwoValues(placedObjectsRigidbody2D[i].velocity, -tolerance, tolerance)) || (placedObjectsRigidbody2D[i].velocity == Vector2.zero));
+        Vector2 velocity = placedObjectsRigidbody2D[i].velocity;
+        return ((StaticClass.isInBetweenOrEqualToTwoValues(velocity, -tolerance, tolerance)) || (velocity == Vector2.zero));
     }
 
     public void resetLists() {

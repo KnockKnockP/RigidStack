@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler {
-    //Variables for dragging and dropping the object.
+    [Header("Variables for dragging and dropping the object.")]
     private bool isDragging, isClientThatPlacedTheObject;
     private static short spriteOrder = 1;
     private dragAndDropImageScript _dragAndDropImageScript;

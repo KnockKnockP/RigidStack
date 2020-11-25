@@ -6,6 +6,7 @@ public class postDragAndDropScript : NetworkBehaviour {
     //Variables for manipulating the object.
     public static bool isCollisionFishy;
     private objectEditingScript _objectEditingScript;
+
     //The object we are going to manipulate.
     [NonSerialized] public GameObject thisGameObject;
 

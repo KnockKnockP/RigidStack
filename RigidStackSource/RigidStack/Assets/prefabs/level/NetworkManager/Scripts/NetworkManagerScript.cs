@@ -5,11 +5,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class NetworkManagerScript : MonoBehaviour {
-    //A variable for determining the game mode.
-    public static bool isMultiplayerGame = false;
-
-    //A variable for setting up the main menu.
     private static bool hasAddedAnEvent = false;
+    public static bool isMultiplayerGame = false;
 
     //A variable for finding the available port.
     private static readonly IPEndPoint defaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, 0);
@@ -33,7 +30,6 @@ public class NetworkManagerScript : MonoBehaviour {
         return;
     }
 
-    //TODO : MERGE PREMAINMENU AND MAIN MENU AND MAKE SETTINGS MENU INTO A PREFAB PANEL.
     private void sceneChanged(Scene scene, LoadSceneMode loadSceneMode) {
         if ((scene.name == SceneNames.Level) && (isMultiplayerGame == false)) {
             NetworkManager networkManager = NetworkManager.singleton;
