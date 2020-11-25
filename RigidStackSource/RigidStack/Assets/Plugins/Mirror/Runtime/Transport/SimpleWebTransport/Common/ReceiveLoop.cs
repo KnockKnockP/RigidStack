@@ -5,20 +5,16 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Mirror.SimpleWeb
-{
-    internal static class ReceiveLoop
-    {
-        public struct Config
-        {
+namespace Mirror.SimpleWeb {
+    internal static class ReceiveLoop {
+        public struct Config {
             public readonly Connection conn;
             public readonly int maxMessageSize;
             public readonly bool expectMask;
             public readonly ConcurrentQueue<Message> queue;
             public readonly BufferPool bufferPool;
 
-            public Config(Connection conn, int maxMessageSize, bool expectMask, ConcurrentQueue<Message> queue, BufferPool bufferPool)
-            {
+            public Config(Connection conn, int maxMessageSize, bool expectMask, ConcurrentQueue<Message> queue, BufferPool bufferPool) {
                 this.conn = conn ?? throw new ArgumentNullException(nameof(conn));
                 this.maxMessageSize = maxMessageSize;
                 this.expectMask = expectMask;
@@ -26,8 +22,7 @@ namespace Mirror.SimpleWeb
                 this.bufferPool = bufferPool ?? throw new ArgumentNullException(nameof(bufferPool));
             }
 
-            public void Deconstruct(out Connection conn, out int maxMessageSize, out bool expectMask, out ConcurrentQueue<Message> queue, out BufferPool bufferPool)
-            {
+            public void Deconstruct(out Connection conn, out int maxMessageSize, out bool expectMask, out ConcurrentQueue<Message> queue, out BufferPool bufferPool) {
                 conn = this.conn;
                 maxMessageSize = this.maxMessageSize;
                 expectMask = this.expectMask;
@@ -36,70 +31,48 @@ namespace Mirror.SimpleWeb
             }
         }
 
-        public static void Loop(Config config)
-        {
+        public static void Loop(Config config) {
             (Connection conn, int maxMessageSize, bool expectMask, ConcurrentQueue<Message> queue, BufferPool _) = config;
 
             byte[] readBuffer = new byte[Constants.HeaderSize + (expectMask ? Constants.MaskSize : 0) + maxMessageSize];
-            try
-            {
-                try
-                {
+            try {
+                try {
                     TcpClient client = conn.client;
 
-                    while (client.Connected)
-                    {
+                    while (client.Connected) {
                         ReadOneMessage(config, readBuffer);
                     }
 
                     Log.Info($"{conn} Not Connected");
-                }
-                catch (Exception)
-                {
+                } catch (Exception) {
                     // if interupted we dont care about other execptions
                     Utils.CheckForInterupt();
                     throw;
                 }
-            }
-            catch (ThreadInterruptedException e) { Log.InfoException(e); }
-            catch (ThreadAbortException e) { Log.InfoException(e); }
-            catch (ObjectDisposedException e) { Log.InfoException(e); }
-            catch (ReadHelperException e)
-            {
+            } catch (ThreadInterruptedException e) { Log.InfoException(e); } catch (ThreadAbortException e) { Log.InfoException(e); } catch (ObjectDisposedException e) { Log.InfoException(e); } catch (ReadHelperException e) {
                 // this could happen if client sends bad message
                 Log.InfoException(e);
                 queue.Enqueue(new Message(conn.connId, e));
-            }
-            catch (SocketException e)
-            {
+            } catch (SocketException e) {
                 // this could happen if wss client closes stream
                 Log.Warn($"ReceiveLoop SocketException\n{e.Message}", false);
                 queue.Enqueue(new Message(conn.connId, e));
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 // this could happen if client disconnects
                 Log.Warn($"ReceiveLoop IOException\n{e.Message}", false);
                 queue.Enqueue(new Message(conn.connId, e));
-            }
-            catch (InvalidDataException e)
-            {
+            } catch (InvalidDataException e) {
                 Log.Error($"Invalid data from {conn}: {e.Message}");
                 queue.Enqueue(new Message(conn.connId, e));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Log.Exception(e);
                 queue.Enqueue(new Message(conn.connId, e));
-            }
-            finally
-            {
+            } finally {
                 conn.Dispose();
             }
         }
 
-        static void ReadOneMessage(Config config, byte[] buffer)
-        {
+        static void ReadOneMessage(Config config, byte[] buffer) {
             (Connection conn, int maxMessageSize, bool expectMask, ConcurrentQueue<Message> queue, BufferPool bufferPool) = config;
             Stream stream = conn.stream;
 
@@ -109,15 +82,13 @@ namespace Mirror.SimpleWeb
             // log after first blocking call
             Log.Verbose($"Message From {conn}");
 
-            if (MessageProcessor.NeedToReadShortLength(buffer))
-            {
+            if (MessageProcessor.NeedToReadShortLength(buffer)) {
                 offset = ReadHelper.Read(stream, buffer, offset, Constants.ShortLength);
             }
 
             MessageProcessor.ValidateHeader(buffer, maxMessageSize, expectMask);
 
-            if (expectMask)
-            {
+            if (expectMask) {
                 offset = ReadHelper.Read(stream, buffer, offset, Constants.MaskSize);
             }
 
@@ -130,8 +101,7 @@ namespace Mirror.SimpleWeb
             int msgOffset = offset;
             offset = ReadHelper.Read(stream, buffer, offset, payloadLength);
 
-            switch (opcode)
-            {
+            switch (opcode) {
                 case 2:
                     HandleArrayMessage(config, buffer, msgOffset, payloadLength);
                     break;
@@ -141,20 +111,16 @@ namespace Mirror.SimpleWeb
             }
         }
 
-        static void HandleArrayMessage(Config config, byte[] buffer, int msgOffset, int payloadLength)
-        {
+        static void HandleArrayMessage(Config config, byte[] buffer, int msgOffset, int payloadLength) {
             (Connection conn, int _, bool expectMask, ConcurrentQueue<Message> queue, BufferPool bufferPool) = config;
 
             ArrayBuffer arrayBuffer = bufferPool.Take(payloadLength);
 
-            if (expectMask)
-            {
+            if (expectMask) {
                 int maskOffset = msgOffset - Constants.MaskSize;
                 // write the result of toggle directly into arrayBuffer to avoid 2nd copy call
                 MessageProcessor.ToggleMask(buffer, msgOffset, arrayBuffer, payloadLength, buffer, maskOffset);
-            }
-            else
-            {
+            } else {
                 arrayBuffer.CopyFrom(buffer, msgOffset, payloadLength);
             }
 
@@ -164,12 +130,10 @@ namespace Mirror.SimpleWeb
             queue.Enqueue(new Message(conn.connId, arrayBuffer));
         }
 
-        static void HandleCloseMessage(Config config, byte[] buffer, int msgOffset, int payloadLength)
-        {
+        static void HandleCloseMessage(Config config, byte[] buffer, int msgOffset, int payloadLength) {
             (Connection conn, int _, bool expectMask, ConcurrentQueue<Message> _, BufferPool _) = config;
 
-            if (expectMask)
-            {
+            if (expectMask) {
                 int maskOffset = msgOffset - Constants.MaskSize;
                 MessageProcessor.ToggleMask(buffer, msgOffset, payloadLength, buffer, maskOffset);
             }
@@ -182,13 +146,11 @@ namespace Mirror.SimpleWeb
             conn.Dispose();
         }
 
-        static string GetCloseMessage(byte[] buffer, int msgOffset, int payloadLength)
-        {
+        static string GetCloseMessage(byte[] buffer, int msgOffset, int payloadLength) {
             return Encoding.UTF8.GetString(buffer, msgOffset + 2, payloadLength - 2);
         }
 
-        static int GetCloseCode(byte[] buffer, int msgOffset)
-        {
+        static int GetCloseCode(byte[] buffer, int msgOffset) {
             return buffer[msgOffset + 0] << 8 | buffer[msgOffset + 1];
         }
     }

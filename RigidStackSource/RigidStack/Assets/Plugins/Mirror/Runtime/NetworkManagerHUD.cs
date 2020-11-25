@@ -2,8 +2,7 @@
 // confusion if someone accidentally presses one.
 using UnityEngine;
 
-namespace Mirror
-{
+namespace Mirror {
     /// <summary>
     /// An extension for the NetworkManager that displays a default HUD for controlling the network state of the game.
     /// <para>This component also shows useful internal state for the networking system in the inspector window of the editor. It allows users to view connections, networked objects, message handlers, and packet statistics. This information can be helpful when debugging networked games.</para>
@@ -12,8 +11,7 @@ namespace Mirror
     [AddComponentMenu("Network/NetworkManagerHUD")]
     [RequireComponent(typeof(NetworkManager))]
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkManagerHUD.html")]
-    public class NetworkManagerHUD : MonoBehaviour
-    {
+    public class NetworkManagerHUD : MonoBehaviour {
         NetworkManager manager;
 
         /// <summary>
@@ -31,35 +29,27 @@ namespace Mirror
         /// </summary>
         public int offsetY;
 
-        void Awake()
-        {
+        void Awake() {
             manager = GetComponent<NetworkManager>();
         }
 
-        void OnGUI()
-        {
+        void OnGUI() {
             if (!showGUI)
                 return;
 
             GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 215, 9999));
-            if (!NetworkClient.isConnected && !NetworkServer.active)
-            {
+            if (!NetworkClient.isConnected && !NetworkServer.active) {
                 StartButtons();
-            }
-            else
-            {
+            } else {
                 StatusLabels();
             }
 
             // client ready
-            if (NetworkClient.isConnected && !ClientScene.ready)
-            {
-                if (GUILayout.Button("Client Ready"))
-                {
+            if (NetworkClient.isConnected && !ClientScene.ready) {
+                if (GUILayout.Button("Client Ready")) {
                     ClientScene.Ready(NetworkClient.connection);
 
-                    if (ClientScene.localPlayer == null)
-                    {
+                    if (ClientScene.localPlayer == null) {
                         ClientScene.AddPlayer(NetworkClient.connection);
                     }
                 }
@@ -70,86 +60,66 @@ namespace Mirror
             GUILayout.EndArea();
         }
 
-        void StartButtons()
-        {
-            if (!NetworkClient.active)
-            {
+        void StartButtons() {
+            if (!NetworkClient.active) {
                 // Server + Client
-                if (Application.platform != RuntimePlatform.WebGLPlayer)
-                {
-                    if (GUILayout.Button("Host (Server + Client)"))
-                    {
+                if (Application.platform != RuntimePlatform.WebGLPlayer) {
+                    if (GUILayout.Button("Host (Server + Client)")) {
                         manager.StartHost();
                     }
                 }
 
                 // Client + IP
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Client"))
-                {
+                if (GUILayout.Button("Client")) {
                     manager.StartClient();
                 }
                 manager.networkAddress = GUILayout.TextField(manager.networkAddress);
                 GUILayout.EndHorizontal();
 
                 // Server Only
-                if (Application.platform == RuntimePlatform.WebGLPlayer)
-                {
+                if (Application.platform == RuntimePlatform.WebGLPlayer) {
                     // cant be a server in webgl build
                     GUILayout.Box("(  WebGL cannot be server  )");
+                } else {
+                    if (GUILayout.Button("Server Only"))
+                        manager.StartServer();
                 }
-                else
-                {
-                    if (GUILayout.Button("Server Only")) manager.StartServer();
-                }
-            }
-            else
-            {
+            } else {
                 // Connecting
                 GUILayout.Label("Connecting to " + manager.networkAddress + "..");
-                if (GUILayout.Button("Cancel Connection Attempt"))
-                {
+                if (GUILayout.Button("Cancel Connection Attempt")) {
                     manager.StopClient();
                 }
             }
         }
 
-        void StatusLabels()
-        {
+        void StatusLabels() {
             // server / client status message
-            if (NetworkServer.active)
-            {
+            if (NetworkServer.active) {
                 GUILayout.Label("Server: active. Transport: " + Transport.activeTransport);
             }
-            if (NetworkClient.isConnected)
-            {
+            if (NetworkClient.isConnected) {
                 GUILayout.Label("Client: address=" + manager.networkAddress);
             }
         }
 
-        void StopButtons()
-        {
+        void StopButtons() {
             // stop host if host mode
-            if (NetworkServer.active && NetworkClient.isConnected)
-            {
-                if (GUILayout.Button("Stop Host"))
-                {
+            if (NetworkServer.active && NetworkClient.isConnected) {
+                if (GUILayout.Button("Stop Host")) {
                     manager.StopHost();
                 }
             }
             // stop client if client-only
-            else if (NetworkClient.isConnected)
-            {
-                if (GUILayout.Button("Stop Client"))
-                {
+            else if (NetworkClient.isConnected) {
+                if (GUILayout.Button("Stop Client")) {
                     manager.StopClient();
                 }
             }
             // stop server if server-only
-            else if (NetworkServer.active)
-            {
-                if (GUILayout.Button("Stop Server"))
-                {
+            else if (NetworkServer.active) {
+                if (GUILayout.Button("Stop Server")) {
                     manager.StopServer();
                 }
             }

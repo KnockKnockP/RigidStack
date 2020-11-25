@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace kcp2k
-{
+namespace kcp2k {
     // KCP Segment Definition
-    internal class Segment
-    {
+    internal class Segment {
         internal uint conv;     // conversation
         internal uint cmd;      // command, e.g. Kcp.CMD_ACK etc.
         internal uint frg;      // fragment
@@ -25,18 +23,15 @@ namespace kcp2k
         // pool ////////////////////////////////////////////////////////////////
         internal static readonly Stack<Segment> Pool = new Stack<Segment>(32);
 
-        public static Segment Take()
-        {
-            if (Pool.Count > 0)
-            {
+        public static Segment Take() {
+            if (Pool.Count > 0) {
                 Segment seg = Pool.Pop();
                 return seg;
             }
             return new Segment();
         }
 
-        public static void Return(Segment seg)
-        {
+        public static void Return(Segment seg) {
             seg.Reset();
             Pool.Push(seg);
         }
@@ -44,8 +39,7 @@ namespace kcp2k
 
         // ikcp_encode_seg
         // encode a segment into buffer
-        internal int Encode(byte[] ptr, int offset)
-        {
+        internal int Encode(byte[] ptr, int offset) {
             int offset_ = offset;
             offset += Utils.Encode32U(ptr, offset, conv);
             offset += Utils.Encode8u(ptr, offset, (byte)cmd);
@@ -60,8 +54,7 @@ namespace kcp2k
         }
 
         // reset to return a fresh segment to the pool
-        internal void Reset()
-        {
+        internal void Reset() {
             conv = 0;
             cmd = 0;
             frg = 0;

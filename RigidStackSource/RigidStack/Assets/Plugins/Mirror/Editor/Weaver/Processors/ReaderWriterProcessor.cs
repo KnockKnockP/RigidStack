@@ -1,27 +1,21 @@
 // finds all readers and writers and register them
-using System;
-using System.Linq;
 using Mono.CecilX;
 using Mono.CecilX.Cil;
+using System;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
-namespace Mirror.Weaver
-{
-    public static class ReaderWriterProcessor
-    {
-        public static bool Process(AssemblyDefinition CurrentAssembly)
-        {
+namespace Mirror.Weaver {
+    public static class ReaderWriterProcessor {
+        public static bool Process(AssemblyDefinition CurrentAssembly) {
             Readers.Init();
             Writers.Init();
-            foreach (Assembly unityAsm in CompilationPipeline.GetAssemblies())
-            {
-                if (unityAsm.name == "Mirror")
-                {
+            foreach (Assembly unityAsm in CompilationPipeline.GetAssemblies()) {
+                if (unityAsm.name == "Mirror") {
                     using (DefaultAssemblyResolver asmResolver = new DefaultAssemblyResolver())
-                    using (AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(unityAsm.outputPath, new ReaderParameters { ReadWrite = false, ReadSymbols = false, AssemblyResolver = asmResolver }))
-                    {
+                    using (AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(unityAsm.outputPath, new ReaderParameters { ReadWrite = false, ReadSymbols = false, AssemblyResolver = asmResolver })) {
                         ProcessAssemblyClasses(CurrentAssembly, assembly);
                     }
                 }
@@ -30,52 +24,43 @@ namespace Mirror.Weaver
             return ProcessAssemblyClasses(CurrentAssembly, CurrentAssembly);
         }
 
-        static bool ProcessAssemblyClasses(AssemblyDefinition CurrentAssembly, AssemblyDefinition assembly)
-        {
+        static bool ProcessAssemblyClasses(AssemblyDefinition CurrentAssembly, AssemblyDefinition assembly) {
             bool modified = false;
-            foreach (TypeDefinition klass in assembly.MainModule.Types)
-            {
+            foreach (TypeDefinition klass in assembly.MainModule.Types) {
                 // extension methods only live in static classes
                 // static classes are represented as sealed and abstract
-                if (klass.IsAbstract && klass.IsSealed)
-                {
+                if (klass.IsAbstract && klass.IsSealed) {
                     // if asmebly has any declared writers then it is "modified"
                     modified |= LoadDeclaredWriters(CurrentAssembly, klass);
                     modified |= LoadDeclaredReaders(CurrentAssembly, klass);
                 }
             }
 
-            foreach (TypeDefinition klass in assembly.MainModule.Types)
-            {
+            foreach (TypeDefinition klass in assembly.MainModule.Types) {
                 // if asmebly has any network message then it is modified
                 modified |= LoadMessageReadWriter(CurrentAssembly.MainModule, klass);
             }
             return modified;
         }
 
-        static bool LoadMessageReadWriter(ModuleDefinition module, TypeDefinition klass)
-        {
+        static bool LoadMessageReadWriter(ModuleDefinition module, TypeDefinition klass) {
             bool modified = false;
-            if (!klass.IsAbstract && !klass.IsInterface && klass.ImplementsInterface<NetworkMessage>())
-            {
+            if (!klass.IsAbstract && !klass.IsInterface && klass.ImplementsInterface<NetworkMessage>()) {
                 Readers.GetReadFunc(module.ImportReference(klass));
                 Writers.GetWriteFunc(module.ImportReference(klass));
                 modified = true;
             }
 
-            foreach (TypeDefinition td in klass.NestedTypes)
-            {
+            foreach (TypeDefinition td in klass.NestedTypes) {
                 modified |= LoadMessageReadWriter(module, td);
             }
             return modified;
         }
 
-        static bool LoadDeclaredWriters(AssemblyDefinition currentAssembly, TypeDefinition klass)
-        {
+        static bool LoadDeclaredWriters(AssemblyDefinition currentAssembly, TypeDefinition klass) {
             // register all the writers in this class.  Skip the ones with wrong signature
             bool modified = false;
-            foreach (MethodDefinition method in klass.Methods)
-            {
+            foreach (MethodDefinition method in klass.Methods) {
                 if (method.Parameters.Count != 2)
                     continue;
 
@@ -98,12 +83,10 @@ namespace Mirror.Weaver
             return modified;
         }
 
-        static bool LoadDeclaredReaders(AssemblyDefinition currentAssembly, TypeDefinition klass)
-        {
+        static bool LoadDeclaredReaders(AssemblyDefinition currentAssembly, TypeDefinition klass) {
             // register all the reader in this class.  Skip the ones with wrong signature
             bool modified = false;
-            foreach (MethodDefinition method in klass.Methods)
-            {
+            foreach (MethodDefinition method in klass.Methods) {
                 if (method.Parameters.Count != 1)
                     continue;
 
@@ -125,8 +108,7 @@ namespace Mirror.Weaver
             return modified;
         }
 
-        static bool IsEditorAssembly(AssemblyDefinition currentAssembly)
-        {
+        static bool IsEditorAssembly(AssemblyDefinition currentAssembly) {
             return currentAssembly.MainModule.AssemblyReferences.Any(assemblyReference =>
                 assemblyReference.Name == nameof(UnityEditor)
                 );
@@ -140,8 +122,7 @@ namespace Mirror.Weaver
         /// executed before mirror runtime code
         /// </summary>
         /// <param name="currentAssembly"></param>
-        public static void InitializeReaderAndWriters(AssemblyDefinition currentAssembly)
-        {
+        public static void InitializeReaderAndWriters(AssemblyDefinition currentAssembly) {
             MethodDefinition rwInitializer = new MethodDefinition("InitReadWriters", MethodAttributes.Public |
                     MethodAttributes.Static,
                     WeaverTypes.Import(typeof(void)));
@@ -152,8 +133,7 @@ namespace Mirror.Weaver
             customAttributeRef.ConstructorArguments.Add(new CustomAttributeArgument(WeaverTypes.Import<RuntimeInitializeLoadType>(), RuntimeInitializeLoadType.BeforeSceneLoad));
             rwInitializer.CustomAttributes.Add(customAttributeRef);
 
-            if (IsEditorAssembly(currentAssembly))
-            {
+            if (IsEditorAssembly(currentAssembly)) {
                 // editor assembly,  add InitializeOnLoadMethod too.  Useful for the editor tests
                 System.Reflection.ConstructorInfo initializeOnLoadConstructor = typeof(InitializeOnLoadMethodAttribute).GetConstructor(new Type[0]);
                 CustomAttribute initializeCustomConstructorRef = new CustomAttribute(currentAssembly.MainModule.ImportReference(initializeOnLoadConstructor));

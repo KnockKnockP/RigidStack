@@ -2,14 +2,23 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Mirror
-{
+namespace Mirror {
     // UnityEvent definitions
-    [Serializable] public class ClientDataReceivedEvent : UnityEvent<ArraySegment<byte>, int> { }
-    [Serializable] public class UnityEventException : UnityEvent<Exception> { }
-    [Serializable] public class UnityEventInt : UnityEvent<int> { }
-    [Serializable] public class ServerDataReceivedEvent : UnityEvent<int, ArraySegment<byte>, int> { }
-    [Serializable] public class UnityEventIntException : UnityEvent<int, Exception> { }
+    [Serializable]
+    public class ClientDataReceivedEvent : UnityEvent<ArraySegment<byte>, int> {
+    }
+    [Serializable]
+    public class UnityEventException : UnityEvent<Exception> {
+    }
+    [Serializable]
+    public class UnityEventInt : UnityEvent<int> {
+    }
+    [Serializable]
+    public class ServerDataReceivedEvent : UnityEvent<int, ArraySegment<byte>, int> {
+    }
+    [Serializable]
+    public class UnityEventIntException : UnityEvent<int, Exception> {
+    }
 
     /// <summary>
     /// Abstract transport layer component
@@ -17,8 +26,7 @@ namespace Mirror
     /// <remarks>
     /// note: Not all transports need a port, so add it to yours if needed.
     /// </remarks>
-    public abstract class Transport : MonoBehaviour
-    {
+    public abstract class Transport : MonoBehaviour {
         /// <summary>
         /// The current transport used by Mirror.
         /// </summary>
@@ -71,8 +79,7 @@ namespace Mirror
         /// Establish a connection to a server
         /// </summary>
         /// <param name="uri">The address of the server we are trying to connect to</param>
-        public virtual void ClientConnect(Uri uri)
-        {
+        public virtual void ClientConnect(Uri uri) {
             // By default, to keep backwards compatibility, just connect to the host
             // in the uri
             ClientConnect(uri.Host);
@@ -200,15 +207,15 @@ namespace Mirror
         //            ShoulderRotation.LateUpdate, resulting in projectile
         //            spawns at the point before shoulder rotation.
 #pragma warning disable UNT0001 // Empty Unity message
-        public void Update() { }
+        public void Update() {
+        }
 #pragma warning restore UNT0001 // Empty Unity message
 
         /// <summary>
         /// called when quitting the application by closing the window / pressing stop in the editor
         /// <para>virtual so that inheriting classes' OnApplicationQuit() can call base.OnApplicationQuit() too</para>
         /// </summary>
-        public virtual void OnApplicationQuit()
-        {
+        public virtual void OnApplicationQuit() {
             // stop transport (e.g. to shut down threads)
             // (when pressing Stop in the Editor, Unity keeps threads alive
             //  until we press Start again. so if Transports use threads, we

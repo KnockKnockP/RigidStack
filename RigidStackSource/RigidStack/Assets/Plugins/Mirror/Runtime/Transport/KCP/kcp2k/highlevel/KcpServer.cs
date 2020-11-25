@@ -6,10 +6,8 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-namespace kcp2k
-{
-    public class KcpServer
-    {
+namespace kcp2k {
+    public class KcpServer {
         // events
         public Action<int> OnConnected;
         public Action<int, ArraySegment<byte>> OnData;
@@ -54,8 +52,7 @@ namespace kcp2k
                          int FastResend = 0,
                          bool CongestionWindow = true,
                          uint SendWindowSize = Kcp.WND_SND,
-                         uint ReceiveWindowSize = Kcp.WND_RCV)
-        {
+                         uint ReceiveWindowSize = Kcp.WND_RCV) {
             this.OnConnected = OnConnected;
             this.OnData = OnData;
             this.OnDisconnected = OnDisconnected;
@@ -69,11 +66,9 @@ namespace kcp2k
 
         public bool IsActive() => socket != null;
 
-        public void Start(ushort port)
-        {
+        public void Start(ushort port) {
             // only start once
-            if (socket != null)
-            {
+            if (socket != null) {
                 Debug.LogWarning("KCP: server already started!");
             }
 
@@ -83,35 +78,27 @@ namespace kcp2k
             socket.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
         }
 
-        public void Send(int connectionId, ArraySegment<byte> segment)
-        {
-            if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
-            {
+        public void Send(int connectionId, ArraySegment<byte> segment) {
+            if (connections.TryGetValue(connectionId, out KcpServerConnection connection)) {
                 connection.Send(segment);
             }
         }
-        public void Disconnect(int connectionId)
-        {
-            if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
-            {
+        public void Disconnect(int connectionId) {
+            if (connections.TryGetValue(connectionId, out KcpServerConnection connection)) {
                 connection.Disconnect();
             }
         }
 
-        public string GetClientAddress(int connectionId)
-        {
-            if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
-            {
+        public string GetClientAddress(int connectionId) {
+            if (connections.TryGetValue(connectionId, out KcpServerConnection connection)) {
                 return (connection.GetRemoteEndPoint() as IPEndPoint).Address.ToString();
             }
             return "";
         }
 
         HashSet<int> connectionsToRemove = new HashSet<int>();
-        public void Tick()
-        {
-            while (socket != null && socket.Poll(0, SelectMode.SelectRead))
-            {
+        public void Tick() {
+            while (socket != null && socket.Poll(0, SelectMode.SelectRead)) {
                 int msgLength = socket.ReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref newClientEP);
                 //Debug.Log($"KCP: server raw recv {msgLength} bytes = {BitConverter.ToString(buffer, 0, msgLength)}");
 
@@ -119,8 +106,7 @@ namespace kcp2k
                 int connectionId = newClientEP.GetHashCode();
 
                 // is this a new connection?
-                if (!connections.TryGetValue(connectionId, out KcpServerConnection connection))
-                {
+                if (!connections.TryGetValue(connectionId, out KcpServerConnection connection)) {
                     // create a new KcpConnection
                     connection = new KcpServerConnection(socket, newClientEP, NoDelay, Interval, FastResend, CongestionWindow, SendWindowSize, ReceiveWindowSize);
 
@@ -143,8 +129,7 @@ namespace kcp2k
                     // for now, this is fine.
 
                     // setup authenticated event that also adds to connections
-                    connection.OnAuthenticated = () =>
-                    {
+                    connection.OnAuthenticated = () => {
                         // only send handshake to client AFTER we received his
                         // handshake in OnAuthenticated.
                         // we don't want to reply to random internet messages
@@ -161,16 +146,14 @@ namespace kcp2k
                         // internet.
 
                         // setup data event
-                        connection.OnData = (message) =>
-                        {
+                        connection.OnData = (message) => {
                             // call mirror event
                             //Debug.Log($"KCP: OnServerDataReceived({connectionId}, {BitConverter.ToString(message.Array, message.Offset, message.Count)})");
                             OnData.Invoke(connectionId, message);
                         };
 
                         // setup disconnected event
-                        connection.OnDisconnected = () =>
-                        {
+                        connection.OnDisconnected = () => {
                             // flag for removal
                             // (can't remove directly because connection is updated
                             //  and event is called while iterating all connections)
@@ -198,30 +181,26 @@ namespace kcp2k
                     // connection will simply be garbage collected.
                 }
                 // existing connection: simply input the message into kcp
-                else
-                {
+                else {
                     connection.RawInput(buffer, msgLength);
                 }
             }
 
             // tick all server connections
-            foreach (KcpServerConnection connection in connections.Values)
-            {
+            foreach (KcpServerConnection connection in connections.Values) {
                 connection.Tick();
             }
 
             // remove disconnected connections
             // (can't do it in connection.OnDisconnected because Tick is called
             //  while iterating connections)
-            foreach (int connectionId in connectionsToRemove)
-            {
+            foreach (int connectionId in connectionsToRemove) {
                 connections.Remove(connectionId);
             }
             connectionsToRemove.Clear();
         }
 
-        public void Stop()
-        {
+        public void Stop() {
             socket?.Close();
             socket = null;
         }

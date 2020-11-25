@@ -1,7 +1,4 @@
-﻿namespace ParrelSync.NonCore
-{
-    using System.Collections;
-    using System.Collections.Generic;
+﻿namespace ParrelSync.NonCore {
     using UnityEditor;
     using UnityEngine;
 
@@ -11,27 +8,23 @@
     /// Removing this file from project wont effect any other functions.
     /// </summary>
     [InitializeOnLoad]
-    public class AskFeedbackDialog
-    {
+    public class AskFeedbackDialog {
         const string InitializeOnLoadCountKey = "ParrelSync_InitOnLoadCount", StopShowingKey = "ParrelSync_StopShowFeedBack";
-        static AskFeedbackDialog()
-        {            
-            if (EditorPrefs.HasKey(StopShowingKey)) { return; }
+        static AskFeedbackDialog() {
+            if (EditorPrefs.HasKey(StopShowingKey)) {
+                return;
+            }
 
             int InitializeOnLoadCount = EditorPrefs.GetInt(InitializeOnLoadCountKey, 0);
-            if (InitializeOnLoadCount > 20)
-            {
+            if (InitializeOnLoadCount > 20) {
                 ShowDialog();
-            }
-            else
-            {
+            } else {
                 EditorPrefs.SetInt(InitializeOnLoadCountKey, InitializeOnLoadCount + 1);
             }
         }
 
         //[MenuItem("ParrelSync/(Debug)Show AskFeedbackDialog ")]
-        private static void ShowDialog()
-        {
+        private static void ShowDialog() {
             int option = EditorUtility.DisplayDialogComplex("Do you like " + ParrelSync.ClonesManager.ProjectName + "?",
                    "Do you like " + ParrelSync.ClonesManager.ProjectName + "?\n" +
                    "If so, please don't hesitate to star it on GitHub and contribute to the project!",
@@ -40,8 +33,7 @@
                    "Remind me next time"
                );
 
-            switch (option)
-            {
+            switch (option) {
                 // First parameter.
                 case 0:
                     Debug.Log("AskFeedbackDialog: Star on GitHub selected");

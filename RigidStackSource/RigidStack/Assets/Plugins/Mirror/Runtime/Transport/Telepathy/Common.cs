@@ -4,10 +4,8 @@ using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Telepathy
-{
-    public abstract class Common
-    {
+namespace Telepathy {
+    public abstract class Common {
         /////////////////////////////////////////////////////////
         // common code
         // incoming message queue of <connectionId, message>
@@ -32,8 +30,7 @@ namespace Telepathy
         // -> bool return makes while (GetMessage(out Message)) easier!
         // -> no 'is client connected' check because we still want to read the
         //    Disconnected message after a disconnect
-        public bool GetNextMessage(out Message message)
-        {
+        public bool GetNextMessage(out Message message) {
             return receiveQueue.TryDequeue(out message);
         }
 
@@ -65,12 +62,10 @@ namespace Telepathy
         // send message (via stream) with the <size,content> message structure
         // this function is blocking sometimes!
         // (e.g. if someone has high latency or wire was cut off)
-        protected static bool SendMessagesBlocking(NetworkStream stream, byte[][] messages)
-        {
+        protected static bool SendMessagesBlocking(NetworkStream stream, byte[][] messages) {
             // stream.Write throws exceptions if client sends with high
             // frequency and the server stops
-            try
-            {
+            try {
                 // we might have multiple pending messages. merge into one
                 // packet to avoid TCP overheads and improve performance.
                 int packetSize = 0;
@@ -86,8 +81,7 @@ namespace Telepathy
 
                 // create the packet
                 int position = 0;
-                for (int i = 0; i < messages.Length; ++i)
-                {
+                for (int i = 0; i < messages.Length; ++i) {
                     // create header buffer if not created yet
                     if (header == null)
                         header = new byte[4];
@@ -105,9 +99,7 @@ namespace Telepathy
                 stream.Write(payload, 0, packetSize);
 
                 return true;
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 // log as regular message because servers do shut down sometimes
                 Logger.Log("Send: stream.Write exception: " + exception);
                 return false;
@@ -115,8 +107,7 @@ namespace Telepathy
         }
 
         // read message (via stream) with the <size,content> message structure
-        protected static bool ReadMessageBlocking(NetworkStream stream, int MaxMessageSize, out byte[] content)
-        {
+        protected static bool ReadMessageBlocking(NetworkStream stream, int MaxMessageSize, out byte[] content) {
             content = null;
 
             // create header buffer if not created yet
@@ -133,8 +124,7 @@ namespace Telepathy
             // protect against allocation attacks. an attacker might send
             // multiple fake '2GB header' packets in a row, causing the server
             // to allocate multiple 2GB byte arrays and run out of memory.
-            if (size <= MaxMessageSize)
-            {
+            if (size <= MaxMessageSize) {
                 // read exactly 'size' bytes for content (blocking)
                 content = new byte[size];
                 return stream.ReadExactly(content, size);
@@ -145,8 +135,7 @@ namespace Telepathy
 
         // thread receive function is the same for client and server's clients
         // (static to reduce state for maximum reliability)
-        protected static void ReceiveLoop(int connectionId, TcpClient client, ConcurrentQueue<Message> receiveQueue, int MaxMessageSize)
-        {
+        protected static void ReceiveLoop(int connectionId, TcpClient client, ConcurrentQueue<Message> receiveQueue, int MaxMessageSize) {
             // get NetworkStream from client
             NetworkStream stream = client.GetStream();
 
@@ -155,8 +144,7 @@ namespace Telepathy
 
             // absolutely must wrap with try/catch, otherwise thread exceptions
             // are silent
-            try
-            {
+            try {
                 // add connected event to queue with ip address as data in case
                 // it's needed
                 receiveQueue.Enqueue(new Message(connectionId, EventType.Connected, null));
@@ -177,8 +165,7 @@ namespace Telepathy
                 //    + no resizing
                 //    + no extra allocations, just one for the content
                 //    + no crazy extraction logic
-                while (true)
-                {
+                while (true) {
                     // read the next message (blocking) or stop if stream closed
                     byte[] content;
                     if (!ReadMessageBlocking(stream, MaxMessageSize, out content))
@@ -194,26 +181,20 @@ namespace Telepathy
                     //    logging, which will make the queue pile up even more.
                     // -> instead we show it every 10s, so that the system can
                     //    use most it's processing power to hopefully process it.
-                    if (receiveQueue.Count > messageQueueSizeWarning)
-                    {
+                    if (receiveQueue.Count > messageQueueSizeWarning) {
                         TimeSpan elapsed = DateTime.Now - messageQueueLastWarning;
-                        if (elapsed.TotalSeconds > 10)
-                        {
+                        if (elapsed.TotalSeconds > 10) {
                             Logger.LogWarning("ReceiveLoop: messageQueue is getting big(" + receiveQueue.Count + "), try calling GetNextMessage more often. You can call it more than once per frame!");
                             messageQueueLastWarning = DateTime.Now;
                         }
                     }
                 }
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 // something went wrong. the thread was interrupted or the
                 // connection closed or we closed our own connection or ...
                 // -> either way we should stop gracefully
                 Logger.Log("ReceiveLoop: finished receive function for connectionId=" + connectionId + " reason: " + exception);
-            }
-            finally
-            {
+            } finally {
                 // clean up no matter what
                 stream.Close();
                 client.Close();
@@ -230,16 +211,13 @@ namespace Telepathy
         // thread send function
         // note: we really do need one per connection, so that if one connection
         //       blocks, the rest will still continue to get sends
-        protected static void SendLoop(int connectionId, TcpClient client, SafeQueue<byte[]> sendQueue, ManualResetEvent sendPending)
-        {
+        protected static void SendLoop(int connectionId, TcpClient client, SafeQueue<byte[]> sendQueue, ManualResetEvent sendPending) {
             // get NetworkStream from client
             NetworkStream stream = client.GetStream();
 
-            try
-            {
+            try {
                 // try this. client will get closed eventually.
-                while (client.Connected)
-                {
+                while (client.Connected) {
                     // reset ManualResetEvent before we do anything else. this
                     // way there is no race condition. if Send() is called again
                     // while in here then it will be properly detected next time
@@ -253,8 +231,7 @@ namespace Telepathy
                     // SafeQueue.TryDequeueAll is twice as fast as
                     // ConcurrentQueue, see SafeQueue.cs!
                     byte[][] messages;
-                    if (sendQueue.TryDequeueAll(out messages))
-                    {
+                    if (sendQueue.TryDequeueAll(out messages)) {
                         // send message (blocking) or stop if stream is closed
                         if (!SendMessagesBlocking(stream, messages))
                             // break instead of return so stream close still happens!
@@ -264,24 +241,16 @@ namespace Telepathy
                     // don't choke up the CPU: wait until queue not empty anymore
                     sendPending.WaitOne();
                 }
-            }
-            catch (ThreadAbortException)
-            {
+            } catch (ThreadAbortException) {
                 // happens on stop. don't log anything.
-            }
-            catch (ThreadInterruptedException)
-            {
+            } catch (ThreadInterruptedException) {
                 // happens if receive thread interrupts send thread.
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 // something went wrong. the thread was interrupted or the
                 // connection closed or we closed our own connection or ...
                 // -> either way we should stop gracefully
                 Logger.Log("SendLoop Exception: connectionId=" + connectionId + " reason: " + exception);
-            }
-            finally
-            {
+            } finally {
                 // clean up no matter what
                 // we might get SocketExceptions when sending if the 'host has
                 // failed to respond' - in which case we should close the connection

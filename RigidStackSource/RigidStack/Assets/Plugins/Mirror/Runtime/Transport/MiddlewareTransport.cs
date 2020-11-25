@@ -1,12 +1,10 @@
 using System;
 
-namespace Mirror
-{
+namespace Mirror {
     /// <summary>
     /// Allows Middleware to override some of the transport methods or let the inner transport handle them.
     /// </summary>
-    public abstract class MiddlewareTransport : Transport
-    {
+    public abstract class MiddlewareTransport : Transport {
         /// <summary>
         /// Transport to call to after middleware
         /// </summary>

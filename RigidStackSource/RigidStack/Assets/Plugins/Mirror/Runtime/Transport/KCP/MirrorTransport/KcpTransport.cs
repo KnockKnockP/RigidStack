@@ -1,14 +1,12 @@
 //#if MIRROR <- commented out because MIRROR isn't defined on first import yet
+using Mirror;
 using System;
 using System.Linq;
 using System.Net;
-using Mirror;
 using UnityEngine;
 
-namespace kcp2k
-{
-    public class KcpTransport : Transport
-    {
+namespace kcp2k {
+    public class KcpTransport : Transport {
         // scheme used by this transport
         public const string Scheme = "kcp";
 
@@ -37,8 +35,7 @@ namespace kcp2k
         [Header("Debug")]
         public bool debugGUI;
 
-        void Awake()
-        {
+        void Awake() {
             // TODO simplify after converting Mirror Transport events to Action
             client = new KcpClient(
                 () => OnClientConnected.Invoke(),
@@ -66,12 +63,10 @@ namespace kcp2k
 
         // client
         public override bool ClientConnected() => client.connected;
-        public override void ClientConnect(string address)
-        {
+        public override void ClientConnect(string address) {
             client.Connect(address, Port, NoDelay, Interval, FastResend, CongestionWindow, SendWindowSize, ReceiveWindowSize);
         }
-        public override void ClientSend(int channelId, ArraySegment<byte> segment)
-        {
+        public override void ClientSend(int channelId, ArraySegment<byte> segment) {
             client.Send(segment);
         }
         public override void ClientDisconnect() => client.Disconnect();
@@ -81,8 +76,7 @@ namespace kcp2k
         //            e.g. in uSurvival Transport would apply Cmds before
         //            ShoulderRotation.LateUpdate, resulting in projectile
         //            spawns at the point before shoulder rotation.
-        public void LateUpdate()
-        {
+        public void LateUpdate() {
             // note: we need to check enabled in case we set it to false
             // when LateUpdate already started.
             // (https://github.com/vis2k/Mirror/pull/379)
@@ -94,8 +88,7 @@ namespace kcp2k
         }
 
         // server
-        public override Uri ServerUri()
-        {
+        public override Uri ServerUri() {
             UriBuilder builder = new UriBuilder();
             builder.Scheme = Scheme;
             builder.Host = Dns.GetHostName();
@@ -104,12 +97,10 @@ namespace kcp2k
         }
         public override bool ServerActive() => server.IsActive();
         public override void ServerStart() => server.Start(Port);
-        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment)
-        {
+        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment) {
             server.Send(connectionId, segment);
         }
-        public override bool ServerDisconnect(int connectionId)
-        {
+        public override bool ServerDisconnect(int connectionId) {
             server.Disconnect(connectionId);
             return true;
         }
@@ -117,13 +108,13 @@ namespace kcp2k
         public override void ServerStop() => server.Stop();
 
         // common
-        public override void Shutdown() {}
+        public override void Shutdown() {
+        }
 
         // MTU
         public override int GetMaxPacketSize(int channelId = Channels.DefaultReliable) => Kcp.MTU_DEF;
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return "KCP";
         }
 
@@ -136,14 +127,13 @@ namespace kcp2k
         int GetTotalReceiveBuffer() =>
             server.connections.Values.Sum(conn => conn.ReceiveBufferCount);
 
-        void OnGUI()
-        {
-            if (!debugGUI) return;
+        void OnGUI() {
+            if (!debugGUI)
+                return;
 
             GUILayout.BeginArea(new Rect(5, 100, 300, 300));
 
-            if (ServerActive())
-            {
+            if (ServerActive()) {
                 GUILayout.BeginVertical("Box");
                 GUILayout.Label("SERVER");
                 GUILayout.Label("  connections: " + server.connections.Count);
@@ -154,8 +144,7 @@ namespace kcp2k
                 GUILayout.EndVertical();
             }
 
-            if (ClientConnected())
-            {
+            if (ClientConnected()) {
                 GUILayout.BeginVertical("Box");
                 GUILayout.Label("CLIENT");
                 GUILayout.Label("  SendQueue: " + client.connection.SendQueueCount);

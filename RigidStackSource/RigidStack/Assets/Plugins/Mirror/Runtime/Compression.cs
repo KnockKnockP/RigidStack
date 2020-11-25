@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Mirror
-{
+namespace Mirror {
     /// <summary>
     /// Functions to Compress Quaternions and Floats
     /// </summary>
@@ -55,8 +54,7 @@ namespace Mirror
     /// <br/><see href="https://gafferongames.com/post/snapshot_compression/">Post on Snapshot Compression</see>
     /// </para>
     /// </remarks>
-    public static class Compression
-    {
+    public static class Compression {
         const float QuaternionMinValue = -1f / 1.414214f; // 1/ sqrt(2)
         const float QuaternionMaxValue = 1f / 1.414214f;
 
@@ -67,16 +65,14 @@ namespace Mirror
         /// <summary>
         /// Used to Compress Quaternion into 4 bytes
         /// </summary>
-        public static uint CompressQuaternion(Quaternion value)
-        {
+        public static uint CompressQuaternion(Quaternion value) {
             value = value.normalized;
 
             int largestIndex = FindLargestIndex(value);
             Vector3 small = GetSmallerDimensions(largestIndex, value);
             // largest needs to be positive to be calculated by reader 
             // if largest is negative flip sign of others because Q = -Q
-            if (value[largestIndex] < 0)
-            {
+            if (value[largestIndex] < 0) {
                 small *= -1;
             }
 
@@ -90,17 +86,14 @@ namespace Mirror
             return packed;
         }
 
-        internal static int FindLargestIndex(Quaternion q)
-        {
+        internal static int FindLargestIndex(Quaternion q) {
             int index = default;
             float current = default;
 
             // check each value to see which one is largest (ignoring +-)
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 float next = Mathf.Abs(q[i]);
-                if (next > current)
-                {
+                if (next > current) {
                     index = i;
                     current = next;
                 }
@@ -109,15 +102,13 @@ namespace Mirror
             return index;
         }
 
-        static Vector3 GetSmallerDimensions(int largestIndex, Quaternion value)
-        {
+        static Vector3 GetSmallerDimensions(int largestIndex, Quaternion value) {
             float x = value.x;
             float y = value.y;
             float z = value.z;
             float w = value.w;
 
-            switch (largestIndex)
-            {
+            switch (largestIndex) {
                 case 0:
                     return new Vector3(y, z, w);
                 case 1:
@@ -136,8 +127,7 @@ namespace Mirror
         /// Used to read a Compressed Quaternion from 4 bytes
         /// <para>Quaternion is normalized</para>
         /// </summary>
-        public static Quaternion DecompressQuaternion(uint packed)
-        {
+        public static Quaternion DecompressQuaternion(uint packed) {
             // 10 bits
             const uint mask = 0b11_1111_1111;
             Quaternion result;
@@ -157,15 +147,13 @@ namespace Mirror
             return result;
         }
 
-        static Quaternion FromSmallerDimensions(uint largestIndex, Vector3 smallest)
-        {
+        static Quaternion FromSmallerDimensions(uint largestIndex, Vector3 smallest) {
             float a = smallest.x;
             float b = smallest.y;
             float c = smallest.z;
 
             float largest = Mathf.Sqrt(1 - a * a - b * b - c * c);
-            switch (largestIndex)
-            {
+            switch (largestIndex) {
                 case 0:
                     return new Quaternion(largest, a, b, c).normalized;
                 case 1:
@@ -185,11 +173,14 @@ namespace Mirror
         /// Scales float from minFloat->maxFloat to minUint->maxUint
         /// <para>values out side of minFloat/maxFloat will return either 0 or maxUint</para>
         /// </summary>
-        public static uint ScaleToUInt(float value, float minFloat, float maxFloat, uint minUint, uint maxUint)
-        {
+        public static uint ScaleToUInt(float value, float minFloat, float maxFloat, uint minUint, uint maxUint) {
             // if out of range return min/max
-            if (value > maxFloat) { return maxUint; }
-            if (value < minFloat) { return minUint; }
+            if (value > maxFloat) {
+                return maxUint;
+            }
+            if (value < minFloat) {
+                return minUint;
+            }
 
             float rangeFloat = maxFloat - minFloat;
             uint rangeUint = maxUint - minUint;
@@ -205,11 +196,14 @@ namespace Mirror
         /// <summary>
         /// Scales uint from minUint->maxUint to minFloat->maxFloat 
         /// </summary>
-        public static float ScaleFromUInt(uint value, float minFloat, float maxFloat, uint minUint, uint maxUint)
-        {
+        public static float ScaleFromUInt(uint value, float minFloat, float maxFloat, uint minUint, uint maxUint) {
             // if out of range return min/max
-            if (value > maxUint) { return maxFloat; }
-            if (value < minUint) { return minFloat; }
+            if (value > maxUint) {
+                return maxFloat;
+            }
+            if (value < minUint) {
+                return minFloat;
+            }
 
             float rangeFloat = maxFloat - minFloat;
             uint rangeUint = maxUint - minUint;

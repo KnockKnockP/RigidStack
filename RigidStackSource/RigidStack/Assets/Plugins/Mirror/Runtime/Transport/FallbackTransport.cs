@@ -4,20 +4,16 @@
 using System;
 using UnityEngine;
 
-namespace Mirror
-{
+namespace Mirror {
     [HelpURL("https://mirror-networking.com/docs/Transports/Fallback.html")]
-    public class FallbackTransport : Transport
-    {
+    public class FallbackTransport : Transport {
         public Transport[] transports;
 
         // the first transport that is available on this platform
         Transport available;
 
-        public void Awake()
-        {
-            if (transports == null || transports.Length == 0)
-            {
+        public void Awake() {
+            if (transports == null || transports.Length == 0) {
                 throw new Exception("FallbackTransport requires at least 1 underlying transport");
             }
             InitClient();
@@ -26,40 +22,32 @@ namespace Mirror
             Debug.Log("FallbackTransport available: " + available.GetType());
         }
 
-        void OnEnable()
-        {
+        void OnEnable() {
             available.enabled = true;
         }
 
-        void OnDisable()
-        {
+        void OnDisable() {
             available.enabled = false;
         }
 
         // The client just uses the first transport available
-        Transport GetAvailableTransport()
-        {
-            foreach (Transport transport in transports)
-            {
-                if (transport.Available())
-                {
+        Transport GetAvailableTransport() {
+            foreach (Transport transport in transports) {
+                if (transport.Available()) {
                     return transport;
                 }
             }
             throw new Exception("No transport suitable for this platform");
         }
 
-        public override bool Available()
-        {
+        public override bool Available() {
             return available.Available();
         }
 
         // clients always pick the first transport
-        void InitClient()
-        {
+        void InitClient() {
             // wire all the base transports to our events
-            foreach (Transport transport in transports)
-            {
+            foreach (Transport transport in transports) {
                 transport.OnClientConnected.AddListener(OnClientConnected.Invoke);
                 transport.OnClientDataReceived.AddListener(OnClientDataReceived.Invoke);
                 transport.OnClientError.AddListener(OnClientError.Invoke);
@@ -67,24 +55,17 @@ namespace Mirror
             }
         }
 
-        public override void ClientConnect(string address)
-        {
+        public override void ClientConnect(string address) {
             available.ClientConnect(address);
         }
 
-        public override void ClientConnect(Uri uri)
-        {
-            foreach (Transport transport in transports)
-            {
-                if (transport.Available())
-                {
-                    try
-                    {
+        public override void ClientConnect(Uri uri) {
+            foreach (Transport transport in transports) {
+                if (transport.Available()) {
+                    try {
                         transport.ClientConnect(uri);
                         available = transport;
-                    }
-                    catch (ArgumentException)
-                    {
+                    } catch (ArgumentException) {
                         // transport does not support the schema, just move on to the next one
                     }
                 }
@@ -92,26 +73,21 @@ namespace Mirror
             throw new Exception("No transport suitable for this platform");
         }
 
-        public override bool ClientConnected()
-        {
+        public override bool ClientConnected() {
             return available.ClientConnected();
         }
 
-        public override void ClientDisconnect()
-        {
+        public override void ClientDisconnect() {
             available.ClientDisconnect();
         }
 
-        public override void ClientSend(int channelId, ArraySegment<byte> segment)
-        {
+        public override void ClientSend(int channelId, ArraySegment<byte> segment) {
             available.ClientSend(channelId, segment);
         }
 
-        void InitServer()
-        {
+        void InitServer() {
             // wire all the base transports to our events
-            foreach (Transport transport in transports)
-            {
+            foreach (Transport transport in transports) {
                 transport.OnServerConnected.AddListener(OnServerConnected.Invoke);
                 transport.OnServerDataReceived.AddListener(OnServerDataReceived.Invoke);
                 transport.OnServerError.AddListener(OnServerError.Invoke);
@@ -123,43 +99,35 @@ namespace Mirror
         // should we return the list of all available uri?
         public override Uri ServerUri() => available.ServerUri();
 
-        public override bool ServerActive()
-        {
+        public override bool ServerActive() {
             return available.ServerActive();
         }
 
-        public override string ServerGetClientAddress(int connectionId)
-        {
+        public override string ServerGetClientAddress(int connectionId) {
             return available.ServerGetClientAddress(connectionId);
         }
 
-        public override bool ServerDisconnect(int connectionId)
-        {
+        public override bool ServerDisconnect(int connectionId) {
             return available.ServerDisconnect(connectionId);
         }
 
-        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment)
-        {
+        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment) {
             available.ServerSend(connectionId, channelId, segment);
         }
 
-        public override void ServerStart()
-        {
+        public override void ServerStart() {
             available.ServerStart();
         }
 
-        public override void ServerStop()
-        {
+        public override void ServerStop() {
             available.ServerStop();
         }
 
-        public override void Shutdown()
-        {
+        public override void Shutdown() {
             available.Shutdown();
         }
 
-        public override int GetMaxPacketSize(int channelId = 0)
-        {
+        public override int GetMaxPacketSize(int channelId = 0) {
             // finding the max packet size in a fallback environment has to be
             // done very carefully:
             // * servers and clients might run different transports depending on
@@ -172,16 +140,14 @@ namespace Mirror
             // => the safest solution is to use the smallest max size for all
             //    transports. that will never fail.
             int mininumAllowedSize = int.MaxValue;
-            foreach (Transport transport in transports)
-            {
+            foreach (Transport transport in transports) {
                 int size = transport.GetMaxPacketSize(channelId);
                 mininumAllowedSize = Mathf.Min(size, mininumAllowedSize);
             }
             return mininumAllowedSize;
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return available.ToString();
         }
 

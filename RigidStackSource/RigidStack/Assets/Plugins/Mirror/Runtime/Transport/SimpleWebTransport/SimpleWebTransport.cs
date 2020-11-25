@@ -4,10 +4,8 @@ using System.Security.Authentication;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Mirror.SimpleWeb
-{
-    public class SimpleWebTransport : Transport
-    {
+namespace Mirror.SimpleWeb {
+    public class SimpleWebTransport : Transport {
         public const string NormalScheme = "ws";
         public const string SecureScheme = "wss";
 
@@ -51,20 +49,16 @@ namespace Mirror.SimpleWeb
         /// <para>Gets _logLevels field</para>
         /// <para>Sets _logLevels and Log.level fields</para>
         /// </summary>
-        public Log.Levels LogLevels
-        {
+        public Log.Levels LogLevels {
             get => _logLevels;
-            set
-            {
+            set {
                 _logLevels = value;
                 Log.level = _logLevels;
             }
         }
 
-        void OnValidate()
-        {
-            if (maxMessageSize > ushort.MaxValue)
-            {
+        void OnValidate() {
+            if (maxMessageSize > ushort.MaxValue) {
                 Debug.LogWarning($"max supported value for maxMessageSize is {ushort.MaxValue}");
                 maxMessageSize = ushort.MaxValue;
             }
@@ -77,29 +71,24 @@ namespace Mirror.SimpleWeb
 
         TcpConfig TcpConfig => new TcpConfig(noDelay, sendTimeout, receiveTimeout);
 
-        public override bool Available()
-        {
+        public override bool Available() {
             return true;
         }
-        public override int GetMaxPacketSize(int channelId = 0)
-        {
+        public override int GetMaxPacketSize(int channelId = 0) {
             return maxMessageSize;
         }
 
-        void Awake()
-        {
+        void Awake() {
             Log.level = _logLevels;
         }
-        public override void Shutdown()
-        {
+        public override void Shutdown() {
             client?.Disconnect();
             client = null;
             server?.Stop();
             server = null;
         }
 
-        void LateUpdate()
-        {
+        void LateUpdate() {
             ProcessMessages();
         }
 
@@ -108,31 +97,26 @@ namespace Mirror.SimpleWeb
         /// <para>Invokes OnData events allowing mirror to handle messages (Cmd/SyncVar/etc)</para>
         /// <para>Called within LateUpdate, Can be called by user to process message before important logic</para>
         /// </summary>
-        public void ProcessMessages()
-        {
+        public void ProcessMessages() {
             server?.ProcessMessageQueue(this);
             client?.ProcessMessageQueue(this);
         }
 
         #region Client
         string GetScheme() => sslEnabled ? SecureScheme : NormalScheme;
-        public override bool ClientConnected()
-        {
+        public override bool ClientConnected() {
             // not null and not NotConnected (we want to return true if connecting or disconnecting)
             return client != null && client.ConnectionState != ClientState.NotConnected;
         }
 
-        public override void ClientConnect(string hostname)
-        {
+        public override void ClientConnect(string hostname) {
             // connecting or connected
-            if (ClientConnected())
-            {
+            if (ClientConnected()) {
                 Debug.LogError("Already Connected");
                 return;
             }
 
-            UriBuilder builder = new UriBuilder
-            {
+            UriBuilder builder = new UriBuilder {
                 Scheme = GetScheme(),
                 Host = hostname,
                 Port = port
@@ -140,19 +124,19 @@ namespace Mirror.SimpleWeb
 
 
             client = SimpleWebClient.Create(maxMessageSize, clientMaxMessagesPerTick, TcpConfig);
-            if (client == null) { return; }
+            if (client == null) {
+                return;
+            }
 
             client.onConnect += OnClientConnected.Invoke;
-            client.onDisconnect += () =>
-            {
+            client.onDisconnect += () => {
                 OnClientDisconnected.Invoke();
                 // clear client here after disconnect event has been sent
                 // there should be no more messages after disconnect
                 client = null;
             };
             client.onData += (ArraySegment<byte> data) => OnClientDataReceived.Invoke(data, Channels.DefaultReliable);
-            client.onError += (Exception e) =>
-            {
+            client.onError += (Exception e) => {
                 ClientDisconnect();
                 OnClientError.Invoke(e);
             };
@@ -160,28 +144,23 @@ namespace Mirror.SimpleWeb
             client.Connect(builder.Uri);
         }
 
-        public override void ClientDisconnect()
-        {
+        public override void ClientDisconnect() {
             // dont set client null here of messages wont be processed
             client?.Disconnect();
         }
 
-        public override void ClientSend(int channelId, ArraySegment<byte> segment)
-        {
-            if (!ClientConnected())
-            {
+        public override void ClientSend(int channelId, ArraySegment<byte> segment) {
+            if (!ClientConnected()) {
                 Debug.LogError("Not Connected");
                 return;
             }
 
-            if (segment.Count > maxMessageSize)
-            {
+            if (segment.Count > maxMessageSize) {
                 Log.Error("Message greater than max size");
                 return;
             }
 
-            if (segment.Count == 0)
-            {
+            if (segment.Count == 0) {
                 Log.Error("Message count was zero");
                 return;
             }
@@ -191,15 +170,12 @@ namespace Mirror.SimpleWeb
         #endregion
 
         #region Server
-        public override bool ServerActive()
-        {
+        public override bool ServerActive() {
             return server != null && server.Active;
         }
 
-        public override void ServerStart()
-        {
-            if (ServerActive())
-            {
+        public override void ServerStart() {
+            if (ServerActive()) {
                 Debug.LogError("SimpleWebServer Already Started");
             }
 
@@ -214,10 +190,8 @@ namespace Mirror.SimpleWeb
             server.Start(port);
         }
 
-        public override void ServerStop()
-        {
-            if (!ServerActive())
-            {
+        public override void ServerStop() {
+            if (!ServerActive()) {
                 Debug.LogError("SimpleWebServer Not Active");
             }
 
@@ -225,10 +199,8 @@ namespace Mirror.SimpleWeb
             server = null;
         }
 
-        public override bool ServerDisconnect(int connectionId)
-        {
-            if (!ServerActive())
-            {
+        public override bool ServerDisconnect(int connectionId) {
+            if (!ServerActive()) {
                 Debug.LogError("SimpleWebServer Not Active");
                 return false;
             }
@@ -236,22 +208,18 @@ namespace Mirror.SimpleWeb
             return server.KickClient(connectionId);
         }
 
-        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment)
-        {
-            if (!ServerActive())
-            {
+        public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment) {
+            if (!ServerActive()) {
                 Debug.LogError("SimpleWebServer Not Active");
                 return;
             }
 
-            if (segment.Count > maxMessageSize)
-            {
+            if (segment.Count > maxMessageSize) {
                 Log.Error("Message greater than max size");
                 return;
             }
 
-            if (segment.Count == 0)
-            {
+            if (segment.Count == 0) {
                 Log.Error("Message count was zero");
                 return;
             }
@@ -260,15 +228,12 @@ namespace Mirror.SimpleWeb
             return;
         }
 
-        public override string ServerGetClientAddress(int connectionId)
-        {
+        public override string ServerGetClientAddress(int connectionId) {
             return server.GetClientAddress(connectionId);
         }
 
-        public override Uri ServerUri()
-        {
-            UriBuilder builder = new UriBuilder
-            {
+        public override Uri ServerUri() {
+            UriBuilder builder = new UriBuilder {
                 Scheme = GetScheme(),
                 Host = Dns.GetHostName(),
                 Port = port

@@ -1,15 +1,15 @@
-namespace Mirror
-{
+namespace Mirror {
     /// <summary>
     /// A sync object is an object that can synchronize it's state
     /// between server and client, such as a SyncList
     /// </summary>
-    public interface SyncObject
-    {
+    public interface SyncObject {
         /// <summary>
         /// true if there are changes since the last flush
         /// </summary>
-        bool IsDirty { get; }
+        bool IsDirty {
+            get;
+        }
 
         /// <summary>
         /// Discard all the queued changes

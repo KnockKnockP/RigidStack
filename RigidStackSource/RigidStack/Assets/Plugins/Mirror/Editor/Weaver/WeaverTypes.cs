@@ -1,10 +1,8 @@
-using System;
 using Mono.CecilX;
+using System;
 
-namespace Mirror.Weaver
-{
-    public static class WeaverTypes
-    {
+namespace Mirror.Weaver {
+    public static class WeaverTypes {
         public static MethodReference ScriptableObjectCreateInstanceMethod;
 
         public static MethodReference NetworkBehaviourDirtyBitsReference;
@@ -60,8 +58,7 @@ namespace Mirror.Weaver
 
         public static TypeReference Import(Type t) => currentAssembly.MainModule.ImportReference(t);
 
-        public static void SetupTargetTypes(AssemblyDefinition currentAssembly)
-        {
+        public static void SetupTargetTypes(AssemblyDefinition currentAssembly) {
             // system types
             WeaverTypes.currentAssembly = currentAssembly;
 

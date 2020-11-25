@@ -1,15 +1,12 @@
-using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 
-namespace kcp2k
-{
-    public class KcpClientConnection : KcpConnection
-    {
+namespace kcp2k {
+    public class KcpClientConnection : KcpConnection {
         readonly byte[] buffer = new byte[1500];
 
-        public void Connect(string host, ushort port, bool noDelay, uint interval = Kcp.INTERVAL, int fastResend = 0, bool congestionWindow = true, uint sendWindowSize = Kcp.WND_SND, uint receiveWindowSize = Kcp.WND_RCV)
-        {
+        public void Connect(string host, ushort port, bool noDelay, uint interval = Kcp.INTERVAL, int fastResend = 0, bool congestionWindow = true, uint sendWindowSize = Kcp.WND_SND, uint receiveWindowSize = Kcp.WND_RCV) {
             Debug.Log($"KcpClient: connect to {host}:{port}");
             IPAddress[] ipAddress = Dns.GetHostAddresses(host);
             if (ipAddress.Length < 1)
@@ -27,14 +24,10 @@ namespace kcp2k
         }
 
         // call from transport update
-        public void RawReceive()
-        {
-            try
-            {
-                if (socket != null)
-                {
-                    while (socket.Poll(0, SelectMode.SelectRead))
-                    {
+        public void RawReceive() {
+            try {
+                if (socket != null) {
+                    while (socket.Poll(0, SelectMode.SelectRead)) {
                         int msgLength = socket.ReceiveFrom(buffer, ref remoteEndpoint);
                         //Debug.Log($"KCP: client raw recv {msgLength} bytes = {BitConverter.ToString(buffer, 0, msgLength)}");
                         RawInput(buffer, msgLength);
@@ -42,17 +35,15 @@ namespace kcp2k
                 }
             }
             // this is fine, the socket might have been closed in the other end
-            catch (SocketException) {}
+            catch (SocketException) { }
         }
 
-        protected override void Dispose()
-        {
+        protected override void Dispose() {
             socket.Close();
             socket = null;
         }
 
-        protected override void RawSend(byte[] data, int length)
-        {
+        protected override void RawSend(byte[] data, int length) {
             socket.Send(data, length, SocketFlags.None);
         }
     }

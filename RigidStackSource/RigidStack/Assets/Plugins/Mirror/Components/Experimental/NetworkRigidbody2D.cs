@@ -1,10 +1,8 @@
 using UnityEngine;
 
-namespace Mirror.Experimental
-{
+namespace Mirror.Experimental {
     [AddComponentMenu("Network/Experimental/NetworkRigidbody2D")]
-    public class NetworkRigidbody2D : NetworkBehaviour
-    {
+    public class NetworkRigidbody2D : NetworkBehaviour {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkRigidbody2D));
 
         [Header("Settings")]
@@ -41,10 +39,8 @@ namespace Mirror.Experimental
         /// </summary>
         readonly ClientSyncState previousValue = new ClientSyncState();
 
-        void OnValidate()
-        {
-            if (target == null)
-            {
+        void OnValidate() {
+            if (target == null) {
                 target = GetComponent<Rigidbody2D>();
             }
         }
@@ -77,8 +73,7 @@ namespace Mirror.Experimental
 
         bool ClientWithAuthority => clientAuthority && hasAuthority;
 
-        void OnVelocityChanged(Vector2 _, Vector2 newValue)
-        {
+        void OnVelocityChanged(Vector2 _, Vector2 newValue) {
             if (IgnoreSync)
                 return;
 
@@ -86,40 +81,35 @@ namespace Mirror.Experimental
         }
 
 
-        void OnAngularVelocityChanged(float _, float newValue)
-        {
+        void OnAngularVelocityChanged(float _, float newValue) {
             if (IgnoreSync)
                 return;
 
             target.angularVelocity = newValue;
         }
 
-        void OnIsKinematicChanged(bool _, bool newValue)
-        {
+        void OnIsKinematicChanged(bool _, bool newValue) {
             if (IgnoreSync)
                 return;
 
             target.isKinematic = newValue;
         }
 
-        void OnGravityScaleChanged(float _, float newValue)
-        {
+        void OnGravityScaleChanged(float _, float newValue) {
             if (IgnoreSync)
                 return;
 
             target.gravityScale = newValue;
         }
 
-        void OnuDragChanged(float _, float newValue)
-        {
+        void OnuDragChanged(float _, float newValue) {
             if (IgnoreSync)
                 return;
 
             target.drag = newValue;
         }
 
-        void OnAngularDragChanged(float _, float newValue)
-        {
+        void OnAngularDragChanged(float _, float newValue) {
             if (IgnoreSync)
                 return;
 
@@ -128,27 +118,20 @@ namespace Mirror.Experimental
         #endregion
 
 
-        internal void Update()
-        {
-            if (isServer)
-            {
+        internal void Update() {
+            if (isServer) {
                 SyncToClients();
-            }
-            else if (ClientWithAuthority)
-            {
+            } else if (ClientWithAuthority) {
                 SendToServer();
             }
         }
 
-        internal void FixedUpdate()
-        {
-            if (clearAngularVelocity && !syncAngularVelocity)
-            {
+        internal void FixedUpdate() {
+            if (clearAngularVelocity && !syncAngularVelocity) {
                 target.angularVelocity = 0f;
             }
 
-            if (clearVelocity && !syncVelocity)
-            {
+            if (clearVelocity && !syncVelocity) {
                 target.velocity = Vector2.zero;
             }
         }
@@ -157,8 +140,7 @@ namespace Mirror.Experimental
         /// Updates sync var values on server so that they sync to the client
         /// </summary>
         [Server]
-        void SyncToClients()
-        {
+        void SyncToClients() {
             // only update if they have changed more than Sensitivity
 
             Vector2 currentVelocity = syncVelocity ? target.velocity : default;
@@ -167,14 +149,12 @@ namespace Mirror.Experimental
             bool velocityChanged = syncVelocity && ((previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity);
             bool angularVelocityChanged = syncAngularVelocity && ((previousValue.angularVelocity - currentAngularVelocity) > angularVelocitySensitivity);
 
-            if (velocityChanged)
-            {
+            if (velocityChanged) {
                 velocity = currentVelocity;
                 previousValue.velocity = currentVelocity;
             }
 
-            if (angularVelocityChanged)
-            {
+            if (angularVelocityChanged) {
                 angularVelocity = currentAngularVelocity;
                 previousValue.angularVelocity = currentAngularVelocity;
             }
@@ -190,10 +170,8 @@ namespace Mirror.Experimental
         /// Uses Command to send values to server
         /// </summary>
         [Client]
-        void SendToServer()
-        {
-            if (!hasAuthority)
-            {
+        void SendToServer() {
+            if (!hasAuthority) {
                 logger.LogWarning("SendToServer called without authority");
                 return;
             }
@@ -203,8 +181,7 @@ namespace Mirror.Experimental
         }
 
         [Client]
-        void SendVelocity()
-        {
+        void SendVelocity() {
             float now = Time.time;
             if (now < previousValue.nextSyncTime)
                 return;
@@ -217,47 +194,38 @@ namespace Mirror.Experimental
 
             // if angularVelocity has changed it is likely that velocity has also changed so just sync both values
             // however if only velocity has changed just send velocity
-            if (angularVelocityChanged)
-            {
+            if (angularVelocityChanged) {
                 CmdSendVelocityAndAngular(currentVelocity, currentAngularVelocity);
                 previousValue.velocity = currentVelocity;
                 previousValue.angularVelocity = currentAngularVelocity;
-            }
-            else if (velocityChanged)
-            {
+            } else if (velocityChanged) {
                 CmdSendVelocity(currentVelocity);
                 previousValue.velocity = currentVelocity;
             }
 
 
             // only update syncTime if either has changed
-            if (angularVelocityChanged || velocityChanged)
-            {
+            if (angularVelocityChanged || velocityChanged) {
                 previousValue.nextSyncTime = now + syncInterval;
             }
         }
 
         [Client]
-        void SendRigidBodySettings()
-        {
+        void SendRigidBodySettings() {
             // These shouldn't change often so it is ok to send in their own Command
-            if (previousValue.isKinematic != target.isKinematic)
-            {
+            if (previousValue.isKinematic != target.isKinematic) {
                 CmdSendIsKinematic(target.isKinematic);
                 previousValue.isKinematic = target.isKinematic;
             }
-            if (previousValue.gravityScale != target.gravityScale)
-            {
+            if (previousValue.gravityScale != target.gravityScale) {
                 CmdChangeGravityScale(target.gravityScale);
                 previousValue.gravityScale = target.gravityScale;
             }
-            if (previousValue.drag != target.drag)
-            {
+            if (previousValue.drag != target.drag) {
                 CmdSendDrag(target.drag);
                 previousValue.drag = target.drag;
             }
-            if (previousValue.angularDrag != target.angularDrag)
-            {
+            if (previousValue.angularDrag != target.angularDrag) {
                 CmdSendAngularDrag(target.angularDrag);
                 previousValue.angularDrag = target.angularDrag;
             }
@@ -267,8 +235,7 @@ namespace Mirror.Experimental
         /// Called when only Velocity has changed on the client
         /// </summary>
         [Command]
-        void CmdSendVelocity(Vector2 velocity)
-        {
+        void CmdSendVelocity(Vector2 velocity) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
@@ -281,14 +248,12 @@ namespace Mirror.Experimental
         /// Called when angularVelocity has changed on the client
         /// </summary>
         [Command]
-        void CmdSendVelocityAndAngular(Vector2 velocity, float angularVelocity)
-        {
+        void CmdSendVelocityAndAngular(Vector2 velocity, float angularVelocity) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
 
-            if (syncVelocity)
-            {
+            if (syncVelocity) {
                 this.velocity = velocity;
 
                 target.velocity = velocity;
@@ -299,8 +264,7 @@ namespace Mirror.Experimental
         }
 
         [Command]
-        void CmdSendIsKinematic(bool isKinematic)
-        {
+        void CmdSendIsKinematic(bool isKinematic) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
@@ -310,8 +274,7 @@ namespace Mirror.Experimental
         }
 
         [Command]
-        void CmdChangeGravityScale(float gravityScale)
-        {
+        void CmdChangeGravityScale(float gravityScale) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
@@ -321,8 +284,7 @@ namespace Mirror.Experimental
         }
 
         [Command]
-        void CmdSendDrag(float drag)
-        {
+        void CmdSendDrag(float drag) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
@@ -332,8 +294,7 @@ namespace Mirror.Experimental
         }
 
         [Command]
-        void CmdSendAngularDrag(float angularDrag)
-        {
+        void CmdSendAngularDrag(float angularDrag) {
             // Ignore messages from client if not in client authority mode
             if (!clientAuthority)
                 return;
@@ -345,8 +306,7 @@ namespace Mirror.Experimental
         /// <summary>
         /// holds previously synced values
         /// </summary>
-        public class ClientSyncState
-        {
+        public class ClientSyncState {
             /// <summary>
             /// Next sync time that velocity will be synced, based on syncInterval.
             /// </summary>
