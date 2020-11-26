@@ -6,10 +6,14 @@ public class objectInformation : NetworkBehaviour {
     public int minimumAmount = 0, maximumAmount = 0;
 
     //A variable to check if the object has been placed down.
-    private Collider2D _collider2D;
+    [SerializeField] private Collider2D _collider2D;
 
-    private void Awake() {
-        _collider2D = GetComponent<Collider2D>();
+    private void OnValidate() {
+#if UNITY_EDITOR
+        if (_collider2D == null) {
+            _collider2D = GetComponent<Collider2D>();
+        }
+#endif
         return;
     }
 

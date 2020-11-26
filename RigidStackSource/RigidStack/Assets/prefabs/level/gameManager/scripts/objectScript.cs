@@ -104,7 +104,7 @@ public class objectScript : NetworkBehaviour {
     private void updateDock(int dragAndDropObjectIndex, int objectIndex, short objectCount) {
         dragAndDropScripts[dragAndDropObjectIndex].objectToPlace = objects[objectIndex];
         dragAndDropImageScripts[dragAndDropObjectIndex].objectCount = objectCount;
-        dragAndDropImages[dragAndDropObjectIndex].sprite = objects[objectCount].GetComponent<SpriteRenderer>().sprite;
+        dragAndDropImages[dragAndDropObjectIndex].sprite = objects[objectIndex].GetComponent<SpriteRenderer>().sprite;
         return;
     }
 }

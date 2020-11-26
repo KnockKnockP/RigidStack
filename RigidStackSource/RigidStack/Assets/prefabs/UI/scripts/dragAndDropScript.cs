@@ -7,19 +7,31 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     [Header("Variables for dragging and dropping the object.")]
     private bool isDragging, isClientThatPlacedTheObject;
     private static short spriteOrder = 1;
-    private dragAndDropImageScript _dragAndDropImageScript;
-    private heightScript _heightScript;
-    private endMenuManager _endMenuManager;
+    [SerializeField] private dragAndDropImageScript _dragAndDropImageScript;
+    [SerializeField] private heightScript _heightScript;
+    [SerializeField] private endMenuManager _endMenuManager;
     public static dragAndDropScript _dragAndDropScript;
     private uint placedGameObjectNetId;
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
     //The object the player can place using this drag and drop image.
     [NonSerialized] public GameObject objectToPlace, placedGameObject;
 
+    private void OnValidate() {
+#if UNITY_EDITOR
+        if (_dragAndDropImageScript == null) {
+            _dragAndDropImageScript = dragAndDropImageGameobject.GetComponent<dragAndDropImageScript>();
+        }
+        if (_heightScript == null) {
+            _heightScript = FindObjectOfType<heightScript>();
+        }
+        if (_endMenuManager == null) {
+            _endMenuManager = FindObjectOfType<endMenuManager>();
+        }
+#endif
+        return;
+    }
+
     private void Start() {
-        _dragAndDropImageScript = dragAndDropImageGameobject.GetComponent<dragAndDropImageScript>();
-        _heightScript = FindObjectOfType<heightScript>();
-        _endMenuManager = FindObjectOfType<endMenuManager>();
         disableObjectEditingPanel();
         return;
     }

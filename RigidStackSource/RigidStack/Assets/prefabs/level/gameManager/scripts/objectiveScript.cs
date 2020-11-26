@@ -12,11 +12,11 @@ public class objectiveScript : NetworkBehaviour {
     [NonSerialized] public int newObjectiveScoreAddition = 10;
     [NonSerialized] public int objectiveScore = 0;
     [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty;
-    private heightScript _heightScript;
+    [SerializeField] private heightScript _heightScript;
 
     [Header("Variables for height canvases.")]
     private float heightCanvasPivotX;
-    private RectTransform heightCanvasRectTransform;
+    [SerializeField] private RectTransform heightCanvasRectTransform;
     [SerializeField] private Canvas textCanvasTemplate = null;
     private readonly List<Canvas> textCanvases = new List<Canvas>();
 
@@ -54,8 +54,6 @@ public class objectiveScript : NetworkBehaviour {
             Any methods that require networking does not work when doing initialization.
     */
     private void syncDifficulty(Difficulty oldDifficulty, Difficulty newDifficulty) {
-        _heightScript = FindObjectOfType<heightScript>();
-        heightCanvasRectTransform = textCanvasTemplate.GetComponent<RectTransform>();
         heightCanvasPivotX = heightCanvasRectTransform.pivot.x;
         switch (difficulty) {
             case (Difficulty.Sandbox): {

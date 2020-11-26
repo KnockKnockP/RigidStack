@@ -32,7 +32,9 @@ public class windScript : MonoBehaviour {
     private void OnTriggerStay2D(Collider2D collision) {
         if (collision.gameObject.CompareTag("object") == true) {
             Rigidbody2D rigidbody2D = collision.gameObject.GetComponent<Rigidbody2D>();
-            rigidbody2D.velocity = new Vector3((rigidbody2D.velocity.x + windStrength), rigidbody2D.velocity.y);
+            Vector2 velocity = rigidbody2D.velocity;
+            velocity.x = (velocity.x + windStrength);
+            rigidbody2D.velocity = velocity;
         }
         return;
     }

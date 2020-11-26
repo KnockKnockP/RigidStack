@@ -1,5 +1,4 @@
-﻿using kcp2k;
-using Mirror;
+﻿using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +11,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [NonSerialized] public string lobbyName = "Unnamed.";
     private List<string> playerNames = new List<string>();
     private readonly List<DiscoveryResponse> discoveredServers = new List<DiscoveryResponse>();
-    private KcpTransport kcpTransport;
+    //private KcpTransport kcpTransport;
+    private TelepathyTransport kcpTransport;
     private NetworkManager networkManager;
     private CustomNetworkDiscovery customNetworkDiscovery;
 
@@ -35,7 +35,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         while (true) {
             if (NetworkManager.singleton != null) {
                 networkManager = NetworkManager.singleton;
-                kcpTransport = networkManager.gameObject.GetComponent<KcpTransport>();
+                //kcpTransport = networkManager.gameObject.GetComponent<KcpTransport>();
+                kcpTransport = networkManager.gameObject.GetComponent<TelepathyTransport>();
                 customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
                 yield break;
             }
@@ -45,7 +46,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     public void createLobby() {
         playerCount = 0;
-        kcpTransport.Port = NetworkManagerScript.getAvailablePort();
+        //kcpTransport.Port = NetworkManagerScript.getAvailablePort();
+        kcpTransport.port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.StartHost();
         StartCoroutine(nameof(checkPort));

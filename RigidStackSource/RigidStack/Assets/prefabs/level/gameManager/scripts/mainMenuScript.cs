@@ -38,8 +38,8 @@ public class mainMenuScript : MonoBehaviour {
             updateText.color = new Color32(255, 255, 0, 255);
             updateText.gameObject.SetActive(true);
         }
-        stream.Close();
         streamReader.Close();
+        stream.Close();
         return;
     }
 
@@ -48,8 +48,8 @@ public class mainMenuScript : MonoBehaviour {
         Stream stream = webClient.OpenRead("https://knockknockp.github.io/RigidStack/notice.txt");
         StreamReader streamReader = new StreamReader(stream);
         noticeText.text = streamReader.ReadToEnd();
-        stream.Close();
         streamReader.Close();
+        stream.Close();
         return;
     }
 }

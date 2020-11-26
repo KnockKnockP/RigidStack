@@ -3,7 +3,9 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 
 public class backgroundManager : MonoBehaviour {
+#pragma warning disable CS0414
     [Header("Variables for testing backgrounds."), SerializeField] private bool forceMorning = false, forceAfternoon = false, forceNight = false;
+#pragma warning restore CS0414
 
     private float maximumHeightOfGeneratedBackgrounds;
     [SerializeField] private Transform gridTransform = null, backgroundHolderEmptyObject = null;

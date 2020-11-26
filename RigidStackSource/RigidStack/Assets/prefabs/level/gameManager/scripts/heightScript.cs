@@ -114,7 +114,6 @@ public class heightScript : NetworkBehaviour {
                 if (currentFrameMaxHeight >= _objectiveScript.objectiveScore) {
                     _objectiveScript.clientRPCGenerateObjective(false);
                     if (isServer == true) {
-                        clientRPCDisableObjectEditingPanel();
                         _objectScript.giveMoreItems();
                     }
                 }

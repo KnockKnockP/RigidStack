@@ -1,4 +1,3 @@
-using kcp2k;
 using Mirror;
 using Mirror.Discovery;
 using System;
@@ -20,19 +19,19 @@ public class DiscoveryResponse : NetworkMessage {
 }
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
-    private multiplayerLobbyScript _multiplayerLobbyScript;
-    [SerializeField] private KcpTransport kcpTransport = null;
+    [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript;
+    //[SerializeField] private KcpTransport kcpTransport = null;
+    [SerializeField] private TelepathyTransport kcpTransport = null;
 
     private void OnValidate() {
-        kcpTransport = GetComponent<KcpTransport>();
-        if (kcpTransport == null) {
-            Debug.LogWarning(nameof(KcpTransport) + " not found.");
+#if UNITY_EDITOR
+        if (_multiplayerLobbyScript == null) {
+            _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
         }
-        return;
-    }
-
-    private void Awake() {
-        _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
+        if (kcpTransport == null) {
+            kcpTransport = FindObjectOfType<TelepathyTransport>();
+        }
+#endif
         return;
     }
 

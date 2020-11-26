@@ -3137,25 +3137,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6904283737170093565, guid: 05d9ba78d93eb5c4fae902236287f36f,
-        type: 3}
-      propertyPath: transport
-      value: 
-      objectReference: {fileID: 744143152}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
---- !u!114 &744143152 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6981686247899858679, guid: 05d9ba78d93eb5c4fae902236287f36f,
-    type: 3}
-  m_PrefabInstance: {fileID: 744143151}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &778750990
 GameObject:
   m_ObjectHideFlags: 0
@@ -6758,6 +6741,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671609277275646802, guid: 05f072496546af3439658966ab8d0e32,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -48.299927
       objectReference: {fileID: 0}
     - target: {fileID: 9117409400665640504, guid: 05f072496546af3439658966ab8d0e32,
         type: 3}

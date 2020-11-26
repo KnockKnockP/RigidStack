@@ -6,7 +6,7 @@ public class randomBackgroundObjectGenerationScript : MonoBehaviour {
     [Header("A variable for storing random background objects.")]
     [SerializeField] private GameObject[] objects = null;
 
-    private void Start() {
+    private void Awake() {
         StartCoroutine(generateRandomObjects());
         return;
     }

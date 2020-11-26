@@ -3,10 +3,14 @@ using UnityEngine.UI;
 
 public class fpsCounterScript : MonoBehaviour {
     private int oldValue;
-    private Text fpsCounterText;
+    [SerializeField] private Text fpsCounterText;
 
-    private void Awake() {
-        fpsCounterText = gameObject.GetComponent<Text>();
+    private void OnValidate() {
+#if UNITY_EDITOR
+        if (fpsCounterText == null) {
+            fpsCounterText = gameObject.GetComponent<Text>();
+        }
+#endif
         return;
     }
 

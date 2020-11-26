@@ -7,12 +7,8 @@ public class DummyPlayerScript : NetworkBehaviour {
     public static NetworkIdentity networkIdentity;
     public static GameObject player;
 
-    private void Awake() {
-        loadedAllThings = false;
-        return;
-    }
-
     private void Start() {
+        loadedAllThings = false;
         DontDestroyOnLoad(gameObject);
         NetworkIdentity _networkIdentity = GetComponent<NetworkIdentity>();
         if (_networkIdentity.isLocalPlayer == true) {
@@ -22,6 +18,12 @@ public class DummyPlayerScript : NetworkBehaviour {
             networkIdentity = _networkIdentity;
             loadedAllThings = true;
         }
+        return;
+    }
+
+    public override void OnStopClient() {
+        base.OnStopClient();
+        loadedAllThings = false;
         return;
     }
 }

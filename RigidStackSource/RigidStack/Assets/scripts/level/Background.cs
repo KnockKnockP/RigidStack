@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Background.", menuName = "ScriptableObjects/Background.", order = 1)]
+[CreateAssetMenu(fileName = "Background.", menuName = "ScriptableObjects/Background.")]
 public class Background : ScriptableObject {
     /*
         staticBackgrounds are backgrounds that does not care about the camera's position.

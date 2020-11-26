@@ -11805,10 +11805,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  timerText: {fileID: 797998249}
-  heightTextsParent: {fileID: 830823893}
+  _heightScript: {fileID: 7619175099963299232}
+  heightCanvasRectTransform: {fileID: 5463136634126960547, guid: 692d46d0ec036994c949297fcdea5664,
+    type: 3}
   textCanvasTemplate: {fileID: 5463136634126960546, guid: 692d46d0ec036994c949297fcdea5664,
     type: 3}
+  timerText: {fileID: 797998249}
+  heightTextsParent: {fileID: 830823893}
   cannonGrouperObject: {fileID: 627405725}
   cannon: {fileID: 1286257869036953297, guid: 26474ecd5fb611f459907e995ba2c418, type: 3}
   minimumDifferenceForEachWinds: 5
