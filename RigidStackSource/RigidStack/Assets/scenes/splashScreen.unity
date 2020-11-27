@@ -240,7 +240,6 @@ MonoBehaviour:
   videoPlayer: {fileID: 909513648}
   splashObjects:
   - {fileID: 11400000, guid: 9e8fdca775726c1439519883a2d01631, type: 2}
-  - {fileID: 11400000, guid: 4d855fb59620ddc40a7156e40d8285ea, type: 2}
 --- !u!1 &839914099
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,15 +502,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1792009380

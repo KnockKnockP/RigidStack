@@ -1,11 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Video;
 
 [CreateAssetMenu(fileName = "SplashObject.", menuName = "ScriptableObjects/SplashObject.")]
 public class SplashObject : ScriptableObject {
-    [NonSerialized] public bool isSprite, isVideo;
-    [Range(2f, 10f)] public float durationTime = 2f;
+    public bool isSprite, isVideo;
+    [Range(2f, 60f)] public float durationTime = 2f;
     public SplashEffect splashEffect;
     public Sprite spriteSplash;
     public VideoClip videoSplash;

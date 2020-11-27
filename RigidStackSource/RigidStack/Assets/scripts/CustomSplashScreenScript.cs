@@ -17,6 +17,7 @@ public class CustomSplashScreenScript : MonoBehaviour {
     }
 
     private IEnumerator playAllSplashScreens() {
+        Camera camera = FindObjectOfType<Camera>();
         foreach (SplashObject splashObject in splashObjects) {
             if (splashObject.isSprite == true) {
                 spriteRenderer.sprite = splashObject.spriteSplash;
@@ -25,7 +26,9 @@ public class CustomSplashScreenScript : MonoBehaviour {
                 videoPlayer.clip = splashObject.videoSplash;
                 videoPlayer.Play();
             }
+            backgroundManager.resizeBackground(spriteRenderer.gameObject, false, camera);
             if (splashObject.splashEffect == SplashObject.SplashEffect.NoEffects) {
+                spriteRenderer.color = Color.white;
                 yield return new WaitForSeconds(splashObject.durationTime);
             } else if (splashObject.splashEffect == SplashObject.SplashEffect.FadeInAndFadeOut) {
                 //Fade in.
@@ -58,7 +61,6 @@ public class CustomSplashScreenScript : MonoBehaviour {
             }
             yield return null;
         }
-        yield break;
     }
 
     private void changeScene() {
