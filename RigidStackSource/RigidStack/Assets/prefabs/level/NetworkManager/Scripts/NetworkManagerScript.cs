@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using kcp2k;
+using Mirror;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
@@ -36,8 +37,7 @@ public class NetworkManagerScript : MonoBehaviour {
             if (networkManager.isNetworkActive == true) {
                 networkManager.StopHost();
             }
-            //networkManager.GetComponent<KcpTransport>().Port = getAvailablePort();
-            networkManager.GetComponent<TelepathyTransport>().port = getAvailablePort();
+            networkManager.GetComponent<KcpTransport>().Port = getAvailablePort();
             networkManager.StartHost();
         }
         return;

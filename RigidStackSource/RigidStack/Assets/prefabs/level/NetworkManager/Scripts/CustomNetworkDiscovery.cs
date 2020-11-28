@@ -1,3 +1,4 @@
+using kcp2k;
 using Mirror;
 using Mirror.Discovery;
 using System;
@@ -20,8 +21,7 @@ public class DiscoveryResponse : NetworkMessage {
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
     [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript;
-    //[SerializeField] private KcpTransport kcpTransport = null;
-    [SerializeField] private TelepathyTransport kcpTransport = null;
+    [SerializeField] private KcpTransport kcpTransport = null;
 
     private void OnValidate() {
 #if UNITY_EDITOR
@@ -29,7 +29,7 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
             _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
         }
         if (kcpTransport == null) {
-            kcpTransport = FindObjectOfType<TelepathyTransport>();
+            kcpTransport = FindObjectOfType<KcpTransport>();
         }
 #endif
         return;
