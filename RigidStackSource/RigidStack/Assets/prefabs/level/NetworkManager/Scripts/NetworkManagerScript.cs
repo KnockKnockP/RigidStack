@@ -21,6 +21,11 @@ public class NetworkManagerScript : MonoBehaviour {
     }
 
     private void Start() {
+        activateScriptCrammer();
+        return;
+    }
+
+    public static void activateScriptCrammer() {
         if (SceneManager.GetActiveScene().name != SceneNames.Level) {
             foreach (Transform _transform in Resources.FindObjectsOfTypeAll<Transform>()) {
                 if (_transform.gameObject.name == "scriptCrammer") {
@@ -37,6 +42,7 @@ public class NetworkManagerScript : MonoBehaviour {
             if (networkManager.isNetworkActive == true) {
                 networkManager.StopHost();
             }
+            networkManager.GetComponent<NetworkManager>().maxConnections = 1;
             networkManager.GetComponent<KcpTransport>().Port = getAvailablePort();
             networkManager.StartHost();
         }

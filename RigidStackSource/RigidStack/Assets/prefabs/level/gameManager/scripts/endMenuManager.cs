@@ -124,12 +124,10 @@ public class endMenuManager : NetworkBehaviour {
             _objectiveScript.objectiveScore = 0;
             _heightScript.currentGameMaxHeight = 0;
         }
-        if (NetworkManagerScript.isMultiplayerGame == true) {
-            NetworkManager.singleton.ServerChangeScene(SceneNames.Level);
-        } else {
+        if (NetworkManagerScript.isMultiplayerGame == false) {
             FindObjectOfType<savingScript>().save();
-            FindObjectOfType<loadSceneScript>().loadLevel();
         }
+        FindObjectOfType<loadSceneScript>().loadLevel();
         return;
     }
     #endregion

@@ -24,7 +24,8 @@ public class VersionGeneratorScriptOverride : Editor {
         string newVersion = Application.version;
         VersionGeneratorScript versionGeneratorScript = (VersionGeneratorScript)(target);
         if (versionGeneratorScript.isDevelopmentBuild == true) {
-            newVersion = ("TESTBUILD-" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day + "T" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + DateTime.Now.ToString("tt", CultureInfo.InvariantCulture) + "+0900");
+            DateTime now = DateTime.Now;
+            newVersion = now.ToString("TESTBUILD-yyyy-MM-ddThh-mm-tt+0900", CultureInfo.InvariantCulture);
         } else {
             string[] split = newVersion.Split('.');
             string majorVersion = split[0], minorVersion = split[1], patchVersion = split[2];

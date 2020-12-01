@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
 public class CustomSplashScreenScript : MonoBehaviour {
-    [SerializeField] private string sceneToLoadAfterPlaying;
+    [SerializeField, Scene] private string sceneToLoadAfterPlaying;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private List<SplashObject> splashObjects = new List<SplashObject>();

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6904283737170093538}
   - component: {fileID: 6904283737170093565}
+  - component: {fileID: 2633424574534438387}
   - component: {fileID: 610054410749590170}
   - component: {fileID: 6426886545656024901}
   - component: {fileID: 5481702614048272607}
@@ -50,10 +51,10 @@ MonoBehaviour:
   runInBackground: 0
   autoStartServerBuild: 0
   showDebugMessages: 0
-  serverTickRate: 30
+  serverTickRate: 60
   offlineScene: 
   onlineScene: 
-  transport: {fileID: 610054410749590170}
+  transport: {fileID: 2633424574534438387}
   networkAddress: 127.0.0.1
   maxConnections: 5
   disconnectInactiveConnections: 0
@@ -77,7 +78,7 @@ MonoBehaviour:
   - {fileID: 2387137070807326072, guid: e5393abfeaaa98e4ca83f4ad614a031b, type: 3}
   - {fileID: 2387137070807326072, guid: 76300935d55c8fd4e95f29798bb97999, type: 3}
   - {fileID: 2387137070807326072, guid: 5ad6e97dd7b657e46b3acb7b8219c498, type: 3}
---- !u!114 &610054410749590170
+--- !u!114 &2633424574534438387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,6 +86,48 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6904283737170093537}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClientConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  port: 1024
+  NoDelay: 1
+  serverMaxMessageSize: 16384
+  serverMaxReceivesPerTick: 10000
+  clientMaxMessageSize: 16384
+  clientMaxReceivesPerTick: 1000
+--- !u!114 &610054410749590170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6904283737170093537}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
@@ -113,7 +156,7 @@ MonoBehaviour:
   OnServerDisconnected:
     m_PersistentCalls:
       m_Calls: []
-  Port: 7777
+  Port: 1024
   NoDelay: 1
   Interval: 10
   FastResend: 0
@@ -137,7 +180,7 @@ MonoBehaviour:
   serverBroadcastListenPort: 47777
   ActiveDiscoveryInterval: 3
   _multiplayerLobbyScript: {fileID: 0}
-  kcpTransport: {fileID: 610054410749590170}
+  telepathyTransport: {fileID: 2633424574534438387}
 --- !u!114 &5481702614048272607
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,4 @@
-﻿using kcp2k;
+﻿//using kcp2k;
 using Mirror;
 using System;
 using System.Collections;
@@ -12,7 +12,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [NonSerialized] public string lobbyName = "Unnamed.";
     private List<string> playerNames = new List<string>();
     private readonly List<DiscoveryResponse> discoveredServers = new List<DiscoveryResponse>();
-    private KcpTransport kcpTransport;
+    //private KcpTransport kcpTransport;
+    [Obsolete] private TelepathyTransport telepathyTransport;
     private NetworkManager networkManager;
     private CustomNetworkDiscovery customNetworkDiscovery;
 
@@ -26,39 +27,47 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [SerializeField] private Dropdown selectPlayerDropdownMenu = null;
     [SerializeField] private GameObject joinMultiplayerLobbyPanel = null, lobbyPanel = null;
 
+    [Obsolete]
     private void Start() {
         StartCoroutine(waitForSingleton());
         return;
     }
 
+    [Obsolete]
     private IEnumerator waitForSingleton() {
         while (true) {
             if (NetworkManager.singleton != null) {
                 networkManager = NetworkManager.singleton;
-                kcpTransport = networkManager.gameObject.GetComponent<KcpTransport>();
-                customNetworkDiscovery = networkManager.gameObject.GetComponent<CustomNetworkDiscovery>();
+                //kcpTransport = networkManager.GetComponent<KcpTransport>();
+                telepathyTransport = networkManager.GetComponent<TelepathyTransport>();
+                customNetworkDiscovery = networkManager.GetComponent<CustomNetworkDiscovery>();
                 yield break;
             }
             yield return null;
         }
     }
 
+    [Obsolete]
     public void createLobby() {
         playerCount = 0;
-        kcpTransport.Port = NetworkManagerScript.getAvailablePort();
+        //kcpTransport.Port = NetworkManagerScript.getAvailablePort();
+        telepathyTransport.port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
+        networkManager.maxConnections = 5;
         networkManager.StartHost();
         StartCoroutine(nameof(checkPort));
         return;
     }
 
+    [Obsolete]
     private IEnumerator checkPort() {
         const int timeOut = 5;
         for (int i = timeOut; i >= 0; i--) {
             selectMultiplayerText.text = ("Please wait for " + i + ((i == 1) ? " second." : " seconds."));
             yield return new WaitForSeconds(1);
         }
-        if (kcpTransport.ServerActive() == false) {
+        if (telepathyTransport.ServerActive() == false) {
+        //if (kcpTransport.ServerActive() == false) {
             Debug.LogWarning("Something went wrong with creation of the multiplayer lobby.\r\n" +
                              "Retrying.");
             customNetworkDiscovery.StopDiscovery();
@@ -151,12 +160,14 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #endregion
 
     #region Joining the multiplayer lobby.
+    [Obsolete]
     public void joinMultiplayerLobby(int index) {
         NetworkIdentity[] networkIdentities = FindObjectsOfType<NetworkIdentity>();
         foreach (NetworkIdentity networkIdentity in networkIdentities) {
             networkIdentity.gameObject.SetActive(false);
         }
-        kcpTransport.Port = (ushort)(discoveredServers[index].uri.Port);
+        //kcpTransport.Port = (ushort)(discoveredServers[index].uri.Port);
+        telepathyTransport.port = (ushort)(discoveredServers[index].uri.Port);
         networkManager.StartClient(discoveredServers[index].uri);
         lobbyPanel.SetActive(true);
         return;
@@ -227,6 +238,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             networkManager.StopClient();
             refreshServers();
         }
+        NetworkManagerScript.activateScriptCrammer();
         return;
     }
 
@@ -244,10 +256,18 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #endregion
 
     #region Cancelling the multiplayer lobby.
-    [Server]
     public void cancelMakingTheMultiplayerLobby() {
+        if (isServer == true) {
+            actuallyCancelMakingTheMultiplayerLobby();
+        }
+        return;
+    }
+
+    [Server]
+    private void actuallyCancelMakingTheMultiplayerLobby() {
         StopCoroutine(nameof(checkPort));
         selectMultiplayerText.text = "";
+        cancelMultiplayerLobby();
         return;
     }
 

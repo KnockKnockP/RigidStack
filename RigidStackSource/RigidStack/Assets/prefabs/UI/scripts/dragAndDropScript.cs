@@ -27,6 +27,8 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         if (_endMenuManager == null) {
             _endMenuManager = FindObjectOfType<endMenuManager>();
         }
+#else
+        _ = dragAndDropImageGameobject;
 #endif
         return;
     }
