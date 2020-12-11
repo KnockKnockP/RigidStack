@@ -1,4 +1,8 @@
-﻿//using kcp2k;
+﻿/*
+    Behold... the new contestant of the new spaghetti code competition!
+*/
+
+//using kcp2k;
 using Mirror;
 using System;
 using System.Collections;
@@ -67,7 +71,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             yield return new WaitForSeconds(1);
         }
         if (telepathyTransport.ServerActive() == false) {
-        //if (kcpTransport.ServerActive() == false) {
+            //if (kcpTransport.ServerActive() == false) {
             Debug.LogWarning("Something went wrong with creation of the multiplayer lobby.\r\n" +
                              "Retrying.");
             customNetworkDiscovery.StopDiscovery();
@@ -278,6 +282,15 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         return;
     }
 
+    [ClientRpc]
+    private void clientRPCCancelMultiplayerLobby() {
+        if (isServer == true) {
+            return;
+        }
+        exitMultiplayerLobby();
+        return;
+    }
+
     [Server]
     private IEnumerator waitUntilAllClientsDisconnect() {
         while (playerCount != 1) {
@@ -289,16 +302,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         }
         networkManager.StopHost();
         lobbyPanel.SetActive(false);
+        NetworkManagerScript.activateScriptCrammer();
         yield break;
-    }
-
-    [ClientRpc]
-    private void clientRPCCancelMultiplayerLobby() {
-        if (isServer == true) {
-            return;
-        }
-        exitMultiplayerLobby();
-        return;
     }
     #endregion
 

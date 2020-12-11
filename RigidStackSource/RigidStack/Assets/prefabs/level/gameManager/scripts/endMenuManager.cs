@@ -104,12 +104,8 @@ public class endMenuManager : NetworkBehaviour {
 
     #region Restarting the level.
     public void restart() {
-        if (NetworkManagerScript.isMultiplayerGame == true) {
-            if (isClientOnly == true) {
-                if (isGameEnded == true) {
-                    commandRestart();
-                }
-            } else {
+        if (isClientOnly == true) {
+            if (isGameEnded == true) {
                 commandRestart();
             }
         } else {
@@ -120,14 +116,13 @@ public class endMenuManager : NetworkBehaviour {
 
     [Command(ignoreAuthority = true)]
     private void commandRestart() {
-        if (isServer == true) {
+        if (NetworkManagerScript.isMultiplayerGame == false) {
+            FindObjectOfType<savingScript>().save();
+        } else {
             _objectiveScript.objectiveScore = 0;
             _heightScript.currentGameMaxHeight = 0;
         }
-        if (NetworkManagerScript.isMultiplayerGame == false) {
-            FindObjectOfType<savingScript>().save();
-        }
-        FindObjectOfType<loadSceneScript>().loadLevel();
+        loadSceneScript.loadScene(SceneNames.Level);
         return;
     }
     #endregion

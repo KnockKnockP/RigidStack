@@ -19,22 +19,31 @@ public class pauseScript : NetworkBehaviour {
     }
 
     public void toMainMenu() {
-        loadSceneScript.loadScene(SceneNames.MainMenu);
-        stopConnection(true);
+        if (isServer == true) {
+            clientRPCStopConnection(true, true, SceneNames.MainMenu, "Server stopped the multiplayer lobby.");
+        } else {
+            stopConnection(true, true, SceneNames.MainMenu, null);
+        }
         return;
     }
 
     public void exit() {
         FindObjectOfType<savingScript>().save();
         if (NetworkManager.singleton != null) {
-            stopConnection(false);
+            clientRPCStopConnection(false, false, SceneNames.MainMenu, "Server exited the game.");
         }
         Application.Quit();
         Debug.Log("Exited the game.");
         return;
     }
 
-    private void stopConnection(bool destroy) {
+    [ClientRpc]
+    private void clientRPCStopConnection(bool destroy, bool switchServer, string sceneName, string disconnectedReason) {
+        stopConnection(destroy, switchServer, sceneName, disconnectedReason);
+        return;
+    }
+
+    private void stopConnection(bool destroy, bool switchServer, string sceneName = null, string disconnectReason = null) {
         if (NetworkManager.singleton.isNetworkActive == true) {
             if (isServer == true) {
                 NetworkManager.singleton.StopHost();
@@ -44,6 +53,18 @@ public class pauseScript : NetworkBehaviour {
             if (destroy == true) {
                 Destroy(NetworkManager.singleton.gameObject);
             }
+        }
+        if (sceneName != null) {
+            if (isServer == true) {
+                if (switchServer == true) {
+                    loadSceneScript.loadScene(sceneName);
+                }
+            } else {
+                loadSceneScript.loadScene(sceneName);
+            }
+        }
+        if ((isClientOnly == true) && (disconnectReason != null)) {
+            //TODO : Display disconnected reason.
         }
         return;
     }
