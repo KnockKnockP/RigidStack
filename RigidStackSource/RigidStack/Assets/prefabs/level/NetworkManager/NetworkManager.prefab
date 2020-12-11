@@ -51,7 +51,7 @@ MonoBehaviour:
   runInBackground: 0
   autoStartServerBuild: 0
   showDebugMessages: 0
-  serverTickRate: 60
+  serverTickRate: 10
   offlineScene: 
   onlineScene: 
   transport: {fileID: 2633424574534438387}
@@ -178,6 +178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   secretHandshake: 2435568174707227294
   serverBroadcastListenPort: 47777
+  repeatDiscovery: 0
   ActiveDiscoveryInterval: 3
   _multiplayerLobbyScript: {fileID: 0}
   telepathyTransport: {fileID: 2633424574534438387}
