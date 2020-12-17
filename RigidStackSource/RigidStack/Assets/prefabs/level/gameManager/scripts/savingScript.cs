@@ -106,11 +106,10 @@ public class savingScript : MonoBehaviour {
     [Header("Settings menu."), SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
 
-    [Header("Profiles menu.")]
     private bool hasLoadedProfileListOnStart;
     public const string defaultProfileName = "Default";
     private static string lastlySelectedProfileName = defaultProfileName;
-    [SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
+    [Header("Profiles menu."), SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
 
@@ -250,16 +249,16 @@ public class savingScript : MonoBehaviour {
                     profileToLoad = splitLine[1].Trim(' ');
                     continue;
                 }
-                if (checkName(readLine) == false) {
-                    continue;
+                if (checkName(readLine) == true) {
+                    PlayerData loadedPlayerData = load(readLine, false);
+                    LoadedPlayerData.profiles.Add(loadedPlayerData);
+                    profileNames.Add(loadedPlayerData.name);
                 }
-                PlayerData loadedPlayerData = load(readLine, false);
-                LoadedPlayerData.profiles.Add(loadedPlayerData);
-                profileNames.Add(loadedPlayerData.name);
             }
             streamReader.Close();
             profilesDropdown.ClearOptions();
             profilesDropdown.AddOptions(profileNames);
+            selectProfile(profileToLoad);
         } catch (Exception exception) {
             catchException(exception);
         }
