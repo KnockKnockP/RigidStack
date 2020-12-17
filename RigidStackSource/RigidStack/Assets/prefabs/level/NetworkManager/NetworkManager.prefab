@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 610054410749590170}
   - component: {fileID: 6426886545656024901}
   - component: {fileID: 5481702614048272607}
+  - component: {fileID: 740351558}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -51,8 +52,8 @@ MonoBehaviour:
   runInBackground: 0
   autoStartServerBuild: 0
   showDebugMessages: 0
-  serverTickRate: 10
-  offlineScene: 
+  serverTickRate: 60
+  offlineScene: Assets/scenes/mainMenu.unity
   onlineScene: 
   transport: {fileID: 2633424574534438387}
   networkAddress: 127.0.0.1
@@ -194,3 +195,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09b9ba2e76b08374088ebfe4f05b9b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &740351558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6904283737170093537}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc654f29862fc2643b948f772ebb9e68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showPing: 1
+  position: {x: 0, y: 100}
+  fontSize: 60
+  textColor: {r: 0, g: 0, b: 0, a: 1}
