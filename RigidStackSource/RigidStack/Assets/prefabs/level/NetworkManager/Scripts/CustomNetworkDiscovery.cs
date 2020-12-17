@@ -43,6 +43,7 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
     }
 
     #region Server.
+    [Obsolete]
     protected override void ProcessClientRequest(DiscoveryRequest discoveryRequest, IPEndPoint _IPEndPoint) {
         base.ProcessClientRequest(discoveryRequest, _IPEndPoint);
         return;
