@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -225,9 +226,10 @@ public class objectiveScript : NetworkBehaviour {
     private IEnumerator shootCannons(float waitSecond) {
         while (true) {
             for (int i = 0; i < cannonList.Count; i++) {
-                GameObject spawnedCannonShell = Instantiate(cannonInformationHolders[i].cannonShell, cannonInformationHolders[i].cannonTip.transform.position, Quaternion.identity, cannonList[i].transform);
+                Vector3 position = cannonInformationHolders[i].cannonTip.transform.position;
+                GameObject spawnedCannonShell = Instantiate(cannonInformationHolders[i].cannonShell, position, Quaternion.identity, cannonList[i].transform);
                 NetworkServer.Spawn(spawnedCannonShell);
-                clientRPCUpdateCannonShell(spawnedCannonShell, i);
+                clientRPCUpdateCannonShell(spawnedCannonShell, i, position);
                 spawnedCannonShell.GetComponent<Rigidbody2D>().velocity = new Vector2(15, 0);
             }
             yield return new WaitForSeconds(waitSecond);
@@ -235,13 +237,13 @@ public class objectiveScript : NetworkBehaviour {
     }
 
     [ClientRpc]
-    private void clientRPCUpdateCannonShell(GameObject _gameObject, int i) {
+    private void clientRPCUpdateCannonShell(GameObject _gameObject, int i, Vector3 position) {
         if (isServer == true) {
             return;
         }
         _gameObject.transform.parent = cannonList[i].transform;
         //We do this so the cannon shell does not spawn in the middle of the screen.
-        _gameObject.transform.position = new Vector3(-500f, -500f, 0f);
+        _gameObject.transform.position = position;
         Destroy(_gameObject.GetComponent<Rigidbody2D>());
         Destroy(_gameObject.GetComponent<CircleCollider2D>());
         return;
