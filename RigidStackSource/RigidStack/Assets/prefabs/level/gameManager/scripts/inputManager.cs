@@ -10,11 +10,18 @@ public class inputManager : MonoBehaviour {
         Left shift, right shift : Place the object,
         Escape : Cancel object editing, pause,
         Left control, right control : Manually check height.
+        Menu key : Open debugging menu.
     */
 
+    private static bool isDebugBuild;
     [SerializeField] private pauseScript _pauseScript = null;
     [SerializeField] private heightScript _heightScript = null;
     [SerializeField] private Button confirmButton = null;
+    [SerializeField] private GameObject debugPanel = null;
+
+    private void Awake() {
+        isDebugBuild = Debug.isDebugBuild;
+    }
 
     private void Update() {
         manageCameraMovement();
@@ -70,6 +77,9 @@ public class inputManager : MonoBehaviour {
     private void manageOthers() {
         if ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true)) {
             _heightScript.manuallyCheckHeight();
+        }
+        if ((isDebugBuild == true) && (Input.GetKeyDown(KeyCode.Menu) == true)) {
+            debugPanel.SetActive(!debugPanel.activeSelf);
         }
         return;
     }
