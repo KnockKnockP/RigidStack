@@ -11,7 +11,7 @@ public static class SceneNames {
 public class loadSceneScript : MonoBehaviour {
     public static void loadScene(string sceneName) {
         if (sceneName != SceneNames.Level) {
-            Destroy(NetworkManager.singleton);
+            Destroy(NetworkManager.singleton.gameObject);
         }
         Time.timeScale = 1f;
         heightScript _heightScript = FindObjectOfType<heightScript>();

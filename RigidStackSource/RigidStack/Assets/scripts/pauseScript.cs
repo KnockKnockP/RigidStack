@@ -55,10 +55,8 @@ public class pauseScript : NetworkBehaviour {
             }
         }
         if (sceneName != null) {
-            if (isServer == true) {
-                if (switchServer == true) {
-                    loadSceneScript.loadScene(sceneName);
-                }
+            if ((isServer == true) && (switchServer == true)) {
+                loadSceneScript.loadScene(sceneName);
             } else {
                 loadSceneScript.loadScene(sceneName);
             }

@@ -45,6 +45,8 @@ public class NetworkManagerScript : MonoBehaviour {
             networkManager.GetComponent<NetworkManager>().maxConnections = 1;
             networkManager.GetComponent<KcpTransport>().Port = getAvailablePort();
             networkManager.StartHost();
+        } else if (scene.name == SceneNames.MainMenu) {
+            activateScriptCrammer();
         }
         return;
     }
