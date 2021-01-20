@@ -9889,6 +9889,10 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1067815829}
+    - target: {fileID: 453735320, guid: 05f072496546af3439658966ab8d0e32, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: changeDifficulty
+      objectReference: {fileID: 0}
     - target: {fileID: 1083971224, guid: 05f072496546af3439658966ab8d0e32, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -9901,10 +9905,19 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1067815826}
+    - target: {fileID: 1767042585, guid: 05f072496546af3439658966ab8d0e32, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: load
+      objectReference: {fileID: 0}
     - target: {fileID: 2109126759, guid: 05f072496546af3439658966ab8d0e32, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1067815826}
+    - target: {fileID: 4427301915767304913, guid: 05f072496546af3439658966ab8d0e32,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4638720358054432380, guid: 05f072496546af3439658966ab8d0e32,
         type: 3}
       propertyPath: m_Pivot.x
@@ -10015,6 +10028,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: settingsPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 4638720358054432381, guid: 05f072496546af3439658966ab8d0e32,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8257409833688724923, guid: 05f072496546af3439658966ab8d0e32,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -10025,6 +10043,11 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1067815829}
+    - target: {fileID: 9104956035451883979, guid: 05f072496546af3439658966ab8d0e32,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 05f072496546af3439658966ab8d0e32, type: 3}
 --- !u!114 &4638720359327928316 stripped
