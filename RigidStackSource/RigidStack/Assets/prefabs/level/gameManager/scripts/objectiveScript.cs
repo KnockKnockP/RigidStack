@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +11,7 @@ public class objectiveScript : NetworkBehaviour {
     private int windSustainTime = 1, windGenerationHeight = 50;
     [NonSerialized] public int newObjectiveScoreAddition = 10;
     [NonSerialized] public int objectiveScore = 0;
-    [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty;
+    [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty = Difficulty.Default;
     [SerializeField] private heightScript _heightScript;
 
     [Header("Variables for height canvases.")]

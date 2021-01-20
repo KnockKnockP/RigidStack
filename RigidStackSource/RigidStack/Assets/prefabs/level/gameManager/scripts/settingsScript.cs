@@ -6,7 +6,8 @@ public enum Difficulty : byte {
     Easy = 1,
     Moderate = 2,
     Difficult = 3,
-    Extreme = 4
+    Extreme = 4,
+    Default = 5
 };
 
 public static class GraphicsLevel {
