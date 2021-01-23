@@ -375,7 +375,7 @@ namespace IngameDebugConsole {
                     popupManager.OnViewportDimensionsChanged();
 
 #if UNITY_ANDROID || UNITY_IOS
-                CheckScreenCutout();
+				CheckScreenCutout();
 #endif
 
                 if (searchbar) {
