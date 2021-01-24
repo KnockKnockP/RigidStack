@@ -13,7 +13,7 @@ public class endMenuManager : NetworkBehaviour {
 
     [Header("Variables for the end menu."), SerializeField] private Text endMenuScoreText = null;
     [SerializeField] private objectiveScript _objectiveScript = null;
-    [SerializeField] private heightScript _heightScript;
+    [SerializeField] private heightScript _heightScript = null;
     [SerializeField] private GameObject endMenu = null;
 
     [Header("Variables for gameplay panels.")]

@@ -12,11 +12,11 @@ public class objectiveScript : NetworkBehaviour {
     [NonSerialized] public int newObjectiveScoreAddition = 10;
     [NonSerialized] public int objectiveScore = 0;
     [SyncVar(hook = nameof(syncDifficulty))] private Difficulty difficulty = Difficulty.Default;
-    [SerializeField] private heightScript _heightScript;
+    [SerializeField] private heightScript _heightScript = null;
 
     [Header("Variables for height canvases.")]
     private float heightCanvasPivotX;
-    [SerializeField] private RectTransform heightCanvasRectTransform;
+    [SerializeField] private RectTransform heightCanvasRectTransform = null;
     [SerializeField] private Canvas textCanvasTemplate = null;
     private readonly List<Canvas> textCanvases = new List<Canvas>();
 

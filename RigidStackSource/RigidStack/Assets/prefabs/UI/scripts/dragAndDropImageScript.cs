@@ -12,6 +12,7 @@ public class dragAndDropImageScript : MonoBehaviour {
                 _objectCount = value;
                 objectCounterText.text = _objectCount.ToString();
             }
+            return;
         }
     }
     [SerializeField] private Text objectCounterText = null;

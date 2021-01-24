@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
 public class CustomSplashScreenScript : MonoBehaviour {
-    [SerializeField, Scene] private string sceneToLoadAfterPlaying;
-    [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField, Scene] private string sceneToLoadAfterPlaying = null;
+    [SerializeField] private SpriteRenderer spriteRenderer = null;
+    [SerializeField] private VideoPlayer videoPlayer = null;
     [SerializeField] private List<SplashObject> splashObjects = new List<SplashObject>();
 
     private void Awake() {

@@ -1,19 +1,23 @@
 ﻿//Warning : Big spaghetti ahead.
+//I might just yeet everything out and start over.
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 using UnityEngine.UI;
 
-public static class LoadedPlayerData {
-    public static PlayerData playerData = new PlayerData();
-    public static PlayerGraphics playerGraphics = new PlayerGraphics();
+[Serializable]
+public class ProfileList {
+    public string lastlySelectedProfileName = savingScript.defaultProfileName;
+    public List<string> profileNames = new List<string>();
     public static List<PlayerData> profiles = new List<PlayerData>();
 }
 
@@ -25,75 +29,227 @@ public class PlayerData {
     public Difficulty difficulty = Difficulty.Easy;
 }
 
+#pragma warning disable IDE0044, IDE0052, 414
+[JsonObject(MemberSerialization.OptIn)]
 public class PlayerGraphics {
-    public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
-    public int graphics = QualitySettings.GetQualityLevel(), verticalSyncCount = QualitySettings.vSyncCount;
-    private static int _targetFramesPerSecond = 60;
-    public static int targetFramesPerSecond {
+    [JsonProperty]
+    private string[] _comment = { "If targetFramesPerSecond is set to -1, the game will render at the platform's default frame rate.",
+                                  "graphics = [0 (Potato.), 1 (Low.), 2 (Medium.), 3 (High.), 4 (Very high.)].",
+                                  "The game will set the graphics value first and then overwrite all other values.",
+                                  "When isBackgroundScalingKeepAspectRatio is set to false, the game will stretch background objects to fit the screen." };
+    [JsonProperty] public bool isBackgroundScalingKeepAspectRatio = false, isBackgroundEnabled = false;
+    [JsonProperty] public int graphics = QualitySettings.GetQualityLevel(), verticalSyncCount = QualitySettings.vSyncCount;
+    [JsonProperty]
+    public int targetFramesPerSecond {
         get {
-            return _targetFramesPerSecond;
+            return Application.targetFrameRate;
         }
         set {
-            _targetFramesPerSecond = value;
             Application.targetFrameRate = value;
+            return;
+        }
+    }
+}
+#pragma warning restore IDE0044, IDE0052, 414
+
+#pragma warning disable IDE0044, IDE0051, IDE0052, 414
+[JsonObject(MemberSerialization.OptIn)]
+public class PlayerQualitySettings {
+    [JsonProperty] private string _comment = "Documentations : https://docs.unity3d.com/ScriptReference/QualitySettings.html";
+    [JsonProperty]
+    public int masterTextureLimit {
+        get {
+            return QualitySettings.masterTextureLimit;
+        }
+        set {
+            QualitySettings.masterTextureLimit = value;
+            return;
         }
     }
 
-    #region Graphics variables' names.
-    public string[] graphicsVariablesNames = new string[] {
-        ";Please take some time to read",
-        ";https://docs.unity3d.com/ScriptReference/QualitySettings.html,",
-        ";https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/index.html",
-        ";to know what each value does.",
-        ";Graphics settings menu values.",
-        ";graphics = [0 (\"Potato.\"), 1 (\"Low.\"), 2 (\"Medium.\"), 3 (\"High.\"), 4 (\"Very high.\")].",
-        ";The game will set the graphics value first and then overwrite all other values.",
-        nameof(graphics),
-        nameof(verticalSyncCount),
-        ";isBackgroundScalingKeepAspectRatio = [False, True].",
-        ";When isBackgroundScalingKeepAspectRatio is set to false, the game will stretch background objects to fit the screen.",
-        nameof(isBackgroundScalingKeepAspectRatio),
-        ";isBackgroundEnabled = [False, True].",
-        ";When isBackgroundEnabled is set to false, the game will not generate any background objects.",
-        nameof(isBackgroundEnabled),
-        ";Universal render pipeline asset values.",
-        nameof(UniversalRenderPipelineAsset.supportsCameraDepthTexture),
-        nameof(UniversalRenderPipelineAsset.supportsCameraOpaqueTexture),
-        nameof(UniversalRenderPipelineAsset.supportsHDR),
-        nameof(UniversalRenderPipelineAsset.msaaSampleCount),
-        nameof(UniversalRenderPipelineAsset.renderScale),
-        //";Per Object Limit settings should be here but, I could not find it anywhere on the UniversalRenderPipelineAsset class.",
-        nameof(UniversalRenderPipelineAsset.shadowDistance),
-        nameof(UniversalRenderPipelineAsset.shadowCascadeOption),
-        nameof(UniversalRenderPipelineAsset.shadowDepthBias),
-        nameof(UniversalRenderPipelineAsset.shadowNormalBias),
-        nameof(UniversalRenderPipelineAsset.colorGradingMode),
-        nameof(UniversalRenderPipelineAsset.colorGradingLutSize),
-        nameof(UniversalRenderPipelineAsset.useSRPBatcher),
-        nameof(UniversalRenderPipelineAsset.supportsDynamicBatching),
-        nameof(UniversalRenderPipelineAsset.shaderVariantLogLevel),
-        ";Quality settings values.",
-        nameof(QualitySettings.masterTextureLimit),
-        nameof(QualitySettings.anisotropicFiltering),
-        nameof(QualitySettings.realtimeReflectionProbes),
-        nameof(QualitySettings.billboardsFaceCameraPosition),
-        nameof(QualitySettings.resolutionScalingFixedDPIFactor),
-        nameof(QualitySettings.streamingMipmapsActive),
-        nameof(QualitySettings.streamingMipmapsAddAllCameras),
-        nameof(QualitySettings.streamingMipmapsMemoryBudget),
-        nameof(QualitySettings.streamingMipmapsMaxLevelReduction),
-        nameof(QualitySettings.streamingMipmapsMaxFileIORequests),
-        nameof(QualitySettings.skinWeights),
-        nameof(QualitySettings.lodBias),
-        nameof(QualitySettings.maximumLODLevel),
-        nameof(QualitySettings.particleRaycastBudget),
-        nameof(QualitySettings.asyncUploadTimeSlice),
-        nameof(QualitySettings.asyncUploadBufferSize),
-        nameof(QualitySettings.asyncUploadPersistentBuffer),
-        ";If targetFramesPerSecond is set to -1, the game will render at the platform's default frame rate.",
-        nameof(targetFramesPerSecond)
-    };
-    #endregion
+    [JsonProperty]
+    public AnisotropicFiltering anisotropicFiltering {
+        get {
+            return QualitySettings.anisotropicFiltering;
+        }
+        set {
+            QualitySettings.anisotropicFiltering = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public bool realtimeReflectionProbes {
+        get {
+            return QualitySettings.realtimeReflectionProbes;
+        }
+        set {
+            QualitySettings.realtimeReflectionProbes = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public bool billboardsFaceCameraPosition {
+        get {
+            return QualitySettings.billboardsFaceCameraPosition;
+        }
+        set {
+            QualitySettings.billboardsFaceCameraPosition = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public float resolutionScalingFixedDPIFactor {
+        get {
+            return QualitySettings.resolutionScalingFixedDPIFactor;
+        }
+        set {
+            QualitySettings.resolutionScalingFixedDPIFactor = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public bool streamingMipmapsActive {
+        get {
+            return QualitySettings.streamingMipmapsActive;
+        }
+        set {
+            QualitySettings.streamingMipmapsActive = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public bool streamingMipmapsAddAllCameras {
+        get {
+            return QualitySettings.streamingMipmapsAddAllCameras;
+        }
+        set {
+            QualitySettings.streamingMipmapsAddAllCameras = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public float streamingMipmapsMemoryBudget {
+        get {
+            return QualitySettings.streamingMipmapsMemoryBudget;
+        }
+        set {
+            QualitySettings.streamingMipmapsMemoryBudget = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public int streamingMipmapsMaxLevelReduction {
+        get {
+            return QualitySettings.streamingMipmapsMaxLevelReduction;
+        }
+        set {
+            QualitySettings.streamingMipmapsMaxLevelReduction = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public int streamingMipmapsMaxFileIORequests {
+        get {
+            return QualitySettings.streamingMipmapsMaxFileIORequests;
+        }
+        set {
+            QualitySettings.streamingMipmapsMaxFileIORequests = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public SkinWeights skinWeights {
+        get {
+            return QualitySettings.skinWeights;
+        }
+        set {
+            QualitySettings.skinWeights = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public float lodBias {
+        get {
+            return QualitySettings.lodBias;
+        }
+        set {
+            QualitySettings.lodBias = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public int maximumLODLevel {
+        get {
+            return QualitySettings.maximumLODLevel;
+        }
+        set {
+            QualitySettings.maximumLODLevel = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public int particleRaycastBudget {
+        get {
+            return QualitySettings.particleRaycastBudget;
+        }
+        set {
+            QualitySettings.particleRaycastBudget = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public int asyncUploadTimeSlice {
+        get {
+            return QualitySettings.asyncUploadTimeSlice;
+        }
+        set {
+            QualitySettings.asyncUploadTimeSlice = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public int asyncUploadBufferSize {
+        get {
+            return QualitySettings.asyncUploadBufferSize;
+        }
+        set {
+            QualitySettings.asyncUploadBufferSize = value;
+            return;
+        }
+    }
+
+    [JsonProperty]
+    public bool asyncUploadPersistentBuffer {
+        get {
+            return QualitySettings.asyncUploadPersistentBuffer;
+        }
+        set {
+            QualitySettings.asyncUploadPersistentBuffer = value;
+            return;
+        }
+    }
+}
+#pragma warning restore IDE0044, IDE0051, IDE0052, 414
+
+public static class LoadedPlayerData {
+    public static ProfileList profileList = new ProfileList();
+    public static PlayerData playerData = new PlayerData();
+    public static PlayerGraphics playerGraphics = new PlayerGraphics();
+    public static PlayerQualitySettings playerQualitySettings = new PlayerQualitySettings();
 }
 
 public class savingScript : MonoBehaviour {
@@ -108,7 +264,6 @@ public class savingScript : MonoBehaviour {
 
     private bool hasLoadedProfileListOnStart;
     public const string defaultProfileName = "Default";
-    private static string lastlySelectedProfileName = defaultProfileName;
     [Header("Profiles menu."), SerializeField] private Text profileNameText = null, newProfileExceptionText = null;
     [SerializeField] private Dropdown profilesDropdown = null;
     [SerializeField] private Button deleteButton = null;
@@ -130,19 +285,19 @@ public class savingScript : MonoBehaviour {
         if ((_universalRenderPipelineAssets != null) && (universalRenderPipelineAssets == null)) {
             universalRenderPipelineAssets = _universalRenderPipelineAssets;
         }
-        string savesFolderPath = getPath(true, false, false, null);
+        string savesFolderPath = getPath(true, false, false, false, false, null);
         if (Directory.Exists(savesFolderPath) == false) {
             Directory.CreateDirectory(savesFolderPath);
         }
         if (SceneManager.GetActiveScene().name == SceneNames.MainMenu) {
-            if (File.Exists(getPath(false, true, false, null)) == false) {
+            if (File.Exists(getPath(false, true, false, false, false, null)) == false) {
                 makeNewProfile(defaultProfileName);
             } else if (hasLoadedProfileListOnStart == false) {
                 loadProfiles();
-                selectProfile(lastlySelectedProfileName);
+                selectProfile(LoadedPlayerData.profileList.lastlySelectedProfileName);
                 hasLoadedProfileListOnStart = true;
             } else {
-                selectProfile(lastlySelectedProfileName);
+                selectProfile(LoadedPlayerData.profileList.lastlySelectedProfileName);
             }
         }
         GC.Collect();
@@ -161,13 +316,12 @@ public class savingScript : MonoBehaviour {
         PlayerData newPlayerData = new PlayerData {
             name = inputName
         };
-        LoadedPlayerData.profiles.Add(newPlayerData);
+        ProfileList.profiles.Add(newPlayerData);
         Dropdown.OptionData optionData = new Dropdown.OptionData {
             text = newPlayerData.name
         };
         profilesDropdown.options.Add(optionData);
         LoadedPlayerData.playerData = newPlayerData;
-        saveProfiles();
         save(newPlayerData.name);
         selectProfile(newPlayerData.name);
         Debug.Log("Added a new profile with the name : " + newPlayerData.name + ".");
@@ -176,56 +330,62 @@ public class savingScript : MonoBehaviour {
 
     public void deleteProfile() {
         try {
-            File.Delete(getPath(false, false, false, LoadedPlayerData.profiles[profilesDropdown.value].name));
-            File.Delete(getPath(false, false, true, LoadedPlayerData.profiles[profilesDropdown.value].name));
+            File.Delete(getPath(false, false, false, false, false, ProfileList.profiles[profilesDropdown.value].name));
+            File.Delete(getPath(false, false, true, false, false, ProfileList.profiles[profilesDropdown.value].name));
         } catch (Exception exception) {
             catchException(exception);
         }
-        LoadedPlayerData.profiles[profilesDropdown.value] = null;
+        ProfileList.profiles[profilesDropdown.value] = null;
         List<PlayerData> newProfileList = new List<PlayerData>();
-        foreach (PlayerData playerData in LoadedPlayerData.profiles) {
+        foreach (PlayerData playerData in ProfileList.profiles) {
             if (playerData != null) {
                 newProfileList.Add(playerData);
             }
         }
-        LoadedPlayerData.profiles = newProfileList;
+        ProfileList.profiles = newProfileList;
         saveProfiles();
         loadProfiles();
         return;
     }
 
     public void selectProfile() {
-        selectProfile(LoadedPlayerData.profiles[profilesDropdown.value].name);
+        selectProfile(ProfileList.profiles[profilesDropdown.value].name);
         return;
     }
 
     private void selectProfile(string profileName) {
-        for (int i = 0; i < LoadedPlayerData.profiles.Count; i++) {
-            if (LoadedPlayerData.profiles[i].name == profileName) {
-                LoadedPlayerData.playerData = LoadedPlayerData.profiles[i];
-                lastlySelectedProfileName = LoadedPlayerData.playerData.name;
-                profilesDropdown.value = i;
-                profileNameText.text = (LoadedPlayerData.playerData.name + ".");
-                load();
-                saveProfiles();
-                break;
+        int index = ScanProfileList(profileName);
+        if (index != -1) {
+            LoadedPlayerData.playerData = ProfileList.profiles[index];
+            LoadedPlayerData.profileList.lastlySelectedProfileName = LoadedPlayerData.playerData.name;
+            profilesDropdown.value = index;
+            profileNameText.text = (LoadedPlayerData.playerData.name + ".");
+            load();
+            saveProfiles();
+        }
+        deleteButton.interactable = (ProfileList.profiles.Count > 1);
+        return;
+    }
+
+    //Returns the index of the element when found, returns -1 when it did not.
+    private static int ScanProfileList(string profileName) {
+        for (int i = 0; i < ProfileList.profiles.Count; i++) {
+            if (ProfileList.profiles[i].name == profileName) {
+                return i;
             }
         }
-        deleteButton.interactable = (LoadedPlayerData.profiles.Count > 1);
-        return;
+        return -1;
     }
     #endregion
 
     #region Profile lists.
     public void saveProfiles() {
-        string path = getPath(false, true, false, null);
+        LoadedPlayerData.profileList.profileNames.Clear();
+        for (int i = 0; i < ProfileList.profiles.Count; i++) {
+            LoadedPlayerData.profileList.profileNames.Add(ProfileList.profiles[i].name);
+        }
         try {
-            StreamWriter streamWriter = new StreamWriter(path);
-            for (int i = 0; i < LoadedPlayerData.profiles.Count; i++) {
-                streamWriter.Write(LoadedPlayerData.profiles[i].name + "\r\n");
-            }
-            streamWriter.Write("Lastly selected profile name : " + lastlySelectedProfileName);
-            streamWriter.Close();
+            File.WriteAllText(getPath(false, true, false, false, false, null), CleanJson(JsonUtility.ToJson(LoadedPlayerData.profileList, true)));
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -233,32 +393,33 @@ public class savingScript : MonoBehaviour {
     }
 
     private void loadProfiles() {
-        string path = getPath(false, true, false, null);
         try {
-            if (checkIfFileExists(path) == false) {
-                return;
-            }
-            StreamReader streamReader = new StreamReader(path);
-            List<string> profileNames = new List<string>();
-            LoadedPlayerData.profiles.Clear();
-            string profileToLoad = defaultProfileName;
-            while (streamReader.EndOfStream == false) {
-                string readLine = streamReader.ReadLine();
-                string[] splitLine = readLine.Split(':');
-                if (splitLine.Length == 2) {
-                    profileToLoad = splitLine[1].Trim(' ');
-                    continue;
+            string path = getPath(false, true, false, false, false, null);
+            if (checkIfFileExists(path) == true) {
+                LoadedPlayerData.profileList = JsonUtility.FromJson<ProfileList>(File.ReadAllText(path));
+                //Remove invalid profile names.
+                List<string> temp = new List<string>();
+                foreach (string name in LoadedPlayerData.profileList.profileNames) {
+                    if (checkName(name) == true) {
+                        temp.Add(name);
+                    }
                 }
-                if (checkName(readLine) == true) {
-                    PlayerData loadedPlayerData = load(readLine, false);
-                    LoadedPlayerData.profiles.Add(loadedPlayerData);
-                    profileNames.Add(loadedPlayerData.name);
+                LoadedPlayerData.profileList.profileNames = temp;
+                if (LoadedPlayerData.profileList.profileNames.Contains(LoadedPlayerData.profileList.lastlySelectedProfileName) == false) {
+                    LoadedPlayerData.profileList.lastlySelectedProfileName = defaultProfileName;
                 }
+
+                profilesDropdown.ClearOptions();
+                profilesDropdown.AddOptions(LoadedPlayerData.profileList.profileNames);
+
+                ProfileList.profiles.Clear();
+                for (int i = 0; i < LoadedPlayerData.profileList.profileNames.Count; i++) {
+                    PlayerData loadedPlayerData = load(LoadedPlayerData.profileList.profileNames[i], false);
+                    ProfileList.profiles.Add(loadedPlayerData);
+                }
+
+                selectProfile(LoadedPlayerData.profileList.lastlySelectedProfileName);
             }
-            streamReader.Close();
-            profilesDropdown.ClearOptions();
-            profilesDropdown.AddOptions(profileNames);
-            selectProfile(profileToLoad);
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -275,7 +436,7 @@ public class savingScript : MonoBehaviour {
     private void save(string profileName) {
         disableOrEnabledButtons(false);
         try {
-            FileStream fileStream = File.Create(getPath(false, false, false, profileName));
+            FileStream fileStream = File.Create(getPath(false, false, false, false, false, profileName));
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(fileStream, LoadedPlayerData.playerData);
             fileStream.Close();
@@ -295,7 +456,7 @@ public class savingScript : MonoBehaviour {
 
     private PlayerData load(string profileName, bool _loadGraphicsSettings) {
         disableOrEnabledButtons(false);
-        string path = getPath(false, false, false, profileName);
+        string path = getPath(false, false, false, false, false, profileName);
         PlayerData playerData = null;
         try {
             if (checkIfFileExists(path) == false) {
@@ -319,54 +480,10 @@ public class savingScript : MonoBehaviour {
 
     #region Graphics settings.
     private void saveGraphicsSettings(string profileName) {
-#if ENABLE_IL2CPP
-            IL2CPPWarning("Saving");
-            return;
-#endif
         try {
-            StreamWriter streamWriter = new StreamWriter(getPath(false, false, true, profileName));
-            for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
-                if (LoadedPlayerData.playerGraphics.graphicsVariablesNames[i].Contains(';') == true) {
-                    streamWriter.Write(LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]);
-                    if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
-                        streamWriter.Write("\r\n");
-                    }
-                    continue;
-                }
-                string variableName = LoadedPlayerData.playerGraphics.graphicsVariablesNames[i];
-                streamWriter.Write(variableName + " = ");
-                object objectToWrite = "Something went wrong.";
-                TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
-                    new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
-                    new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
-                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), QualitySettings.renderPipeline),
-                };
-                bool foundValue = false;
-                foreach (TypeAndObject typeAndObject in typesAndObjects) {
-                    FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
-                    if (fieldInfo == null) {
-                        PropertyInfo propertyInfo = typeAndObject.type.GetProperty(variableName);
-                        if (propertyInfo != null) {
-                            objectToWrite = propertyInfo.GetValue(typeAndObject._object);
-                            foundValue = true;
-                            break;
-                        }
-                    } else {
-                        objectToWrite = fieldInfo.GetValue(typeAndObject._object);
-                        foundValue = true;
-                        break;
-                    }
-                }
-                if (foundValue == false) {
-                    Debug.LogWarning("\"" + variableName + "\"" + " is not a valid variable name.");
-                    continue;
-                }
-                streamWriter.Write(objectToWrite);
-                if (i != (LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length - 1)) {
-                    streamWriter.Write("\r\n");
-                }
-            }
-            streamWriter.Close();
+            File.WriteAllText(getPath(false, false, true, false, false, profileName), CleanJson(JsonConvert.SerializeObject(LoadedPlayerData.playerGraphics, Formatting.Indented)));
+            File.WriteAllText(getPath(false, false, false, true, false, profileName), CleanJson(JsonUtility.ToJson(QualitySettings.renderPipeline, true)));
+            File.WriteAllText(getPath(false, false, false, false, true, profileName), CleanJson(JsonConvert.SerializeObject(LoadedPlayerData.playerQualitySettings, Formatting.Indented)));
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -374,120 +491,53 @@ public class savingScript : MonoBehaviour {
     }
 
     public void loadGraphicsSettings(string profileName) {
-#if ENABLE_IL2CPP
-            IL2CPPWarning("Loading");
-            return;
-#endif
         try {
-            StreamReader streamReader = new StreamReader(getPath(false, false, true, profileName));
-            //UniversalRenderPipelineAsset universalRenderPipelineAsset = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
-            //StaticClass.CopyAllTo(universalRenderPipelineAssets[QualitySettings.GetQualityLevel()], universalRenderPipelineAsset);
-            while (streamReader.EndOfStream == false) {
-                string readLine = streamReader.ReadLine();
-                if (readLine.Contains(";") == true) {
-                    continue;
-                }
-                List<string> splitLine = readLine.Split('=').ToList();
-                if (splitLine.Count != 2) {
-                    Debug.LogWarning("Invalid syntax read.");
-                    continue;
-                }
-                splitLine[0] = splitLine[0].Trim(' ');
-                splitLine[1] = splitLine[1].Trim(' ');
-                if (splitLine[1] == "") {
-                    Debug.LogWarning("There is no value to set to.");
-                    continue;
-                }
-                bool hasFoundTheVariableName = false;
-                string variableName = null;
-                for (int i = 0; i < LoadedPlayerData.playerGraphics.graphicsVariablesNames.Length; i++) {
-                    if (splitLine[0] == LoadedPlayerData.playerGraphics.graphicsVariablesNames[i]) {
-                        variableName = LoadedPlayerData.playerGraphics.graphicsVariablesNames[i];
-                        hasFoundTheVariableName = true;
-                        break;
-                    }
-                }
-                if (hasFoundTheVariableName == false) {
-                    Debug.LogWarning("\"" + splitLine[0] + "\" is not a valid variable name.");
-                    continue;
-                }
-                TypeAndObject[] typesAndObjects = new TypeAndObject[3] {
-                    new TypeAndObject(typeof(PlayerGraphics), LoadedPlayerData.playerGraphics),
-                    new TypeAndObject(typeof(QualitySettings), typeof(QualitySettings)),
-                    //new TypeAndObject(typeof(UniversalRenderPipelineAsset), universalRenderPipelineAsset),
-                    new TypeAndObject(typeof(UniversalRenderPipelineAsset), QualitySettings.renderPipeline),
-                };
-                foreach (TypeAndObject typeAndObject in typesAndObjects) {
-                    FieldInfo fieldInfo = typeAndObject.type.GetField(variableName);
-                    if (fieldInfo == null) {
-                        PropertyInfo propertyInfo = typeAndObject.type.GetProperty(variableName);
-                        if (propertyInfo != null) {
-                            setValues(null, propertyInfo, splitLine[1], typeAndObject);
-                            break;
-                        }
-                    } else {
-                        setValues(fieldInfo, null, splitLine[1], typeAndObject);
-                        break;
-                    }
-                }
+            string path = getPath(false, false, true, false, false, profileName);
+            if (File.Exists(path) == true) {
+                LoadedPlayerData.playerGraphics = JsonConvert.DeserializeObject<PlayerGraphics>(File.ReadAllText(path));
             }
-            //QualitySettings.renderPipeline = universalRenderPipelineAsset;
-            streamReader.Close();
-            _settingsScript.updateGraphics(LoadedPlayerData.playerGraphics.graphics);
-            _settingsScript.updateBackgroundEnabled(LoadedPlayerData.playerGraphics.isBackgroundEnabled);
-            _settingsScript.updateBackgroundScaling(LoadedPlayerData.playerGraphics.isBackgroundScalingKeepAspectRatio);
+            path = getPath(false, false, false, true, false, profileName);
+            if (File.Exists(path) == true) {
+                JsonUtility.FromJsonOverwrite(File.ReadAllText(path), QualitySettings.renderPipeline);
+            }
+            path = getPath(false, false, false, false, true, profileName);
+            if (File.Exists(path) == true) {
+                LoadedPlayerData.playerQualitySettings = JsonConvert.DeserializeObject<PlayerQualitySettings>(File.ReadAllText(path));
+            }
         } catch (Exception exception) {
             catchException(exception);
         }
         return;
     }
-
-    private void setValues(FieldInfo fieldInfo, PropertyInfo propertyInfo, string variableInString, TypeAndObject typeAndObject) {
-        if ((fieldInfo == null && propertyInfo == null)) {
-            Debug.LogError("Both fieldInfo and propertyInfo can not be null");
-            return;
-        }
-        Type variableType;
-        if (fieldInfo != null) {
-            variableType = fieldInfo.FieldType;
-        } else {
-            variableType = propertyInfo.PropertyType;
-        }
-        object objectToWriteAs;
-        if (variableType == typeof(Vector3)) {
-            string vector3Line = variableInString.Trim('(', ')');
-            string[] splitVector3Line = vector3Line.Split(',');
-            objectToWriteAs = new Vector3(float.Parse(splitVector3Line[0]), float.Parse(splitVector3Line[1]), float.Parse(splitVector3Line[2]));
-        } else if (variableType.IsEnum == true) {
-            objectToWriteAs = Enum.Parse(variableType, variableInString);
-        } else {
-            objectToWriteAs = Convert.ChangeType(variableInString, variableType);
-        }
-        if (fieldInfo != null) {
-            fieldInfo.SetValue(typeAndObject._object, objectToWriteAs);
-        } else {
-            propertyInfo.SetValue(typeAndObject._object, objectToWriteAs);
-        }
-        return;
-    }
     #endregion
 
-    private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, string playerName) {
+    private string getPath(bool getSavesFolder, bool getProfileList, bool getGraphicsSettings, bool getURP, bool getQualitySettings, string playerName) {
 #if UNITY_EDITOR
-        string dataPath = Application.dataPath;
+        string dataPath = (Application.dataPath + "/Saves/");
 #else
-            string dataPath = Application.persistentDataPath;
+            string dataPath = (Application.persistentDataPath + "/Saves/");
 #endif
         if (getSavesFolder == true) {
-            return (dataPath + "/Saves/");
+            return dataPath;
+        } else if (getProfileList == true) {
+            return (dataPath + "Profiles.json");
+        } else if (getGraphicsSettings == true) {
+            return (dataPath + playerName + "Graphics.json");
+        } else if (getURP == true) {
+            return (dataPath + playerName + "URP.json");
+        } else if (getQualitySettings == true) {
+            return (dataPath + playerName + "QualitySettings.json");
         }
-        if (getProfileList == true) {
-            return (dataPath + "/Saves/Profiles.txt");
+        return (dataPath + playerName + ".RS");
+    }
+
+    private static string CleanJson(string json) {
+        if (json.Contains("\r\n") == false) {
+            json = json.Replace("\n", "\r\n");
         }
-        if (getGraphicsSettings == true) {
-            return (dataPath + "/Saves/" + playerName + "Graphics.txt");
-        }
-        return (dataPath + "/Saves/" + playerName + ".RS");
+        json = json.Replace(": ", " : ");
+        json = json.TrimEnd('\r', '\n');
+        return json;
     }
 
     #region Name checking.
@@ -507,7 +557,22 @@ public class savingScript : MonoBehaviour {
             newProfileExceptionText.gameObject.SetActive(true);
             return false;
         }
+        foreach (PlayerData playerData in ProfileList.profiles) {
+            if (playerData.name == inputText) {
+                newProfileExceptionText.text = "Duplicate profile name found.";
+                newProfileExceptionText.gameObject.SetActive(true);
+                return false;
+            }
+        }
+        const string bannedCharacrers = "\\\"*|<>:? ";
         for (int i = 0; i < inputText.Length; i++) {
+            if (bannedCharacrers.Contains(inputText[i]) == true) {
+                newProfileExceptionText.text = "Profile name can not contain \"" + inputText[i] + "\".";
+                newProfileExceptionText.gameObject.SetActive(true);
+                return false;
+            }
+
+            /*
             if ((inputText[i] == '\\') ||
                 (inputText[i] == '\"') ||
                 (inputText[i] == '*') ||
@@ -521,13 +586,7 @@ public class savingScript : MonoBehaviour {
                 newProfileExceptionText.gameObject.SetActive(true);
                 return false;
             }
-        }
-        foreach (PlayerData playerData in LoadedPlayerData.profiles) {
-            if (playerData.name == inputText) {
-                newProfileExceptionText.text = "Duplicate profile name found.";
-                newProfileExceptionText.gameObject.SetActive(true);
-                return false;
-            }
+            */
         }
         newProfileExceptionText.gameObject.SetActive(false);
         return true;
@@ -552,26 +611,7 @@ public class savingScript : MonoBehaviour {
         return;
     }
 
-    #region IL2CPP warning.
-#if ENABLE_IL2CPP
-        private void IL2CPPWarning(string loadingOrSaving) {
-            string text = (loadingOrSaving + " graphics settings file is not supported in IL2CPP build.");
-            Color32 warningColor = new Color32(255, 200, 0, 255);
-            if (savingText != null) {
-                savingText.color = warningColor;
-                savingText.text = text;
-                savingText.gameObject.SetActive(true);
-            }
-            if (noticeText != null) {
-                noticeText.color = warningColor;
-                noticeText.text = text;
-                noticeText.gameObject.SetActive(true);
-            }
-            return;
-        }
-#endif
-    #endregion
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void catchException(Exception exception) {
         savingText.gameObject.SetActive(true);
         savingText.color = Color.red;

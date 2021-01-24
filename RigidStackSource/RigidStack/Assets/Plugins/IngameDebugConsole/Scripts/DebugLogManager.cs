@@ -81,9 +81,11 @@ namespace IngameDebugConsole {
         [HideInInspector]
         private bool receiveLogcatLogsInAndroid = false;
 
+#pragma warning disable 169
         [SerializeField]
         [HideInInspector]
         private string logcatArguments;
+#pragma warning enable 169
 
         [SerializeField]
         private bool avoidScreenCutout = true;

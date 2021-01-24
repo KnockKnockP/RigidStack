@@ -21,14 +21,14 @@ public class heightScript : NetworkBehaviour {
     */
     [NonSerialized, SyncVar(hook = nameof(syncScore))] public int currentScore;
     [NonSerialized] public int currentGameMaxHeight;
-    [SerializeField] private objectScript _objectScript;
+    [SerializeField] private objectScript _objectScript = null;
 
     private GameObject previousFrameGameObject;
     [NonSerialized] public List<Transform> placedObjectsTransforms = new List<Transform>();
     [NonSerialized] public List<Rigidbody2D> placedObjectsRigidbody2D = new List<Rigidbody2D>();
     [NonSerialized] public List<GameObject> placedObjects = new List<GameObject>();
 
-    [Header("Variables for showing the height."), SerializeField] private objectiveScript _objectiveScript;
+    [Header("Variables for showing the height."), SerializeField] private objectiveScript _objectiveScript = null;
     [SerializeField] private Text heightText = null;
 
     [Header("A variable for manual height checking."), SerializeField] private Button checkHeightButton = null;
