@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
@@ -330,8 +331,10 @@ public class savingScript : MonoBehaviour {
 
     public void deleteProfile() {
         try {
-            File.Delete(getPath(false, false, false, false, false, ProfileList.profiles[profilesDropdown.value].name));
-            File.Delete(getPath(false, false, true, false, false, ProfileList.profiles[profilesDropdown.value].name));
+            string name = ProfileList.profiles[profilesDropdown.value].name;
+            File.Delete(getPath(false, false, true, false, false, name));
+            File.Delete(getPath(false, false, false, true, false, name));
+            File.Delete(getPath(false, false, false, false, true, name));
         } catch (Exception exception) {
             catchException(exception);
         }
@@ -400,7 +403,7 @@ public class savingScript : MonoBehaviour {
                 //Remove invalid profile names.
                 List<string> temp = new List<string>();
                 foreach (string name in LoadedPlayerData.profileList.profileNames) {
-                    if (checkName(name) == true) {
+                    if (checkName(name, false) == true) {
                         temp.Add(name);
                     }
                 }
@@ -417,8 +420,7 @@ public class savingScript : MonoBehaviour {
                     PlayerData loadedPlayerData = load(LoadedPlayerData.profileList.profileNames[i], false);
                     ProfileList.profiles.Add(loadedPlayerData);
                 }
-
-                selectProfile(LoadedPlayerData.profileList.lastlySelectedProfileName);
+                //selectProfile(LoadedPlayerData.profileList.lastlySelectedProfileName);
             }
         } catch (Exception exception) {
             catchException(exception);
@@ -507,6 +509,7 @@ public class savingScript : MonoBehaviour {
         } catch (Exception exception) {
             catchException(exception);
         }
+        saveGraphicsSettings(profileName);
         return;
     }
     #endregion
@@ -547,21 +550,23 @@ public class savingScript : MonoBehaviour {
     }
 
     private bool checkName(InputField inputField) {
-        return checkName(inputField.text);
+        return checkName(inputField.text, true);
     }
 
-    private bool checkName(string inputText) {
+    private bool checkName(string inputText, bool checkDuplicate) {
         newProfileExceptionText.color = Color.red;
         if (inputText.Length == 0) {
             newProfileExceptionText.text = "Profile name can not be empty.";
             newProfileExceptionText.gameObject.SetActive(true);
             return false;
         }
-        foreach (PlayerData playerData in ProfileList.profiles) {
-            if (playerData.name == inputText) {
-                newProfileExceptionText.text = "Duplicate profile name found.";
-                newProfileExceptionText.gameObject.SetActive(true);
-                return false;
+        if (checkDuplicate == true) {
+            foreach (PlayerData playerData in ProfileList.profiles) {
+                if (playerData.name == inputText) {
+                    newProfileExceptionText.text = "Duplicate profile name found.";
+                    newProfileExceptionText.gameObject.SetActive(true);
+                    return false;
+                }
             }
         }
         const string bannedCharacrers = "\\\"*|<>:? ";
