@@ -501,7 +501,6 @@ public class savingScript : MonoBehaviour {
                 UniversalRenderPipelineAsset universalRenderPipelineAsset = (UniversalRenderPipelineAsset)(QualitySettings.renderPipeline);
                 JsonUtility.FromJsonOverwrite(File.ReadAllText(path), universalRenderPipelineAsset);
                 QualitySettings.renderPipeline = universalRenderPipelineAsset;
-                Debug.LogWarning(universalRenderPipelineAsset.renderScale);
             }
             path = getPath(false, false, false, false, true, profileName);
             if (File.Exists(path) == true) {
