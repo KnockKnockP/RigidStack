@@ -30,7 +30,6 @@ public class settingsScript : MonoBehaviour {
 
 
     [Header("Graphics settings."), SerializeField] private Dropdown graphicsDropdown = null;
-    [SerializeField] private savingScript _savingScript = null;
 
     [SerializeField] private Dropdown verticalSyncCountDropdown = null;
 
@@ -89,7 +88,7 @@ public class settingsScript : MonoBehaviour {
         if (graphicsDropdown != null) {
             graphicsDropdown.value = graphicsLevel;
         }
-        _savingScript.save();
+        //_savingScript.save();
         return;
     }
     #endregion

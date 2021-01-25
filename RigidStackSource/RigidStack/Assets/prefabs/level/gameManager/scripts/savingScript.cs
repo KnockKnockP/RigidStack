@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
@@ -256,7 +255,6 @@ public static class LoadedPlayerData {
 public class savingScript : MonoBehaviour {
     [Header("Common."), SerializeField] private UniversalRenderPipelineAsset[] _universalRenderPipelineAssets = null;
     public static UniversalRenderPipelineAsset[] universalRenderPipelineAssets;
-    [SerializeField] private settingsScript _settingsScript = null;
 
     [Header("Main menu."), SerializeField] private Text noticeText = null;
 
@@ -500,7 +498,10 @@ public class savingScript : MonoBehaviour {
             }
             path = getPath(false, false, false, true, false, profileName);
             if (File.Exists(path) == true) {
-                JsonUtility.FromJsonOverwrite(File.ReadAllText(path), QualitySettings.renderPipeline);
+                UniversalRenderPipelineAsset universalRenderPipelineAsset = (UniversalRenderPipelineAsset)(QualitySettings.renderPipeline);
+                JsonUtility.FromJsonOverwrite(File.ReadAllText(path), universalRenderPipelineAsset);
+                QualitySettings.renderPipeline = universalRenderPipelineAsset;
+                Debug.LogWarning(universalRenderPipelineAsset.renderScale);
             }
             path = getPath(false, false, false, false, true, profileName);
             if (File.Exists(path) == true) {
