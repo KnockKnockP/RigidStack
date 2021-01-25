@@ -20,7 +20,7 @@ public class DiscoveryResponse : NetworkMessage {
 }
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
-    [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript;
+    [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript = null;
     //[SerializeField] private KcpTransport kcpTransport = null;
     [SerializeField, Obsolete] private TelepathyTransport telepathyTransport = null;
 

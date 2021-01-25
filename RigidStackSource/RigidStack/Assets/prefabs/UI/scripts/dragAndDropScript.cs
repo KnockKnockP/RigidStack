@@ -7,9 +7,9 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     [Header("Variables for dragging and dropping the object.")]
     private bool isDragging, isClientThatPlacedTheObject;
     private static short spriteOrder = 1;
-    [SerializeField] private dragAndDropImageScript _dragAndDropImageScript;
-    [SerializeField] private heightScript _heightScript;
-    [SerializeField] private endMenuManager _endMenuManager;
+    [SerializeField] private dragAndDropImageScript _dragAndDropImageScript = null;
+    [SerializeField] private heightScript _heightScript = null;
+    [SerializeField] private endMenuManager _endMenuManager = null;
     public static dragAndDropScript _dragAndDropScript;
     private uint placedGameObjectNetId;
     [SerializeField] private GameObject dragAndDropImageGameobject = null;

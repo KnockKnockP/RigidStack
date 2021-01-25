@@ -85,7 +85,7 @@ namespace IngameDebugConsole {
         [SerializeField]
         [HideInInspector]
         private string logcatArguments;
-#pragma warning enable 169
+#pragma warning restore 169
 
         [SerializeField]
         private bool avoidScreenCutout = true;

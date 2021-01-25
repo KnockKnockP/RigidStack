@@ -4592,6 +4592,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a1f596667a23a4c4f9045bdfffae65c9, type: 2}
   - {fileID: 11400000, guid: a9c0e705dac9876489e7bd32a2b6f915, type: 2}
   - {fileID: 11400000, guid: 89b97ddb8b36d7a428680b3b46b6530d, type: 2}
+  scriptableRendererData: {fileID: 11400000, guid: 2dd968e5ed987e643a921a609a34dc4c,
+    type: 2}
   _settingsScript: {fileID: 1067815829}
   noticeText: {fileID: 304239060}
   savingText: {fileID: 1119445102}

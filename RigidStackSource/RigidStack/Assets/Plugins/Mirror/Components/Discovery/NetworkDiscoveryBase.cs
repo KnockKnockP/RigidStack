@@ -35,7 +35,7 @@ namespace Mirror.Discovery {
 
         [SerializeField]
         [Tooltip("Repeat discovery?")]
-        bool repeatDiscovery;
+        bool repeatDiscovery = false;
 
         [SerializeField]
         [Tooltip("Time in seconds between multi-cast messages; it is only activated when repeat discovery is ticked on.")]

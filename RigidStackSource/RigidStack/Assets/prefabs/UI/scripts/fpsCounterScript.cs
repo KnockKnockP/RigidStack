@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class fpsCounterScript : MonoBehaviour {
     private int oldValue;
-    [SerializeField] private Text fpsCounterText;
+    [SerializeField] private Text fpsCounterText = null;
 
     private void OnValidate() {
 #if UNITY_EDITOR

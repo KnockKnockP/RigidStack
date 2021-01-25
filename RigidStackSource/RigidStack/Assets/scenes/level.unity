@@ -12243,6 +12243,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _universalRenderPipelineAssets: []
+  scriptableRendererData: {fileID: 11400000, guid: 2dd968e5ed987e643a921a609a34dc4c,
+    type: 2}
   _settingsScript: {fileID: 7619175099963299240}
   noticeText: {fileID: 0}
   savingText: {fileID: 0}

@@ -61,8 +61,10 @@ namespace Mirror {
             MaxTimerTimeout = 12000
         };
 
+#pragma warning disable IDE0051, 169
         // always use first channel
         readonly int channelId;
+#pragma warning restore IDE0051, 169
         byte error;
 
         int clientId = -1;
