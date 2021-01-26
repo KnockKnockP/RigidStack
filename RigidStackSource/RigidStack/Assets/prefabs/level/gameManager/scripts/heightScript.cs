@@ -125,12 +125,6 @@ public class heightScript : NetworkBehaviour {
         return;
     }
 
-    [ClientRpc]
-    private void clientRPCDisableObjectEditingPanel() {
-        dragAndDropScript.staticDisableObjectEditingPanel();
-        return;
-    }
-
     private void syncScore(int oldScore, int newScore) {
         updateHeightText();
         return;
