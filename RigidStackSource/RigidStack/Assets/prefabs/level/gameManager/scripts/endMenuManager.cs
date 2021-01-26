@@ -104,11 +104,7 @@ public class endMenuManager : NetworkBehaviour {
 
     #region Restarting the level.
     public void restart() {
-        if (isClientOnly == true) {
-            if (isGameEnded == true) {
-                commandRestart();
-            }
-        } else {
+        if (isServer == true) {
             commandRestart();
         }
         return;

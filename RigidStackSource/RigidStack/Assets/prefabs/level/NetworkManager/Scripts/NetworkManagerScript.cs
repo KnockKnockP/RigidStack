@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class NetworkManagerScript : MonoBehaviour {
     private static bool hasAddedAnEvent = false;
-    public static bool isMultiplayerGame = false;
+    public static bool isSingleplayerGame = false, isMultiplayerGame = false;
 
     //A variable for finding the available port.
     private static readonly IPEndPoint defaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, 0);

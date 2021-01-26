@@ -334,6 +334,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [ClientRpc]
     private void clientRPCChangeScene() {
+        NetworkManagerScript.isSingleplayerGame = false;
         NetworkManagerScript.isMultiplayerGame = true;
         return;
     }

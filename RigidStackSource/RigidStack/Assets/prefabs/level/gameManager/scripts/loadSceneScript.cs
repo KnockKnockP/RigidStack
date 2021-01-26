@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public static class SceneNames {
-    //Variables for managing scenes.
     public const string MainMenu = "mainMenu",
                         Level = "level";
 }
@@ -18,15 +17,17 @@ public class loadSceneScript : MonoBehaviour {
         if (_heightScript != null) {
             _heightScript.currentGameMaxHeight = 0;
         }
-        if (NetworkManagerScript.isMultiplayerGame == true) {
+        if (NetworkManagerScript.isSingleplayerGame == true) {
+            NetworkManager.singleton.StopHost();
+        } else if (NetworkManagerScript.isMultiplayerGame == true) {
             NetworkManager.singleton.ServerChangeScene(sceneName);
-        } else {
-            SceneManager.LoadScene(sceneName);
         }
+        SceneManager.LoadScene(sceneName);
         return;
     }
 
     public void loadLevel() {
+        NetworkManagerScript.isSingleplayerGame = true;
         NetworkManagerScript.isMultiplayerGame = false;
         loadScene(SceneNames.Level);
         return;
