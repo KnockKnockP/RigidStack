@@ -118,7 +118,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     #endregion
 
     public virtual void OnPointerUp(PointerEventData pointerEventData) {
-        if (isDragging == true) {
+        if ((isDragging == true) && (placedGameObject != null)) {
             enableObjectEditingPanel();
             isDragging = false;
         }
