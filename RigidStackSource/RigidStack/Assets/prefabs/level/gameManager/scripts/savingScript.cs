@@ -252,7 +252,9 @@ public class savingScript : MonoBehaviour {
     [Header("Common."), SerializeField] private UniversalRenderPipelineAsset[] _universalRenderPipelineAssets = null;
     public static UniversalRenderPipelineAsset[] universalRenderPipelineAssets;
 
+#pragma warning disable 414
     [Header("Main menu."), SerializeField] private Text noticeText = null;
+#pragma warning restore 414
 
     [Header("Settings menu."), SerializeField] private Text savingText = null;
     [SerializeField] private Button saveButton = null, loadButton = null;
@@ -274,9 +276,6 @@ public class savingScript : MonoBehaviour {
     };
 
     private void Start() {
-        //Doing this useless operation to remove the unused variable warning.
-        _ = noticeText;
-
         if ((_universalRenderPipelineAssets != null) && (universalRenderPipelineAssets == null)) {
             universalRenderPipelineAssets = _universalRenderPipelineAssets;
         }
