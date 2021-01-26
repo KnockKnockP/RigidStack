@@ -50,15 +50,15 @@ public class endMenuManager : NetworkBehaviour {
 
     [Server]
     public void endGame() {
-        clientRPCEndGame();
+        clientRPCEndGame(_heightScript.currentGameMaxHeight);
         return;
     }
 
     [ClientRpc]
-    private void clientRPCEndGame() {
+    private void clientRPCEndGame(int currentGameMaxHeight) {
         isGameEnded = true;
         endMenuScoreText.text = ("Game over!\r\n" +
-                                 "Score : " + _heightScript.currentGameMaxHeight + " / " + LoadedPlayerData.playerData.maxHeight + ".");
+                                 "Score : " + currentGameMaxHeight + " / " + LoadedPlayerData.playerData.maxHeight + ".");
         enableOrDisableEndMenu(true);
         dock.SetActive(false);
         if ((dragAndDropScript._dragAndDropScript != null) && (dragAndDropScript._dragAndDropScript.placedGameObject != null)) {
