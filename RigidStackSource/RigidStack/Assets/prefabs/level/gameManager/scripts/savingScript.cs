@@ -1,7 +1,4 @@
-﻿//Warning : Big spaghetti ahead.
-//I might just yeet everything out and start over.
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +8,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEngine.Scripting;
 using UnityEngine.UI;
 
 [Serializable]
