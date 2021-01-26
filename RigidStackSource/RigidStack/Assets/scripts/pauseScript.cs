@@ -19,6 +19,7 @@ public class pauseScript : NetworkBehaviour {
     }
 
     public void toMainMenu() {
+        FindObjectOfType<savingScript>().save();
         if (isServer == true) {
             clientRPCStopConnection(true, true, SceneNames.MainMenu, "Server stopped the multiplayer lobby.");
         } else {
