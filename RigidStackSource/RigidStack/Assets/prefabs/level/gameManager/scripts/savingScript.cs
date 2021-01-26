@@ -37,13 +37,8 @@ public class PlayerGraphics {
     [JsonProperty] public int graphics = QualitySettings.GetQualityLevel(), verticalSyncCount = QualitySettings.vSyncCount;
     [JsonProperty]
     public int targetFramesPerSecond {
-        get {
-            return Application.targetFrameRate;
-        }
-        set {
-            Application.targetFrameRate = value;
-            return;
-        }
+        get => Application.targetFrameRate;
+        set => Application.targetFrameRate = value;
     }
 }
 #pragma warning restore IDE0044, IDE0052, 414
@@ -54,189 +49,104 @@ public class PlayerQualitySettings {
     [JsonProperty] private string _comment = "Documentations : https://docs.unity3d.com/ScriptReference/QualitySettings.html";
     [JsonProperty]
     public int masterTextureLimit {
-        get {
-            return QualitySettings.masterTextureLimit;
-        }
-        set {
-            QualitySettings.masterTextureLimit = value;
-            return;
-        }
+        get => QualitySettings.masterTextureLimit;
+        set => QualitySettings.masterTextureLimit = value;
     }
 
     [JsonProperty]
     public AnisotropicFiltering anisotropicFiltering {
-        get {
-            return QualitySettings.anisotropicFiltering;
-        }
-        set {
-            QualitySettings.anisotropicFiltering = value;
-            return;
-        }
+        get => QualitySettings.anisotropicFiltering;
+        set => QualitySettings.anisotropicFiltering = value;
     }
 
     [JsonProperty]
     public bool realtimeReflectionProbes {
-        get {
-            return QualitySettings.realtimeReflectionProbes;
-        }
-        set {
-            QualitySettings.realtimeReflectionProbes = value;
-            return;
-        }
+        get => QualitySettings.realtimeReflectionProbes;
+        set => QualitySettings.realtimeReflectionProbes = value;
     }
 
     [JsonProperty]
     public bool billboardsFaceCameraPosition {
-        get {
-            return QualitySettings.billboardsFaceCameraPosition;
-        }
-        set {
-            QualitySettings.billboardsFaceCameraPosition = value;
-            return;
-        }
+        get => QualitySettings.billboardsFaceCameraPosition;
+        set => QualitySettings.billboardsFaceCameraPosition = value;
     }
 
     [JsonProperty]
     public float resolutionScalingFixedDPIFactor {
-        get {
-            return QualitySettings.resolutionScalingFixedDPIFactor;
-        }
-        set {
-            QualitySettings.resolutionScalingFixedDPIFactor = value;
-            return;
-        }
+        get => QualitySettings.resolutionScalingFixedDPIFactor;
+        set => QualitySettings.resolutionScalingFixedDPIFactor = value;
     }
 
     [JsonProperty]
     public bool streamingMipmapsActive {
-        get {
-            return QualitySettings.streamingMipmapsActive;
-        }
-        set {
-            QualitySettings.streamingMipmapsActive = value;
-            return;
-        }
+        get => QualitySettings.streamingMipmapsActive;
+        set => QualitySettings.streamingMipmapsActive = value;
     }
 
     [JsonProperty]
     public bool streamingMipmapsAddAllCameras {
-        get {
-            return QualitySettings.streamingMipmapsAddAllCameras;
-        }
-        set {
-            QualitySettings.streamingMipmapsAddAllCameras = value;
-            return;
-        }
+        get => QualitySettings.streamingMipmapsAddAllCameras;
+        set => QualitySettings.streamingMipmapsAddAllCameras = value;
     }
 
     [JsonProperty]
     public float streamingMipmapsMemoryBudget {
-        get {
-            return QualitySettings.streamingMipmapsMemoryBudget;
-        }
-        set {
-            QualitySettings.streamingMipmapsMemoryBudget = value;
-            return;
-        }
+        get => QualitySettings.streamingMipmapsMemoryBudget;
+        set => QualitySettings.streamingMipmapsMemoryBudget = value;
     }
 
     [JsonProperty]
     public int streamingMipmapsMaxLevelReduction {
-        get {
-            return QualitySettings.streamingMipmapsMaxLevelReduction;
-        }
-        set {
-            QualitySettings.streamingMipmapsMaxLevelReduction = value;
-            return;
-        }
+        get => QualitySettings.streamingMipmapsMaxLevelReduction;
+        set => QualitySettings.streamingMipmapsMaxLevelReduction = value;
     }
 
     [JsonProperty]
     public int streamingMipmapsMaxFileIORequests {
-        get {
-            return QualitySettings.streamingMipmapsMaxFileIORequests;
-        }
-        set {
-            QualitySettings.streamingMipmapsMaxFileIORequests = value;
-            return;
-        }
+        get => QualitySettings.streamingMipmapsMaxFileIORequests;
+        set => QualitySettings.streamingMipmapsMaxFileIORequests = value;
     }
 
     [JsonProperty]
     public SkinWeights skinWeights {
-        get {
-            return QualitySettings.skinWeights;
-        }
-        set {
-            QualitySettings.skinWeights = value;
-            return;
-        }
+        get => QualitySettings.skinWeights;
+        set => QualitySettings.skinWeights = value;
     }
 
     [JsonProperty]
     public float lodBias {
-        get {
-            return QualitySettings.lodBias;
-        }
-        set {
-            QualitySettings.lodBias = value;
-            return;
-        }
+        get => QualitySettings.lodBias;
+        set => QualitySettings.lodBias = value;
     }
 
     [JsonProperty]
     public int maximumLODLevel {
-        get {
-            return QualitySettings.maximumLODLevel;
-        }
-        set {
-            QualitySettings.maximumLODLevel = value;
-            return;
-        }
+        get => QualitySettings.maximumLODLevel;
+        set => QualitySettings.maximumLODLevel = value;
     }
 
     [JsonProperty]
     public int particleRaycastBudget {
-        get {
-            return QualitySettings.particleRaycastBudget;
-        }
-        set {
-            QualitySettings.particleRaycastBudget = value;
-            return;
-        }
+        get => QualitySettings.particleRaycastBudget;
+        set => QualitySettings.particleRaycastBudget = value;
     }
 
     [JsonProperty]
     public int asyncUploadTimeSlice {
-        get {
-            return QualitySettings.asyncUploadTimeSlice;
-        }
-        set {
-            QualitySettings.asyncUploadTimeSlice = value;
-            return;
-        }
+        get => QualitySettings.asyncUploadTimeSlice;
+        set => QualitySettings.asyncUploadTimeSlice = value;
     }
 
     [JsonProperty]
     public int asyncUploadBufferSize {
-        get {
-            return QualitySettings.asyncUploadBufferSize;
-        }
-        set {
-            QualitySettings.asyncUploadBufferSize = value;
-            return;
-        }
+        get => QualitySettings.asyncUploadBufferSize;
+        set => QualitySettings.asyncUploadBufferSize = value;
     }
 
     [JsonProperty]
     public bool asyncUploadPersistentBuffer {
-        get {
-            return QualitySettings.asyncUploadPersistentBuffer;
-        }
-        set {
-            QualitySettings.asyncUploadPersistentBuffer = value;
-            return;
-        }
+        get => QualitySettings.asyncUploadPersistentBuffer;
+        set => QualitySettings.asyncUploadPersistentBuffer = value;
     }
 }
 #pragma warning restore IDE0044, IDE0051, IDE0052, 414
