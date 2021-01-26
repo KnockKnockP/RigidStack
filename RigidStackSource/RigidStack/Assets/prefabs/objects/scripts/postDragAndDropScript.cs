@@ -22,13 +22,13 @@ public class postDragAndDropScript : NetworkBehaviour {
     }
 
     private void OnMouseDrag() {
-        commandDragObject(GetMouseToWorldPoint());
+        commandDragObject(GetMouseToWorldPoint(), offset);
         return;
     }
 
     [Command(ignoreAuthority = true)]
-    private void commandDragObject(Vector3 mouseinput) {
-        Vector3 newPosition = new Vector3((mouseinput.x - offset.x), (mouseinput.y - offset.y), 0f);
+    private void commandDragObject(Vector3 mouseinput, Vector3 _offset) {
+        Vector3 newPosition = new Vector3((mouseinput.x - _offset.x), (mouseinput.y - _offset.y), 0f);
         thisTransform.position = newPosition;
         return;
     }
