@@ -86,6 +86,7 @@ public class objectScript : NetworkBehaviour {
                 objectInformation selectedObjectsObjectInformation = objects[random].GetComponent<objectInformation>();
                 dragAndDropImageScripts[i].objectCount = (short)(UnityEngine.Random.Range(selectedObjectsObjectInformation.minimumAmount, (selectedObjectsObjectInformation.maximumAmount + 1)));
                 dragAndDropScripts[i].objectToPlace = objects[random];
+                dragAndDropImages[i].rectTransform.sizeDelta = objects[random].GetComponent<objectInformation>().rectSize;
                 updateDock(i, random, dragAndDropImageScripts[i].objectCount);
             }
         }
@@ -105,6 +106,7 @@ public class objectScript : NetworkBehaviour {
         dragAndDropScripts[dragAndDropObjectIndex].objectToPlace = objects[objectIndex];
         dragAndDropImageScripts[dragAndDropObjectIndex].objectCount = objectCount;
         dragAndDropImages[dragAndDropObjectIndex].sprite = objects[objectIndex].GetComponent<SpriteRenderer>().sprite;
+        dragAndDropImages[dragAndDropObjectIndex].rectTransform.sizeDelta = objects[objectIndex].GetComponent<objectInformation>().rectSize;
         return;
     }
 }

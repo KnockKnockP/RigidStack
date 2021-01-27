@@ -168,6 +168,8 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 3
+  _collider2D: {fileID: 4335955716186077527}
+  rectSize: {x: 50, y: 100}
 --- !u!114 &-7396801565230928637
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -301,6 +301,8 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 3
   maximumAmount: 6
+  _collider2D: {fileID: 8132156020442810189}
+  rectSize: {x: 100, y: 60}
 --- !u!114 &6736601305251868361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,6 +315,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06b41cf9c2f380048a2573244fb9a7d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 1026276542148935782}
+  videoPlayerSpriteRenderer: {fileID: 4041980402215086611}
 --- !u!114 &-105928536215197166
 MonoBehaviour:
   m_ObjectHideFlags: 0

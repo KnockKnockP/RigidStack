@@ -8,6 +8,8 @@ public class objectInformation : NetworkBehaviour {
     //A variable to check if the object has been placed down.
     [SerializeField] private Collider2D _collider2D = null;
 
+    public Vector2 rectSize;
+
     private void OnValidate() {
 #if UNITY_EDITOR
         if (_collider2D == null) {
