@@ -129,7 +129,6 @@ GameObject:
   - component: {fileID: 8132156020442810189}
   - component: {fileID: 3143912039278302248}
   - component: {fileID: 2199066637753886674}
-  - component: {fileID: -6643549051880076239}
   - component: {fileID: 6736601305251868361}
   - component: {fileID: -105928536215197166}
   - component: {fileID: 3444377152268219759}
@@ -285,24 +284,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
---- !u!114 &-6643549051880076239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2387137070807326072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0973fa1c82a61544281ba5d6961a7b35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  minimumAmount: 3
-  maximumAmount: 6
-  _collider2D: {fileID: 8132156020442810189}
-  rectSize: {x: 100, y: 60}
 --- !u!114 &6736601305251868361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,6 +296,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06b41cf9c2f380048a2573244fb9a7d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  minimumAmount: 3
+  maximumAmount: 6
+  spriteRenderer: {fileID: 4066143604225231544}
+  _collider2D: {fileID: 8132156020442810189}
+  _rigidBody2D: {fileID: 3143912039278302248}
+  rectSize: {x: 100, y: 60}
   videoPlayer: {fileID: 1026276542148935782}
   videoPlayerSpriteRenderer: {fileID: 4041980402215086611}
 --- !u!114 &-105928536215197166

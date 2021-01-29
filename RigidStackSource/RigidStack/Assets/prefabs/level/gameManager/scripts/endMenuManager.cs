@@ -22,7 +22,7 @@ public class endMenuManager : NetworkBehaviour {
     public static bool isGameEnded;
 
     private bool isObjectUndimmed;
-    [NonSerialized] public List<SpriteRenderer> allPlacedObjectsSpriteRenderers = new List<SpriteRenderer>();
+    [NonSerialized] public List<objectInformation> objectInformations = new List<objectInformation>();
 
     private void Update() {
         if (shouldMoveTheCamera == true) {
@@ -91,8 +91,11 @@ public class endMenuManager : NetworkBehaviour {
 
     private void undimObjects() {
         isObjectUndimmed = true;
-        foreach (SpriteRenderer spriteRenderer in allPlacedObjectsSpriteRenderers) {
-            spriteRenderer.color = new Color32(255, 255, 255, 255);
+        foreach (objectInformation _objectInformation in objectInformations) {
+            if (_objectInformation.unDimDelegate == null) {
+                _objectInformation.unDimDelegate = _objectInformation.UnDim;
+            }
+            _objectInformation.unDimDelegate();
         }
         return;
     }

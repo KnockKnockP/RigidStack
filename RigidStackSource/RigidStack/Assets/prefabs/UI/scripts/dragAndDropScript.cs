@@ -157,7 +157,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         }
         _heightScript.placedObjects.Add(_gameObject);
         _heightScript.placedObjectsTransforms.Add(_gameObject.transform);
-        _endMenuManager.allPlacedObjectsSpriteRenderers.Add(_gameObject.GetComponent<SpriteRenderer>());
+        _endMenuManager.objectInformations.Add(_gameObject.GetComponent<objectInformation>());
         _heightScript.placedObjectsRigidbody2D.Add(rigidbody2D);
 
         _gameObject.GetComponent<PolygonCollider2D>().isTrigger = false;
