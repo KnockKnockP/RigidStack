@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 3143912039278302248}
   - component: {fileID: 2199066637753886674}
   - component: {fileID: -6643549051880076239}
+  - component: {fileID: -1195357262226086587}
+  - component: {fileID: 564172717796652925}
   m_Layer: 0
   m_Name: templateObject
   m_TagString: object
@@ -96,7 +98,7 @@ PolygonCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -148,8 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3252ed5ef74f0e747ab19a44df8b3cf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sharedMonobehaviour: {fileID: 0}
-  placedGameObject: {fileID: 0}
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!114 &-6643549051880076239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +164,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0973fa1c82a61544281ba5d6961a7b35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   minimumAmount: 0
   maximumAmount: 0
-  _postDragAndDropScript: {fileID: 0}
+  spriteRenderer: {fileID: 4066143604225231544}
+  _collider2D: {fileID: 6815755850084248506}
+  _rigidBody2D: {fileID: 3143912039278302248}
+  rectSize: {x: 0, y: 0}
+--- !u!114 &-1195357262226086587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387137070807326072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.01
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
+--- !u!114 &564172717796652925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387137070807326072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -6643549051880076239}
   - component: {fileID: 5989630698459639663}
   - component: {fileID: -1160949495254704852}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: printer
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -255,7 +255,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 3
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: 159758945438491691}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 100, y: 93}
 --- !u!114 &5989630698459639663
 MonoBehaviour:

@@ -3207,6 +3207,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6904283737170093565, guid: 05d9ba78d93eb5c4fae902236287f36f,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6904283737170093565, guid: 05d9ba78d93eb5c4fae902236287f36f,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[13]
+      value: 
+      objectReference: {fileID: 2387137070807326072, guid: 7e70df98e4dc02a4eb3700ee4b07b519,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 05d9ba78d93eb5c4fae902236287f36f, type: 3}
 --- !u!1 &778750990
@@ -4592,9 +4603,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a1f596667a23a4c4f9045bdfffae65c9, type: 2}
   - {fileID: 11400000, guid: a9c0e705dac9876489e7bd32a2b6f915, type: 2}
   - {fileID: 11400000, guid: 89b97ddb8b36d7a428680b3b46b6530d, type: 2}
-  scriptableRendererData: {fileID: 11400000, guid: 2dd968e5ed987e643a921a609a34dc4c,
-    type: 2}
-  _settingsScript: {fileID: 1067815829}
   noticeText: {fileID: 304239060}
   savingText: {fileID: 1119445102}
   saveButton: {fileID: 4638720359327928317}
@@ -4650,7 +4658,6 @@ MonoBehaviour:
   difficultyDropdown: {fileID: 453735320}
   manualCheckingText: {fileID: 486069490}
   graphicsDropdown: {fileID: 44582256}
-  _savingScript: {fileID: 1067815826}
   verticalSyncCountDropdown: {fileID: 278909321}
   backgroundEnabledText: {fileID: 1250707625}
   backgroundScalingText: {fileID: 176469607}

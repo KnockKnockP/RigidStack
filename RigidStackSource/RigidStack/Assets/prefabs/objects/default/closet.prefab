@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8745007486844380258}
   - component: {fileID: -7396801565230928637}
   - component: {fileID: 3741325784362648362}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: closet
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -168,7 +168,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 3
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: 4335955716186077527}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 50, y: 100}
 --- !u!114 &-7396801565230928637
 MonoBehaviour:

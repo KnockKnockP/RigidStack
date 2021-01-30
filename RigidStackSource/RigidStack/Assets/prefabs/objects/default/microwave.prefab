@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 9063355184277090828}
   - component: {fileID: 8152781215464870902}
   - component: {fileID: -7733117015297234423}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: microwave
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -168,7 +168,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 5
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: 4156847507200861351}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 100, y: 50}
 --- !u!114 &8152781215464870902
 MonoBehaviour:

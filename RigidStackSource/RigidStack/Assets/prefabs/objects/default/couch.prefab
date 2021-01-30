@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -8915203366108252567}
   - component: {fileID: -8948107071585957936}
   - component: {fileID: 7878696833911954665}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: couch
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -176,7 +176,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 2
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: -9129515146210550777}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 100, y: 55}
 --- !u!114 &-8948107071585957936
 MonoBehaviour:

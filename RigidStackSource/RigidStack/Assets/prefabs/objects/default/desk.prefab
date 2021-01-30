@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -6643549051880076239}
   - component: {fileID: -2223577438166724031}
   - component: {fileID: 4821485516540381973}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: desk
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -172,7 +172,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 2
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: 9037739961868858462}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 100, y: 35}
 --- !u!114 &-2223577438166724031
 MonoBehaviour:

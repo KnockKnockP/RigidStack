@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -6643549051880076239}
   - component: {fileID: -3293413244744437052}
   - component: {fileID: -7799422819129120545}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: refrigerator
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -168,7 +168,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 2
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: -4488514248446877321}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 56, y: 100}
 --- !u!114 &-3293413244744437052
 MonoBehaviour:

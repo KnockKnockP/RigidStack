@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -2815789251952858947}
   - component: {fileID: 7459662732924932771}
   - component: {fileID: -3097038562964849961}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: door
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -168,7 +168,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 3
+  spriteRenderer: {fileID: 870555258722015462}
   _collider2D: {fileID: -1253391948209443662}
+  _rigidBody2D: {fileID: 8503802617942512685}
   rectSize: {x: 50, y: 100}
 --- !u!114 &7459662732924932771
 MonoBehaviour:

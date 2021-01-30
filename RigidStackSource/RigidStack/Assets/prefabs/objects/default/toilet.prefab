@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -6643549051880076239}
   - component: {fileID: 2200924946695531081}
   - component: {fileID: -1369750251976774344}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: toilet
   m_TagString: object
   m_Icon: {fileID: 0}
@@ -186,7 +186,9 @@ MonoBehaviour:
   syncInterval: 0.1
   minimumAmount: 1
   maximumAmount: 6
+  spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: 2376696864713335469}
+  _rigidBody2D: {fileID: 3143912039278302248}
   rectSize: {x: 83, y: 100}
 --- !u!114 &2200924946695531081
 MonoBehaviour:

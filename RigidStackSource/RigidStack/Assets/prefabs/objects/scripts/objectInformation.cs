@@ -2,11 +2,10 @@
 using UnityEngine;
 
 public class objectInformation : NetworkBehaviour {
-    [Header("Variables for determining how many objects the player should get.")]
     public int minimumAmount = 0, maximumAmount = 0;
 
-    [SerializeField] private SpriteRenderer spriteRenderer = null;
-    [SerializeField] private Collider2D _collider2D = null;
+    [SerializeField] protected SpriteRenderer spriteRenderer = null;
+    [SerializeField] protected Collider2D _collider2D = null;
     [SerializeField] private Rigidbody2D _rigidBody2D = null;
     public Vector2 rectSize;
 
