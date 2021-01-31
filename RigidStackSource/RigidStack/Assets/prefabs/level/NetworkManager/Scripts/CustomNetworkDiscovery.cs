@@ -1,4 +1,4 @@
-//using kcp2k;
+using kcp2k;
 using Mirror;
 using Mirror.Discovery;
 using System;
@@ -21,42 +21,32 @@ public class DiscoveryResponse : NetworkMessage {
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
     [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript = null;
-    //[SerializeField] private KcpTransport kcpTransport = null;
-    [SerializeField, Obsolete] private TelepathyTransport telepathyTransport = null;
+    [SerializeField] private KcpTransport kcpTransport = null;
 
-    [Obsolete]
     private void OnValidate() {
 #if UNITY_EDITOR
         if (_multiplayerLobbyScript == null) {
             _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
         }
-        /*
         if (kcpTransport == null) {
             kcpTransport = FindObjectOfType<KcpTransport>();
-        }
-        */
-        if (telepathyTransport == null) {
-            telepathyTransport = FindObjectOfType<TelepathyTransport>();
         }
 #endif
         return;
     }
 
     #region Server.
-    [Obsolete]
     protected override void ProcessClientRequest(DiscoveryRequest discoveryRequest, IPEndPoint _IPEndPoint) {
         base.ProcessClientRequest(discoveryRequest, _IPEndPoint);
         return;
     }
 
-    [Obsolete]
     protected override DiscoveryResponse ProcessRequest(DiscoveryRequest discoveryRequest, IPEndPoint _IPEndPoint) {
         return new DiscoveryResponse {
             currentPlayerCount = _multiplayerLobbyScript.playerCount,
             maxPlayerCount = NetworkManager.singleton.maxConnections,
             name = _multiplayerLobbyScript.lobbyName,
-            //uri = kcpTransport.ServerUri()
-            uri = telepathyTransport.ServerUri()
+            uri = kcpTransport.ServerUri()
         };
     }
     #endregion
