@@ -6,7 +6,7 @@ using UnityEngine;
 public class vacuumCleanerScript : objectInformation {
     private bool _isServer, isFindingCoroutineActive, isVacuumActive = true;
     [Header("Vacuum cleaner script."), SerializeField] private Color originalContainerColor = Color.white;
-    private Vector3 endPointPosition, newEndPointPosition;
+    private Vector3 newEndPointPosition;
     [SerializeField] private Vector2 size = Vector2.zero;
     [SerializeField] private Transform _transform = null, endPointTransform = null;
     [SerializeField] private LayerMask objectLayerMask = default;
@@ -18,9 +18,6 @@ public class vacuumCleanerScript : objectInformation {
 
     private void Start() {
         _isServer = isServer;
-        if (_isServer == true) {
-            endPointPosition = endPointTransform.localPosition;
-        }
         dimDelegate = Dim;
         unDimDelegate = UnDim;
         return;
@@ -31,7 +28,7 @@ public class vacuumCleanerScript : objectInformation {
             spriteRenderer.sprite = disabledSprite;
         }
         if (_isServer == true) {
-            newEndPointPosition = (_transform.position + endPointPosition);
+            newEndPointPosition = endPointTransform.position;
             if ((isFindingCoroutineActive == false) && (_collider2D.isTrigger == false)) {
                 isFindingCoroutineActive = true;
                 coroutine = FindObjectsToVacuum();
@@ -63,7 +60,7 @@ public class vacuumCleanerScript : objectInformation {
                     if (objectsToDrag[i].transform != _transform) {
                         Vector2 objectPosition = objectsToDrag[i].transform.position, difference = (newEndPointPosition - (Vector3)(objectPosition));
                         Vector2 pullDirection = difference.normalized;
-                        const float pullForce = 10f;
+                        const float pullForce = 50f;
                         if (objectsToDragRigidBody2D[i] != null) {
                             objectsToDragRigidBody2D[i].velocity += (pullDirection * (pullForce * Time.deltaTime));
                         }
