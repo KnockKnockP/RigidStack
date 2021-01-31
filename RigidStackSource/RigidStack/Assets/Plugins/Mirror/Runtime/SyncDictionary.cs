@@ -77,7 +77,7 @@ namespace Mirror {
 
         public void OnSerializeAll(NetworkWriter writer) {
             // if init,  write the full list content
-            writer.WritePackedUInt32((uint)objects.Count);
+            writer.WriteUInt32((uint)objects.Count);
 
             foreach (KeyValuePair<TKey, TValue> syncItem in objects) {
                 writer.Write(syncItem.Key);
@@ -88,12 +88,12 @@ namespace Mirror {
             // thus the client will need to skip all the pending changes
             // or they would be applied again.
             // So we write how many changes are pending
-            writer.WritePackedUInt32((uint)changes.Count);
+            writer.WriteUInt32((uint)changes.Count);
         }
 
         public void OnSerializeDelta(NetworkWriter writer) {
             // write all the queued up changes
-            writer.WritePackedUInt32((uint)changes.Count);
+            writer.WriteUInt32((uint)changes.Count);
 
             for (int i = 0; i < changes.Count; i++) {
                 Change change = changes[i];
@@ -117,7 +117,7 @@ namespace Mirror {
             IsReadOnly = true;
 
             // if init,  write the full list content
-            int count = (int)reader.ReadPackedUInt32();
+            int count = (int)reader.ReadUInt32();
 
             objects.Clear();
             changes.Clear();
@@ -131,14 +131,14 @@ namespace Mirror {
             // We will need to skip all these changes
             // the next time the list is synchronized
             // because they have already been applied
-            changesAhead = (int)reader.ReadPackedUInt32();
+            changesAhead = (int)reader.ReadUInt32();
         }
 
         public void OnDeserializeDelta(NetworkReader reader) {
             // This list can now only be modified by synchronization
             IsReadOnly = true;
 
-            int changesCount = (int)reader.ReadPackedUInt32();
+            int changesCount = (int)reader.ReadUInt32();
 
             for (int i = 0; i < changesCount; i++) {
                 Operation operation = (Operation)reader.ReadByte();

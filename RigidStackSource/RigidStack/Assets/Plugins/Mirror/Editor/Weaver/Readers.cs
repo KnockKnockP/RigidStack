@@ -6,21 +6,44 @@ using System.Collections.Generic;
 
 namespace Mirror.Weaver {
     public static class Readers {
-        static Dictionary<string, MethodReference> readFuncs;
+        static Dictionary<TypeReference, MethodReference> readFuncs;
 
         public static void Init() {
-            readFuncs = new Dictionary<string, MethodReference>();
+            readFuncs = new Dictionary<TypeReference, MethodReference>(new TypeReferenceComparer());
         }
 
         internal static void Register(TypeReference dataType, MethodReference methodReference) {
-            readFuncs[dataType.FullName] = methodReference;
-        }
-
-        public static MethodReference GetReadFunc(TypeReference variableReference) {
-            if (readFuncs.TryGetValue(variableReference.FullName, out MethodReference foundFunc)) {
-                return foundFunc;
+            if (readFuncs.ContainsKey(dataType)) {
+                Weaver.Warning($"Registering a Read method for {dataType.FullName} when one already exists", methodReference);
             }
 
+            // we need to import type when we Initialize Readers so import here incase it is used anywhere else
+            TypeReference imported = Weaver.CurrentAssembly.MainModule.ImportReference(dataType);
+            readFuncs[imported] = methodReference;
+        }
+
+        static void RegisterReadFunc(TypeReference typeReference, MethodDefinition newReaderFunc) {
+            Register(typeReference, newReaderFunc);
+
+            Weaver.WeaveLists.generateContainerClass.Methods.Add(newReaderFunc);
+        }
+
+        /// <summary>
+        /// Finds existing reader for type, if non exists trys to create one
+        /// <para>This method is recursive</para>
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <returns>Returns <see cref="MethodReference"/> or null</returns>
+        public static MethodReference GetReadFunc(TypeReference variable) {
+            if (readFuncs.TryGetValue(variable, out MethodReference foundFunc)) {
+                return foundFunc;
+            } else {
+                TypeReference importedVariable = Weaver.CurrentAssembly.MainModule.ImportReference(variable);
+                return GenerateReader(importedVariable);
+            }
+        }
+
+        private static MethodReference GenerateReader(TypeReference variableReference) {
             // Arrays are special,  if we resolve them, we get teh element type,
             // so the following ifs might choke on it for scriptable objects
             // or other objects that require a custom serializer
@@ -39,7 +62,8 @@ namespace Mirror.Weaver {
                 Weaver.Error($"{variableReference.Name} is not a supported type", variableReference);
                 return null;
             }
-            if (variableDefinition.IsDerivedFrom<UnityEngine.Component>()) {
+            if (variableDefinition.IsDerivedFrom<UnityEngine.Component>() &&
+                !variableReference.IsDerivedFrom<NetworkBehaviour>()) {
                 Weaver.Error($"Cannot generate reader for component type {variableReference.Name}. Use a supported type or provide a custom reader", variableReference);
                 return null;
             }
@@ -78,15 +102,24 @@ namespace Mirror.Weaver {
                 TypeReference elementType = genericInstance.GenericArguments[0];
 
                 return GenerateReadCollection(variableReference, elementType, nameof(NetworkReaderExtensions.ReadList));
+            } else if (variableReference.IsDerivedFrom<NetworkBehaviour>()) {
+                return GetNetworkBehaviourReader(variableReference);
             }
 
             return GenerateClassOrStructReadFunction(variableReference);
         }
 
-        static void RegisterReadFunc(TypeReference typeReference, MethodDefinition newReaderFunc) {
-            readFuncs[typeReference.FullName] = newReaderFunc;
+        private static MethodReference GetNetworkBehaviourReader(TypeReference variableReference) {
+            // uses generic ReadNetworkBehaviour rather than having weaver create one for each NB
+            MethodReference generic = WeaverTypes.readNetworkBehaviourGeneric;
 
-            Weaver.WeaveLists.generateContainerClass.Methods.Add(newReaderFunc);
+            MethodReference readFunc = generic.MakeGeneric(variableReference);
+
+            // register function so it is added to Reader<T>
+            // use Register instead of RegisterWriteFunc because this is not a generated function
+            Register(variableReference, readFunc);
+
+            return readFunc;
         }
 
         static MethodDefinition GenerateEnumReadFunc(TypeReference variable) {
@@ -131,7 +164,7 @@ namespace Mirror.Weaver {
                     MethodAttributes.Public |
                     MethodAttributes.Static |
                     MethodAttributes.HideBySig,
-                    Weaver.CurrentAssembly.MainModule.ImportReference(variable));
+                    variable);
 
             readerFunc.Parameters.Add(new ParameterDefinition("reader", ParameterAttributes.None, WeaverTypes.Import<NetworkReader>()));
             readerFunc.Body.InitLocals = true;
@@ -232,7 +265,6 @@ namespace Mirror.Weaver {
                 // mismatched ldloca/ldloc for struct/class combinations is invalid IL, which causes crash at runtime
                 OpCode opcode = variable.IsValueType ? OpCodes.Ldloca : OpCodes.Ldloc;
                 worker.Append(worker.Create(opcode, 0));
-
                 MethodReference readFunc = GetReadFunc(field.FieldType);
                 if (readFunc != null) {
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
@@ -262,18 +294,19 @@ namespace Mirror.Weaver {
             TypeReference funcRef = module.ImportReference(typeof(Func<,>));
             MethodReference funcConstructorRef = module.ImportReference(typeof(Func<,>).GetConstructors()[0]);
 
-            foreach (MethodReference readFunc in readFuncs.Values) {
-                TypeReference dataType = readFunc.ReturnType;
+            foreach (KeyValuePair<TypeReference, MethodReference> kvp in readFuncs) {
+                TypeReference targetType = kvp.Key;
+                MethodReference readFunc = kvp.Value;
 
                 // create a Func<NetworkReader, T> delegate
                 worker.Append(worker.Create(OpCodes.Ldnull));
                 worker.Append(worker.Create(OpCodes.Ldftn, readFunc));
-                GenericInstanceType funcGenericInstance = funcRef.MakeGenericInstanceType(networkReaderRef, dataType);
+                GenericInstanceType funcGenericInstance = funcRef.MakeGenericInstanceType(networkReaderRef, targetType);
                 MethodReference funcConstructorInstance = funcConstructorRef.MakeHostInstanceGeneric(funcGenericInstance);
                 worker.Append(worker.Create(OpCodes.Newobj, funcConstructorInstance));
 
-                // save it in Writer<T>.write
-                GenericInstanceType genericInstance = genericReaderClassRef.MakeGenericInstanceType(dataType);
+                // save it in Reader<T>.read
+                GenericInstanceType genericInstance = genericReaderClassRef.MakeGenericInstanceType(targetType);
                 FieldReference specializedField = fieldRef.SpecializeField(genericInstance);
                 worker.Append(worker.Create(OpCodes.Stsfld, specializedField));
             }

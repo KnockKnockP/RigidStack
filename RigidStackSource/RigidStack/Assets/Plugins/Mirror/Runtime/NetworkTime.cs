@@ -51,7 +51,7 @@ namespace Mirror {
         internal static void UpdateClient() {
             if (Time.time - lastPingTime >= PingFrequency) {
                 NetworkPingMessage pingMessage = new NetworkPingMessage(LocalTime());
-                NetworkClient.Send(pingMessage);
+                NetworkClient.Send(pingMessage, Channels.DefaultUnreliable);
                 lastPingTime = Time.time;
             }
         }
@@ -68,7 +68,7 @@ namespace Mirror {
                 serverTime = LocalTime()
             };
 
-            conn.Send(pongMsg);
+            conn.Send(pongMsg, Channels.DefaultUnreliable);
         }
 
         // Executed at the client when we receive a Pong message

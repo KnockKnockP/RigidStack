@@ -2,35 +2,34 @@
 // Kept as close to original as possible.
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace kcp2k {
     public class Kcp {
         // original Kcp has a define option, which is not defined by default:
         // #define FASTACK_CONSERVE
 
-        public const int RTO_NDL = 30;           // no delay min rto
-        public const int RTO_MIN = 100;          // normal min rto
-        public const int RTO_DEF = 200;          // default RTO
-        public const int RTO_MAX = 60000;        // maximum RTO
-        public const int CMD_PUSH = 81;          // cmd: push data
-        public const int CMD_ACK = 82;          // cmd: ack
-        public const int CMD_WASK = 83;          // cmd: window probe (ask)
-        public const int CMD_WINS = 84;          // cmd: window size (tell)
-        public const int ASK_SEND = 1;           // need to send CMD_WASK
-        public const int ASK_TELL = 2;           // need to send CMD_WINS
-        public const int WND_SND = 32;           // default send window
-        public const int WND_RCV = 128;          // default receive window. must be >= max fragment size
-        public const int MTU_DEF = 1200;         // default MTU (reduced to 1200 to fit all cases: https://en.wikipedia.org/wiki/Maximum_transmission_unit ; steam uses 1200 too!)
+        public const int RTO_NDL = 30;             // no delay min rto
+        public const int RTO_MIN = 100;            // normal min rto
+        public const int RTO_DEF = 200;            // default RTO
+        public const int RTO_MAX = 60000;          // maximum RTO
+        public const int CMD_PUSH = 81;            // cmd: push data
+        public const int CMD_ACK = 82;            // cmd: ack
+        public const int CMD_WASK = 83;            // cmd: window probe (ask)
+        public const int CMD_WINS = 84;            // cmd: window size (tell)
+        public const int ASK_SEND = 1;             // need to send CMD_WASK
+        public const int ASK_TELL = 2;             // need to send CMD_WINS
+        public const int WND_SND = 32;             // default send window
+        public const int WND_RCV = 128;            // default receive window. must be >= max fragment size
+        public const int MTU_DEF = 1200;           // default MTU (reduced to 1200 to fit all cases: https://en.wikipedia.org/wiki/Maximum_transmission_unit ; steam uses 1200 too!)
         public const int ACK_FAST = 3;
         public const int INTERVAL = 100;
         public const int OVERHEAD = 24;
         public const int DEADLINK = 20;
         public const int THRESH_INIT = 2;
         public const int THRESH_MIN = 2;
-        public const int PROBE_INIT = 7000;      // 7 secs to probe window size
-        public const int PROBE_LIMIT = 120000;   // up to 120 secs to probe window
-        public const int FASTACK_LIMIT = 5;      // max times to trigger fastack
+        public const int PROBE_INIT = 7000;        // 7 secs to probe window size
+        public const int PROBE_LIMIT = 120000;     // up to 120 secs to probe window
+        public const int FASTACK_LIMIT = 5;        // max times to trigger fastack
 
         internal struct AckItem {
             internal uint serialNumber;
@@ -41,13 +40,13 @@ namespace kcp2k {
         internal int state;
         readonly uint conv;          // conversation
         internal uint mtu;
-        internal uint mss;           // maximum segment size
-        internal uint snd_una;       // unacknowledged
+        internal uint mss;           // maximum segment size := MTU - OVERHEAD
+        internal uint snd_una;       // unacknowledged. e.g. snd_una is 9 it means 8 has been confirmed, 9 and 10 have been sent
         internal uint snd_nxt;
         internal uint rcv_nxt;
         internal uint ssthresh;      // slow start threshold
-        internal int rx_rttval;
-        internal int rx_srtt;        // smoothed round trip time
+        internal int rx_rttval;      // average deviation of rtt, used to measure the jitter of rtt
+        internal int rx_srtt;        // smoothed round trip time (a weighted average of rtt)
         internal int rx_rto;
         internal int rx_minrto;
         internal uint snd_wnd;       // send window
@@ -235,6 +234,7 @@ namespace kcp2k {
         // ikcp_send
         // sends byte[] to the other end.
         public int Send(byte[] buffer, int offset, int len) {
+            // fragment count
             int count;
 
             if (len < 0)
@@ -243,14 +243,14 @@ namespace kcp2k {
             // streaming mode: removed. we never want to send 'hello' and
             // receive 'he' 'll' 'o'. we want to always receive 'hello'.
 
+            // calculate amount of fragments necessary for 'len'
             if (len <= mss)
                 count = 1;
             else
                 count = (int)((len + mss - 1) / mss);
 
-            // this might be a kcp bug.
-            // it's possible that we should check 'count >= rcv_wnd' instead of
-            // the constant here.
+            // original kcp uses WND_RCV const even though rcv_wnd is the
+            // runtime variable. may or may not be correct, see also:
             // see also: https://github.com/skywind3000/kcp/pull/291/files
             if (count >= WND_RCV)
                 return -2;
@@ -293,7 +293,7 @@ namespace kcp2k {
                     rx_srtt = 1;
             }
             int rto = rx_srtt + Math.Max((int)interval, 4 * rx_rttval);
-            rx_rto = Mathf.Clamp(rto, rx_minrto, RTO_MAX);
+            rx_rto = Utils.Clamp(rto, rx_minrto, RTO_MAX);
         }
 
         // ikcp_shrink_buf
@@ -434,8 +434,10 @@ namespace kcp2k {
         }
 
         // ikcp_input
-        /// used when you receive a low level packet (eg. UDP packet)
-        public int Input(byte[] data, int size) {
+        // used when you receive a low level packet (eg. UDP packet)
+        // => original kcp uses offset=0, we made it a parameter so that high
+        //    level can skip the channel byte more easily
+        public int Input(byte[] data, int offset, int size) {
             uint prev_una = snd_una;
             uint maxack = 0;
             uint latest_ts = 0;
@@ -443,8 +445,6 @@ namespace kcp2k {
 
             if (data == null || size < OVERHEAD)
                 return -1;
-
-            int offset = 0;
 
             while (true) {
                 uint ts = 0;
@@ -456,9 +456,11 @@ namespace kcp2k {
                 byte cmd = 0;
                 byte frg = 0;
 
+                // enough data left to decode segment (aka OVERHEAD bytes)?
                 if (size < OVERHEAD)
                     break;
 
+                // decode segment
                 offset += Utils.Decode32U(data, offset, ref conv_);
                 if (conv_ != conv)
                     return -1;
@@ -471,8 +473,10 @@ namespace kcp2k {
                 offset += Utils.Decode32U(data, offset, ref una);
                 offset += Utils.Decode32U(data, offset, ref len);
 
+                // subtract the segment bytes from size
                 size -= OVERHEAD;
 
+                // enough remaining to read 'len' bytes of the actual payload?
                 if (size < len || len < 0)
                     return -2;
 
@@ -876,10 +880,13 @@ namespace kcp2k {
         }
 
         // ikcp_nodelay
-        //   Normal: false, 40, 0, 0
-        //   Fast:   false, 30, 2, 1
-        //   Fast2:   true, 20, 2, 1
-        //   Fast3:   true, 10, 2, 1
+        // configuration: https://github.com/skywind3000/kcp/blob/master/README.en.md#protocol-configuration
+        //   nodelay : Whether nodelay mode is enabled, 0 is not enabled; 1 enabled.
+        //   interval ：Protocol internal work interval, in milliseconds, such as 10 ms or 20 ms.
+        //   resend ：Fast retransmission mode, 0 represents off by default, 2 can be set (2 ACK spans will result in direct retransmission)
+        //   nc ：Whether to turn off flow control, 0 represents “Do not turn off” by default, 1 represents “Turn off”.
+        // Normal Mode: ikcp_nodelay(kcp, 0, 40, 0, 0);
+        // Turbo Mode： ikcp_nodelay(kcp, 1, 10, 2, 1);
         public void SetNoDelay(uint nodelay, uint interval = INTERVAL, int resend = 0, bool nocwnd = false) {
             this.nodelay = nodelay;
             if (nodelay != 0) {

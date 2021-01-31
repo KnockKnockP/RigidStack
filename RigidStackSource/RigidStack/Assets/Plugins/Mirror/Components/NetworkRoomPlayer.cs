@@ -7,7 +7,7 @@ namespace Mirror {
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Network/NetworkRoomPlayer")]
-    [HelpURL("https://mirror-networking.com/docs/Components/NetworkRoomPlayer.html")]
+    [HelpURL("https://mirror-networking.com/docs/Articles/Components/NetworkRoomPlayer.html")]
     public class NetworkRoomPlayer : NetworkBehaviour {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkRoomPlayer));
 

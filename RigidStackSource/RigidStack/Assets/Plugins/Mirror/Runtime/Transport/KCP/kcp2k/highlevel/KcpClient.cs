@@ -1,7 +1,6 @@
 // kcp client logic abstracted into a class.
 // for use in Mirror, DOTSNET, testing, etc.
 using System;
-using UnityEngine;
 
 namespace kcp2k {
     public class KcpClient {
@@ -22,7 +21,7 @@ namespace kcp2k {
 
         public void Connect(string address, ushort port, bool noDelay, uint interval, int fastResend = 0, bool congestionWindow = true, uint sendWindowSize = Kcp.WND_SND, uint receiveWindowSize = Kcp.WND_RCV) {
             if (connected) {
-                Debug.LogWarning("KCP: client already connected!");
+                Log.Warning("KCP: client already connected!");
                 return;
             }
 
@@ -30,16 +29,16 @@ namespace kcp2k {
 
             // setup events
             connection.OnAuthenticated = () => {
-                Debug.Log($"KCP: OnClientConnected");
+                Log.Info($"KCP: OnClientConnected");
                 connected = true;
                 OnConnected.Invoke();
             };
             connection.OnData = (message) => {
-                //Debug.Log($"KCP: OnClientData({BitConverter.ToString(message.Array, message.Offset, message.Count)})");
+                //Log.Debug($"KCP: OnClientData({BitConverter.ToString(message.Array, message.Offset, message.Count)})");
                 OnData.Invoke(message);
             };
             connection.OnDisconnected = () => {
-                Debug.Log($"KCP: OnClientDisconnected");
+                Log.Info($"KCP: OnClientDisconnected");
                 connected = false;
                 connection = null;
                 OnDisconnected.Invoke();
@@ -49,11 +48,11 @@ namespace kcp2k {
             connection.Connect(address, port, noDelay, interval, fastResend, congestionWindow, sendWindowSize, receiveWindowSize);
         }
 
-        public void Send(ArraySegment<byte> segment) {
+        public void Send(ArraySegment<byte> segment, KcpChannel channel) {
             if (connected) {
-                connection.Send(segment);
+                connection.SendData(segment, channel);
             } else
-                Debug.LogWarning("KCP: can't send because client not connected!");
+                Log.Warning("KCP: can't send because client not connected!");
         }
 
         public void Disconnect() {
@@ -77,5 +76,10 @@ namespace kcp2k {
                 connection.Tick();
             }
         }
+
+        // pause/unpause to safely support mirror scene handling and to
+        // immediately pause the receive while loop if needed.
+        public void Pause() => connection?.Pause();
+        public void Unpause() => connection?.Unpause();
     }
 }

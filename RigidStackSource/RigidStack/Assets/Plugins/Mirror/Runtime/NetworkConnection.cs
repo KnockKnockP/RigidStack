@@ -111,7 +111,8 @@ namespace Mirror {
         /// <typeparam name="T">The message type to unregister.</typeparam>
         /// <param name="msg">The message to send.</param>
         /// <param name="channelId">The transport layer channel to send on.</param>
-        public void Send<T>(T msg, int channelId = Channels.DefaultReliable) where T : NetworkMessage {
+        public void Send<T>(T msg, int channelId = Channels.DefaultReliable)
+            where T : struct, NetworkMessage {
             using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
                 // pack message and send allocation free
                 MessagePacker.Pack(msg, writer);
@@ -189,18 +190,36 @@ namespace Mirror {
         /// <typeparam name="T">The message type to unregister.</typeparam>
         /// <param name="msg">The message object to process.</param>
         /// <returns>Returns true if the handler was successfully invoked</returns>
-        public bool InvokeHandler<T>(T msg, int channelId) where T : NetworkMessage {
+        public bool InvokeHandler<T>(T msg, int channelId)
+            where T : struct, NetworkMessage {
             using (PooledNetworkWriter writer = NetworkWriterPool.GetWriter()) {
                 // if it is a value type,  just use typeof(T) to avoid boxing
                 // this works because value types cannot be derived
                 // if it is a reference type (for example NetworkMessage),
                 // ask the message for the real type
-                int msgType = MessagePacker.GetId(default(T) != null ? typeof(T) : msg.GetType());
+                int msgType = MessagePacker.GetId<T>();
 
                 MessagePacker.Pack(msg, writer);
                 ArraySegment<byte> segment = writer.ToArraySegment();
                 using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(segment))
                     return InvokeHandler(msgType, networkReader, channelId);
+            }
+        }
+
+        // helper function
+        protected void UnpackAndInvoke(NetworkReader reader, int channelId) {
+            if (MessagePacker.Unpack(reader, out int msgType)) {
+                // try to invoke the handler for that message
+                if (messageHandlers.TryGetValue(msgType, out NetworkMessageDelegate msgDelegate)) {
+                    msgDelegate.Invoke(this, reader, channelId);
+                    lastMessageTime = Time.time;
+                } else {
+                    if (logger.LogEnabled())
+                        logger.Log("Unknown message ID " + msgType + " " + this + ". May be due to no existing RegisterHandler for this message.");
+                }
+            } else {
+                logger.LogError("Closed connection: " + this + ". Invalid message header.");
+                Disconnect();
             }
         }
 
@@ -215,26 +234,15 @@ namespace Mirror {
         /// </summary>
         /// <param name="buffer">The data received.</param>
         internal void TransportReceive(ArraySegment<byte> buffer, int channelId) {
-            if (buffer.Count == 0) {
-                logger.LogError($"ConnectionRecv {this} Message was empty");
+            if (buffer.Count < MessagePacker.HeaderSize) {
+                logger.LogError($"ConnectionRecv {this} Message was too short (messages should start with message id)");
+                Disconnect();
                 return;
             }
 
             // unpack message
-            using (PooledNetworkReader networkReader = NetworkReaderPool.GetReader(buffer)) {
-                if (MessagePacker.UnpackMessage(networkReader, out int msgType)) {
-                    // logging
-                    if (logger.LogEnabled())
-                        logger.Log("ConnectionRecv " + this + " msgType:" + msgType + " content:" + BitConverter.ToString(buffer.Array, buffer.Offset, buffer.Count));
-
-                    // try to invoke the handler for that message
-                    if (InvokeHandler(msgType, networkReader, channelId)) {
-                        lastMessageTime = Time.time;
-                    }
-                } else {
-                    logger.LogError("Closed connection: " + this + ". Invalid message header.");
-                    Disconnect();
-                }
+            using (PooledNetworkReader reader = NetworkReaderPool.GetReader(buffer)) {
+                UnpackAndInvoke(reader, channelId);
             }
         }
 

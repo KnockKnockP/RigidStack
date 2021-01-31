@@ -44,7 +44,6 @@ namespace Mirror.Discovery {
         /// <param name="request">Request comming from client</param>
         /// <param name="endpoint">Address of the client that sent the request</param>
         /// <returns>The message to be sent back to the client or null</returns>
-        [Obsolete]
         protected override ServerResponse ProcessRequest(ServerRequest request, IPEndPoint endpoint) {
             // In this case we don't do anything with the request
             // but other discovery implementations might want to use the data

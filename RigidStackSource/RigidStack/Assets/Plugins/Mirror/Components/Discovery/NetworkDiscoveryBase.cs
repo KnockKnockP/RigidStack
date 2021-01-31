@@ -15,7 +15,7 @@ namespace Mirror.Discovery {
     /// <see cref="NetworkDiscovery">NetworkDiscovery</see> for a sample implementation
     /// </summary>
     [DisallowMultipleComponent]
-    [HelpURL("https://mirror-networking.com/docs/Components/NetworkDiscovery.html")]
+    [HelpURL("https://mirror-networking.com/docs/Articles/Components/NetworkDiscovery.html")]
     public abstract class NetworkDiscoveryBase<Request, Response> : MonoBehaviour
         where Request : NetworkMessage
         where Response : NetworkMessage {
@@ -34,11 +34,11 @@ namespace Mirror.Discovery {
         protected int serverBroadcastListenPort = 47777;
 
         [SerializeField]
-        [Tooltip("Repeat discovery?")]
+        [Tooltip("Repeats discovery when enabled.")]
         bool repeatDiscovery = false;
 
         [SerializeField]
-        [Tooltip("Time in seconds between multi-cast messages; it is only activated when repeat discovery is ticked on.")]
+        [Tooltip("Time in seconds between multi-cast messages. Only repeats when repeat discovery is enabled.")]
         [Range(1, 60)]
         float ActiveDiscoveryInterval = 3;
 
@@ -104,7 +104,6 @@ namespace Mirror.Discovery {
         /// <summary>
         /// Advertise this server in the local network
         /// </summary>
-        [Obsolete]
         public void AdvertiseServer() {
             if (!SupportedOnThisPlatform)
                 throw new PlatformNotSupportedException("Network discovery not supported in this platform");
@@ -121,7 +120,6 @@ namespace Mirror.Discovery {
             _ = ServerListenAsync();
         }
 
-        [Obsolete]
         public async Task ServerListenAsync() {
             while (true) {
                 try {
@@ -134,7 +132,6 @@ namespace Mirror.Discovery {
             }
         }
 
-        [Obsolete]
         async Task ReceiveRequestAsync(UdpClient udpClient) {
             // only proceed if there is available data in network buffer, or otherwise Receive() will block
             // average time for UdpClient.Available : 10 us
@@ -163,7 +160,6 @@ namespace Mirror.Discovery {
         /// </remarks>
         /// <param name="request">Request comming from client</param>
         /// <param name="endpoint">Address of the client that sent the request</param>
-        [Obsolete]
         protected virtual void ProcessClientRequest(Request request, IPEndPoint endpoint) {
             Response info = ProcessRequest(request, endpoint);
 
@@ -196,7 +192,6 @@ namespace Mirror.Discovery {
         /// <param name="request">Request comming from client</param>
         /// <param name="endpoint">Address of the client that sent the request</param>
         /// <returns>The message to be sent back to the client or null</returns>
-        [Obsolete]
         protected abstract Response ProcessRequest(Request request, IPEndPoint endpoint);
 
         #endregion

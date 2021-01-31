@@ -14,7 +14,7 @@ namespace Mirror {
     /// </remarks>
     [AddComponentMenu("Network/NetworkAnimator")]
     [RequireComponent(typeof(NetworkIdentity))]
-    [HelpURL("https://mirror-networking.com/docs/Components/NetworkAnimator.html")]
+    [HelpURL("https://mirror-networking.com/docs/Articles/Components/NetworkAnimator.html")]
     public class NetworkAnimator : NetworkBehaviour {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkAnimator));
 
@@ -265,7 +265,7 @@ namespace Mirror {
 
         bool WriteParameters(NetworkWriter writer, bool forceAll = false) {
             ulong dirtyBits = forceAll ? (~0ul) : NextDirtyBits();
-            writer.WritePackedUInt64(dirtyBits);
+            writer.WriteUInt64(dirtyBits);
             for (int i = 0; i < parameters.Length; i++) {
                 if ((dirtyBits & (1ul << i)) == 0)
                     continue;
@@ -273,7 +273,7 @@ namespace Mirror {
                 AnimatorControllerParameter par = parameters[i];
                 if (par.type == AnimatorControllerParameterType.Int) {
                     int newIntValue = animator.GetInteger(par.nameHash);
-                    writer.WritePackedInt32(newIntValue);
+                    writer.WriteInt32(newIntValue);
                 } else if (par.type == AnimatorControllerParameterType.Float) {
                     float newFloatValue = animator.GetFloat(par.nameHash);
                     writer.WriteSingle(newFloatValue);
@@ -289,14 +289,14 @@ namespace Mirror {
             bool animatorEnabled = animator.enabled;
             // need to read values from NetworkReader even if animator is disabled
 
-            ulong dirtyBits = reader.ReadPackedUInt64();
+            ulong dirtyBits = reader.ReadUInt64();
             for (int i = 0; i < parameters.Length; i++) {
                 if ((dirtyBits & (1ul << i)) == 0)
                     continue;
 
                 AnimatorControllerParameter par = parameters[i];
                 if (par.type == AnimatorControllerParameterType.Int) {
-                    int newIntValue = reader.ReadPackedInt32();
+                    int newIntValue = reader.ReadInt32();
                     if (animatorEnabled)
                         animator.SetInteger(par.nameHash, newIntValue);
                 } else if (par.type == AnimatorControllerParameterType.Float) {

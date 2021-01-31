@@ -1,9 +1,11 @@
 using System;
+using UnityEngine;
 
 namespace Mirror {
     /// <summary>
     /// Allows Middleware to override some of the transport methods or let the inner transport handle them.
     /// </summary>
+    [DisallowMultipleComponent]
     public abstract class MiddlewareTransport : Transport {
         /// <summary>
         /// Transport to call to after middleware
@@ -15,7 +17,14 @@ namespace Mirror {
         public override void Shutdown() => inner.Shutdown();
 
         #region Client
-        public override void ClientConnect(string address) => inner.ClientConnect(address);
+        public override void ClientConnect(string address) {
+            inner.OnClientConnected = OnClientConnected;
+            inner.OnClientDataReceived = OnClientDataReceived;
+            inner.OnClientDisconnected = OnClientDisconnected;
+            inner.OnClientError = OnClientError;
+            inner.ClientConnect(address);
+        }
+
         public override bool ClientConnected() => inner.ClientConnected();
         public override void ClientDisconnect() => inner.ClientDisconnect();
         public override void ClientSend(int channelId, ArraySegment<byte> segment) => inner.ClientSend(channelId, segment);
@@ -23,7 +32,14 @@ namespace Mirror {
 
         #region Server
         public override bool ServerActive() => inner.ServerActive();
-        public override void ServerStart() => inner.ServerStart();
+        public override void ServerStart() {
+            inner.OnServerConnected = OnServerConnected;
+            inner.OnServerDataReceived = OnServerDataReceived;
+            inner.OnServerDisconnected = OnServerDisconnected;
+            inner.OnServerError = OnServerError;
+            inner.ServerStart();
+        }
+
         public override void ServerStop() => inner.ServerStop();
         public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment) => inner.ServerSend(connectionId, channelId, segment);
         public override bool ServerDisconnect(int connectionId) => inner.ServerDisconnect(connectionId);

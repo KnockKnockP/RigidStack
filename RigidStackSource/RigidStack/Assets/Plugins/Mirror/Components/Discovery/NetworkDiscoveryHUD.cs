@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Mirror.Discovery {
     [DisallowMultipleComponent]
     [AddComponentMenu("Network/NetworkDiscoveryHUD")]
-    [HelpURL("https://mirror-networking.com/docs/Components/NetworkDiscovery.html")]
+    [HelpURL("https://mirror-networking.com/docs/Articles/Components/NetworkDiscovery.html")]
     [RequireComponent(typeof(NetworkDiscovery))]
     public class NetworkDiscoveryHUD : MonoBehaviour {
         readonly Dictionary<long, ServerResponse> discoveredServers = new Dictionary<long, ServerResponse>();
@@ -18,12 +17,11 @@ namespace Mirror.Discovery {
             if (networkDiscovery == null) {
                 networkDiscovery = GetComponent<NetworkDiscovery>();
                 UnityEditor.Events.UnityEventTools.AddPersistentListener(networkDiscovery.OnServerFound, OnDiscoveredServer);
-                UnityEditor.Undo.RecordObjects(new UnityEngine.Object[] { this, networkDiscovery }, "Set NetworkDiscovery");
+                UnityEditor.Undo.RecordObjects(new Object[] { this, networkDiscovery }, "Set NetworkDiscovery");
             }
         }
 #endif
 
-        [Obsolete]
         void OnGUI() {
             if (NetworkManager.singleton == null)
                 return;
@@ -35,7 +33,6 @@ namespace Mirror.Discovery {
                 DrawGUI();
         }
 
-        [Obsolete]
         void DrawGUI() {
             GUILayout.BeginHorizontal();
 

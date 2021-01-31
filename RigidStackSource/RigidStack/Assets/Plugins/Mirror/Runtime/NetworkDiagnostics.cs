@@ -44,7 +44,8 @@ namespace Mirror {
         /// </summary>
         public static event Action<MessageInfo> OutMessageEvent;
 
-        internal static void OnSend<T>(T message, int channel, int bytes, int count) where T : NetworkMessage {
+        internal static void OnSend<T>(T message, int channel, int bytes, int count)
+            where T : struct, NetworkMessage {
             if (count > 0 && OutMessageEvent != null) {
                 MessageInfo outMessage = new MessageInfo(message, channel, bytes, count);
                 OutMessageEvent?.Invoke(outMessage);
@@ -60,7 +61,8 @@ namespace Mirror {
         /// </summary>
         public static event Action<MessageInfo> InMessageEvent;
 
-        internal static void OnReceive<T>(T message, int channel, int bytes) where T : NetworkMessage {
+        internal static void OnReceive<T>(T message, int channel, int bytes)
+            where T : struct, NetworkMessage {
             if (InMessageEvent != null) {
                 MessageInfo inMessage = new MessageInfo(message, channel, bytes, 1);
                 InMessageEvent?.Invoke(inMessage);

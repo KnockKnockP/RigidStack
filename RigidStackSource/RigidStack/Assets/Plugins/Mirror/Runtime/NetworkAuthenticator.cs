@@ -13,7 +13,7 @@ namespace Mirror {
     /// <summary>
     /// Base class for implementing component-based authentication during the Connect phase
     /// </summary>
-    [HelpURL("https://mirror-networking.com/docs/Guides/Authentication.html")]
+    [HelpURL("https://mirror-networking.com/docs/Articles/Guides/Authentication.html")]
     public abstract class NetworkAuthenticator : MonoBehaviour {
         [Header("Event Listeners (optional)")]
 
@@ -39,6 +39,13 @@ namespace Mirror {
         }
 
         /// <summary>
+        /// Called on server from StopServer to reset the Authenticator
+        /// <para>Server message handlers should be unregistered in this method.</para>
+        /// </summary>
+        public virtual void OnStopServer() {
+        }
+
+        /// <summary>
         /// Called on server from OnServerAuthenticateInternal when a client needs to authenticate
         /// </summary>
         /// <param name="conn">Connection to client.</param>
@@ -61,6 +68,13 @@ namespace Mirror {
         /// <para>Client message handlers should be registered in this method.</para>
         /// </summary>
         public virtual void OnStartClient() {
+        }
+
+        /// <summary>
+        /// Called on client from StopClient to reset the Authenticator
+        /// <para>Client message handlers should be unregistered in this method.</para>
+        /// </summary>
+        public virtual void OnStopClient() {
         }
 
         /// <summary>

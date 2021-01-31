@@ -19,7 +19,7 @@ namespace Mirror {
         static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkServer));
 
         static bool initialized;
-        static int maxConnections;
+        public static int maxConnections;
 
         /// <summary>
         /// The connection to the host mode client (if any).
@@ -89,11 +89,6 @@ namespace Mirror {
                     Transport.activeTransport.ServerStop();
                 }
 
-                Transport.activeTransport.OnServerDisconnected.RemoveListener(OnDisconnected);
-                Transport.activeTransport.OnServerConnected.RemoveListener(OnConnected);
-                Transport.activeTransport.OnServerDataReceived.RemoveListener(OnDataReceived);
-                Transport.activeTransport.OnServerError.RemoveListener(OnError);
-
                 initialized = false;
             }
             dontListen = false;
@@ -131,10 +126,7 @@ namespace Mirror {
             connections.Clear();
 
             logger.Assert(Transport.activeTransport != null, "There was no active transport when calling NetworkServer.Listen, If you are calling Listen manually then make sure to set 'Transport.activeTransport' first");
-            Transport.activeTransport.OnServerDisconnected.AddListener(OnDisconnected);
-            Transport.activeTransport.OnServerConnected.AddListener(OnConnected);
-            Transport.activeTransport.OnServerDataReceived.AddListener(OnDataReceived);
-            Transport.activeTransport.OnServerError.AddListener(OnError);
+            AddTransportHandlers();
         }
 
         internal static void RegisterMessageHandlers() {
@@ -229,7 +221,8 @@ namespace Mirror {
         /// <param name="identity"></param>
         /// <param name="msg"></param>
         /// <param name="channelId"></param>
-        static void SendToObservers<T>(NetworkIdentity identity, T msg, int channelId = Channels.DefaultReliable) where T : NetworkMessage {
+        static void SendToObservers<T>(NetworkIdentity identity, T msg, int channelId = Channels.DefaultReliable)
+            where T : struct, NetworkMessage {
             if (logger.LogEnabled())
                 logger.Log("Server.SendToObservers id:" + typeof(T));
 
@@ -262,7 +255,8 @@ namespace Mirror {
         /// <param name="msg">Message</param>
         /// <param name="channelId">Transport channel to use</param>
         /// <param name="sendToReadyOnly">Indicates if only ready clients should receive the message</param>
-        public static void SendToAll<T>(T msg, int channelId = Channels.DefaultReliable, bool sendToReadyOnly = false) where T : NetworkMessage {
+        public static void SendToAll<T>(T msg, int channelId = Channels.DefaultReliable, bool sendToReadyOnly = false)
+            where T : struct, NetworkMessage {
             if (!active) {
                 logger.LogWarning("Can not send using NetworkServer.SendToAll<T>(T msg) because NetworkServer is not active");
                 return;
@@ -305,7 +299,8 @@ namespace Mirror {
         /// <typeparam name="T">Message type.</typeparam>
         /// <param name="msg">Message</param>
         /// <param name="channelId">Transport channel to use</param>
-        public static void SendToReady<T>(T msg, int channelId = Channels.DefaultReliable) where T : NetworkMessage {
+        public static void SendToReady<T>(T msg, int channelId = Channels.DefaultReliable)
+            where T : struct, NetworkMessage {
             if (!active) {
                 logger.LogWarning("Can not send using NetworkServer.SendToReady<T>(T msg) because NetworkServer is not active");
                 return;
@@ -323,7 +318,8 @@ namespace Mirror {
         /// <param name="msg">Message</param>
         /// <param name="includeOwner">Should the owner of the object be included</param>
         /// <param name="channelId">Transport channel to use</param>
-        public static void SendToReady<T>(NetworkIdentity identity, T msg, bool includeOwner = true, int channelId = Channels.DefaultReliable) where T : NetworkMessage {
+        public static void SendToReady<T>(NetworkIdentity identity, T msg, bool includeOwner = true, int channelId = Channels.DefaultReliable)
+            where T : struct, NetworkMessage {
             if (logger.LogEnabled())
                 logger.Log("Server.SendToReady msgType:" + typeof(T));
 
@@ -362,7 +358,8 @@ namespace Mirror {
         /// <param name="identity">identity of the object</param>
         /// <param name="msg">Message</param>
         /// <param name="channelId">Transport channel to use</param>
-        public static void SendToReady<T>(NetworkIdentity identity, T msg, int channelId) where T : NetworkMessage {
+        public static void SendToReady<T>(NetworkIdentity identity, T msg, int channelId)
+            where T : struct, NetworkMessage {
             SendToReady(identity, msg, true, channelId);
         }
 
@@ -421,7 +418,7 @@ namespace Mirror {
 
             // Check for dead clients but exclude the host client because it
             // doesn't ping itself and therefore may appear inactive.
-            CheckForInavtiveConnections();
+            CheckForInactiveConnections();
 
             // update all server objects
             foreach (KeyValuePair<uint, NetworkIdentity> kvp in NetworkIdentity.spawned) {
@@ -436,7 +433,7 @@ namespace Mirror {
             }
         }
 
-        static void CheckForInavtiveConnections() {
+        static void CheckForInactiveConnections() {
             if (!disconnectInactiveConnections)
                 return;
 
@@ -448,13 +445,22 @@ namespace Mirror {
             }
         }
 
+        static void AddTransportHandlers() {
+            Transport.activeTransport.OnServerConnected = OnConnected;
+            Transport.activeTransport.OnServerDataReceived = OnDataReceived;
+            Transport.activeTransport.OnServerDisconnected = OnDisconnected;
+            Transport.activeTransport.OnServerError = OnError;
+        }
+
         static void OnConnected(int connectionId) {
             if (logger.LogEnabled())
                 logger.Log("Server accepted client:" + connectionId);
 
-            // connectionId needs to be > 0 because 0 is reserved for local player
-            if (connectionId <= 0) {
-                logger.LogError("Server.HandleConnect: invalid connectionId: " + connectionId + " . Needs to be >0, because 0 is reserved for local player.");
+            // connectionId needs to be != 0 because 0 is reserved for local player
+            // note that some transports like kcp generate connectionId by
+            // hashing which can be < 0 as well, so we need to allow < 0!
+            if (connectionId == 0) {
+                logger.LogError("Server.HandleConnect: invalid connectionId: " + connectionId + " . Needs to be != 0, because 0 is reserved for local player.");
                 Transport.activeTransport.ServerDisconnect(connectionId);
                 return;
             }
@@ -533,12 +539,13 @@ namespace Mirror {
         /// <typeparam name="T">Message type</typeparam>
         /// <param name="handler">Function handler which will be invoked when this message type is received.</param>
         /// <param name="requireAuthentication">True if the message requires an authenticated connection</param>
-        public static void RegisterHandler<T>(Action<NetworkConnection, T> handler, bool requireAuthentication = true) where T : NetworkMessage {
+        public static void RegisterHandler<T>(Action<NetworkConnection, T> handler, bool requireAuthentication = true)
+            where T : struct, NetworkMessage {
             int msgType = MessagePacker.GetId<T>();
             if (handlers.ContainsKey(msgType)) {
                 logger.LogWarning($"NetworkServer.RegisterHandler replacing handler for {typeof(T).FullName}, id={msgType}. If replacement is intentional, use ReplaceHandler instead to avoid this warning.");
             }
-            handlers[msgType] = MessagePacker.MessageHandler(handler, requireAuthentication);
+            handlers[msgType] = MessagePacker.WrapHandler(handler, requireAuthentication);
         }
 
         /// <summary>
@@ -548,7 +555,8 @@ namespace Mirror {
         /// <typeparam name="T">Message type</typeparam>
         /// <param name="handler">Function handler which will be invoked when this message type is received.</param>
         /// <param name="requireAuthentication">True if the message requires an authenticated connection</param>
-        public static void RegisterHandler<T>(Action<T> handler, bool requireAuthentication = true) where T : NetworkMessage {
+        public static void RegisterHandler<T>(Action<T> handler, bool requireAuthentication = true)
+            where T : struct, NetworkMessage {
             RegisterHandler<T>((_, value) => { handler(value); }, requireAuthentication);
         }
 
@@ -559,9 +567,10 @@ namespace Mirror {
         /// <typeparam name="T">Message type</typeparam>
         /// <param name="handler">Function handler which will be invoked when this message type is received.</param>
         /// <param name="requireAuthentication">True if the message requires an authenticated connection</param>
-        public static void ReplaceHandler<T>(Action<NetworkConnection, T> handler, bool requireAuthentication = true) where T : NetworkMessage {
+        public static void ReplaceHandler<T>(Action<NetworkConnection, T> handler, bool requireAuthentication = true)
+            where T : struct, NetworkMessage {
             int msgType = MessagePacker.GetId<T>();
-            handlers[msgType] = MessagePacker.MessageHandler(handler, requireAuthentication);
+            handlers[msgType] = MessagePacker.WrapHandler(handler, requireAuthentication);
         }
 
         /// <summary>
@@ -571,7 +580,8 @@ namespace Mirror {
         /// <typeparam name="T">Message type</typeparam>
         /// <param name="handler">Function handler which will be invoked when this message type is received.</param>
         /// <param name="requireAuthentication">True if the message requires an authenticated connection</param>
-        public static void ReplaceHandler<T>(Action<T> handler, bool requireAuthentication = true) where T : NetworkMessage {
+        public static void ReplaceHandler<T>(Action<T> handler, bool requireAuthentication = true)
+            where T : struct, NetworkMessage {
             ReplaceHandler<T>((_, value) => { handler(value); }, requireAuthentication);
         }
 
@@ -579,7 +589,8 @@ namespace Mirror {
         /// Unregisters a handler for a particular message type.
         /// </summary>
         /// <typeparam name="T">Message type</typeparam>
-        public static void UnregisterHandler<T>() where T : NetworkMessage {
+        public static void UnregisterHandler<T>()
+            where T : struct, NetworkMessage {
             int msgType = MessagePacker.GetId<T>();
             handlers.Remove(msgType);
         }
@@ -597,7 +608,8 @@ namespace Mirror {
         /// <typeparam name="T">Message type</typeparam>
         /// <param name="identity"></param>
         /// <param name="msg"></param>
-        public static void SendToClientOfPlayer<T>(NetworkIdentity identity, T msg, int channelId = Channels.DefaultReliable) where T : NetworkMessage {
+        public static void SendToClientOfPlayer<T>(NetworkIdentity identity, T msg, int channelId = Channels.DefaultReliable)
+            where T : struct, NetworkMessage {
             if (identity != null) {
                 identity.connectionToClient.Send(msg, channelId);
             } else {

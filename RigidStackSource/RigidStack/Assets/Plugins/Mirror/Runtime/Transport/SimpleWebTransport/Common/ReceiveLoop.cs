@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using UnityEngine.Profiling;
 
 namespace Mirror.SimpleWeb {
     internal static class ReceiveLoop {
@@ -34,6 +35,8 @@ namespace Mirror.SimpleWeb {
         public static void Loop(Config config) {
             (Connection conn, int maxMessageSize, bool expectMask, ConcurrentQueue<Message> queue, BufferPool _) = config;
 
+            Profiler.BeginThreadProfiling("SimpleWeb", $"ReceiveLoop {conn.connId}");
+
             byte[] readBuffer = new byte[Constants.HeaderSize + (expectMask ? Constants.MaskSize : 0) + maxMessageSize];
             try {
                 try {
@@ -50,9 +53,8 @@ namespace Mirror.SimpleWeb {
                     throw;
                 }
             } catch (ThreadInterruptedException e) { Log.InfoException(e); } catch (ThreadAbortException e) { Log.InfoException(e); } catch (ObjectDisposedException e) { Log.InfoException(e); } catch (ReadHelperException e) {
-                // this could happen if client sends bad message
+                // log as info only
                 Log.InfoException(e);
-                queue.Enqueue(new Message(conn.connId, e));
             } catch (SocketException e) {
                 // this could happen if wss client closes stream
                 Log.Warn($"ReceiveLoop SocketException\n{e.Message}", false);
@@ -68,6 +70,8 @@ namespace Mirror.SimpleWeb {
                 Log.Exception(e);
                 queue.Enqueue(new Message(conn.connId, e));
             } finally {
+                Profiler.EndThreadProfiling();
+
                 conn.Dispose();
             }
         }
