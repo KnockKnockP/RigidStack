@@ -14,7 +14,7 @@ public class inputManager : MonoBehaviour {
     */
 
     private static bool isDebugBuild;
-    [SerializeField] private pauseScript _pauseScript = null;
+    [SerializeField] private endMenuManager _endMenuManager = null;
     [SerializeField] private heightScript _heightScript = null;
     [SerializeField] private Button confirmButton = null;
     [SerializeField] private GameObject debugPanel = null;
@@ -65,10 +65,10 @@ public class inputManager : MonoBehaviour {
             }
         }
         if (Input.GetKeyDown(KeyCode.Escape) == true) {
-            if (dragAndDropScript._dragAndDropScript.placedGameObject != null) {
+            if (dragAndDropScript._dragAndDropScript?.placedGameObject != null) {
                 dragAndDropScript._dragAndDropScript.cancelPlacingObject();
             } else {
-                _pauseScript.pauseOrResume();
+                _endMenuManager.pauseOrResume();
             }
         }
         return;

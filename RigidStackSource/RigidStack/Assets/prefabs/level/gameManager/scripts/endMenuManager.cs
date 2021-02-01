@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class endMenuManager : NetworkBehaviour {
+    private const string _resume = "Resume.", _explore = "Explore.";
+
     [Header("Variables for slowing down time.")]
     private bool shouldSlowDownTime;
     [NonSerialized] public bool shouldMoveTheCamera;
@@ -14,15 +16,22 @@ public class endMenuManager : NetworkBehaviour {
     [Header("Variables for the end menu."), SerializeField] private Text endMenuScoreText = null;
     [SerializeField] private objectiveScript _objectiveScript = null;
     [SerializeField] private heightScript _heightScript = null;
+    [SerializeField] private Text resumeButtonText = null, gameOverText = null;
+    [SerializeField] private Button kickButton = null;
     [SerializeField] private GameObject endMenu = null;
 
     [Header("Variables for gameplay panels.")]
     [SerializeField] private GameObject dock = null, objectEditingPanel = null;
 
+    private bool isPaused;
     public static bool isGameEnded;
 
     private bool isObjectUndimmed;
     [NonSerialized] public List<objectInformation> objectInformations = new List<objectInformation>();
+
+    private void Awake() {
+        kickButton.gameObject.SetActive(NetworkManagerScript.isMultiplayerGame);
+    }
 
     private void Update() {
         if (shouldMoveTheCamera == true) {
@@ -59,6 +68,7 @@ public class endMenuManager : NetworkBehaviour {
         isGameEnded = true;
         endMenuScoreText.text = ("Game over!\r\n" +
                                  "Score : " + currentGameMaxHeight + " / " + LoadedPlayerData.playerData.maxHeight + ".");
+        resumeButtonText.text = _explore;
         enableOrDisableEndMenu(true);
         dock.SetActive(false);
         if ((dragAndDropScript._dragAndDropScript != null) && (dragAndDropScript._dragAndDropScript.placedGameObject != null)) {
@@ -71,9 +81,13 @@ public class endMenuManager : NetworkBehaviour {
     }
 
     public void explore() {
-        enableOrDisableEndMenu(false);
-        if (isObjectUndimmed == false) {
-            undimObjects();
+        if (resumeButtonText.text == _resume) {
+            pauseOrResume();
+        } else {
+            enableOrDisableEndMenu(false);
+            if (isObjectUndimmed == false) {
+                undimObjects();
+            }
         }
         return;
     }
@@ -105,6 +119,72 @@ public class endMenuManager : NetworkBehaviour {
         return;
     }
 
+    public void pauseOrResume() {
+        if (isGameEnded == false) {
+            if (NetworkManagerScript.isSingleplayerGame == true) {
+                Time.timeScale = Convert.ToInt32(isPaused);
+            }
+            isPaused = !isPaused;
+            resumeButtonText.text = _resume;
+            gameOverText.text = "Paused.";
+            endMenu.SetActive(isPaused);
+        } else {
+            resumeButtonText.text = _explore;
+            toggleEndMenu();
+        }
+        return;
+    }
+
+    public void exit() {
+        FindObjectOfType<savingScript>().save();
+        if (NetworkManager.singleton != null) {
+            clientRPCStopConnection(false, false, SceneNames.MainMenu, "Server exited the game.");
+        }
+        Application.Quit();
+        Debug.Log("Exited the game.");
+        return;
+    }
+
+    [ClientRpc]
+    private void clientRPCStopConnection(bool destroy, bool switchServer, string sceneName, string disconnectedReason) {
+        stopConnection(destroy, switchServer, sceneName, disconnectedReason);
+        return;
+    }
+
+    private void stopConnection(bool destroy, bool switchServer, string sceneName = null, string disconnectReason = null) {
+        if (NetworkManager.singleton.isNetworkActive == true) {
+            if (isServer == true) {
+                NetworkManager.singleton.StopHost();
+            } else if (isClientOnly == true) {
+                NetworkManager.singleton.StopClient();
+            }
+            if (destroy == true) {
+                Destroy(NetworkManager.singleton.gameObject);
+            }
+        }
+        if (sceneName != null) {
+            if ((isServer == true) && (switchServer == true)) {
+                loadSceneScript.loadScene(sceneName);
+            } else {
+                loadSceneScript.loadScene(sceneName);
+            }
+        }
+        if ((isClientOnly == true) && (disconnectReason != null)) {
+            //TODO : Display disconnected reason.
+        }
+        return;
+    }
+
+    public void toMainMenu() {
+        FindObjectOfType<savingScript>().save();
+        if (isServer == true) {
+            clientRPCStopConnection(true, true, SceneNames.MainMenu, "Server stopped the multiplayer lobby.");
+        } else {
+            stopConnection(true, true, SceneNames.MainMenu, null);
+        }
+        return;
+    }
+
     #region Restarting the level.
     public void restart() {
         if (isServer == true) {
@@ -125,4 +205,9 @@ public class endMenuManager : NetworkBehaviour {
         return;
     }
     #endregion
+
+    public void kick() {
+        pauseOrResume();
+        return;
+    }
 }

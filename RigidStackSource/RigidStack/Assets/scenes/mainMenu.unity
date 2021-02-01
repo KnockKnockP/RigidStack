@@ -4630,22 +4630,6 @@ MonoBehaviour:
   updateText: {fileID: 942776432}
   noticeText: {fileID: 304239060}
   inGameConsole: {fileID: 241954568}
---- !u!114 &1067815828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1067815825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d2c19cfb6292e846bc246aab5a38b6f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  pauseMenuPanel: {fileID: 0}
-  _endMenuManager: {fileID: 0}
 --- !u!114 &1067815829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7202,7 +7186,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1067815828}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 01685b7b316987144acadd586445b8ab, type: 3}
 --- !u!224 &1557658151 stripped
