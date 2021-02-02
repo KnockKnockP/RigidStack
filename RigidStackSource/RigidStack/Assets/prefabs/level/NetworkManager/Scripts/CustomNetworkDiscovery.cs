@@ -56,8 +56,8 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
         return new DiscoveryRequest();
     }
 
-    protected override void ProcessResponse(DiscoveryResponse discoveryRequest, IPEndPoint __IPEndPoint) {
-        discoveryRequest._IPEndPoint = __IPEndPoint;
+    protected override void ProcessResponse(DiscoveryResponse discoveryRequest, IPEndPoint _IPEndPoint) {
+        discoveryRequest._IPEndPoint = _IPEndPoint;
         UriBuilder realUri = new UriBuilder(discoveryRequest.uri) {
             Host = discoveryRequest._IPEndPoint.Address.ToString()
         };
