@@ -14,6 +14,7 @@ public class sharedMonobehaviour : MonoBehaviour {
         }
         leftSide = mainCamera.ScreenToWorldPoint(new Vector3(0f, 0f, 10f)).x;
         orthographicSize = mainCamera.orthographicSize;
+        FindObjectOfType<dragAndDropScript>()._Start();
         return;
     }
 }

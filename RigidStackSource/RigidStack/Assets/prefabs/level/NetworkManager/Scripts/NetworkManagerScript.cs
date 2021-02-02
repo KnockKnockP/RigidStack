@@ -1,5 +1,6 @@
 ﻿using kcp2k;
 using Mirror;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class NetworkManagerScript : MonoBehaviour {
     private static bool hasAddedAnEvent = false;
     public static bool isSingleplayerGame = false, isMultiplayerGame = false;
+    public static List<string> playerNames = new List<string>();
 
     //A variable for finding the available port.
     private static readonly IPEndPoint defaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, 0);

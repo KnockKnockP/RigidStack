@@ -14,7 +14,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [NonSerialized, SyncVar(hook = nameof(syncPlayerCount))] public int playerCount;
     private string disconnectedReason = "No reason.";
     [NonSerialized] public string lobbyName = "Unnamed.";
-    private List<string> playerNames = new List<string>();
     private readonly List<DiscoveryResponse> discoveredServers = new List<DiscoveryResponse>();
     private KcpTransport kcpTransport;
     private NetworkManager networkManager;
@@ -31,6 +30,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     [SerializeField] private GameObject joinMultiplayerLobbyPanel = null, lobbyPanel = null;
 
     private void Start() {
+        NetworkManagerScript.playerNames.Clear();
         StartCoroutine(waitForSingleton());
         return;
     }
@@ -106,7 +106,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     private void commandUpdatePlayerList(string playerName) {
         //Removing all null names. (Player names that have disconnected.).
         List<string> temp = new List<string>();
-        foreach (string name in playerNames) {
+        foreach (string name in NetworkManagerScript.playerNames) {
             if (name != null) {
                 temp.Add(name);
             }
@@ -115,8 +115,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         if (playerName != null) {
             temp.Add(playerName);
         }
-        playerNames.Clear();
-        playerNames = temp;
+        NetworkManagerScript.playerNames.Clear();
+        NetworkManagerScript.playerNames = temp;
         //List to put it on the dropdown menu. (Excluding the host.).
         List<string> temp2 = new List<string>();
         foreach (string name in temp) {
@@ -172,7 +172,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         bool enableOrDisable = false;
         if (isServer == true) {
             enableOrDisable = true;
-            playerNames.Add(LoadedPlayerData.playerData.name);
+            NetworkManagerScript.playerNames.Add(LoadedPlayerData.playerData.name);
         }
         startButton.gameObject.SetActive(enableOrDisable);
         kickButton.gameObject.SetActive(enableOrDisable);
@@ -200,7 +200,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [Command(ignoreAuthority = true)]
     public void commandNameCheck(string playerName, NetworkIdentity networkIdentity) {
-        foreach (string name in playerNames) {
+        foreach (string name in NetworkManagerScript.playerNames) {
             if (playerName == name) {
                 targetRPCDisconnect(networkIdentity.connectionToClient, "Duplicate name found in the lobby.");
                 return;
@@ -238,9 +238,9 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [Command(ignoreAuthority = true)]
     private void commandRemoveName(string name) {
-        for (int i = 0; i < playerNames.Count; i++) {
-            if (name == playerNames[i]) {
-                playerNames[i] = null;
+        for (int i = 0; i < NetworkManagerScript.playerNames.Count; i++) {
+            if (name == NetworkManagerScript.playerNames[i]) {
+                NetworkManagerScript.playerNames[i] = null;
                 break;
             }
         }
@@ -305,7 +305,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     }
 
     [ClientRpc]
-    private void getKicked(string playerNameToKick) {
+    public void getKicked(string playerNameToKick) {
         if (LoadedPlayerData.playerData.name == playerNameToKick) {
             disconnectedReason = "Kicked by the host.";
             exitMultiplayerLobby();

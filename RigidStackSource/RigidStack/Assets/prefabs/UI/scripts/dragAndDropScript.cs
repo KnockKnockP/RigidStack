@@ -33,7 +33,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
         return;
     }
 
-    private void Start() {
+    public void _Start() {
         disableObjectEditingPanel();
         return;
     }

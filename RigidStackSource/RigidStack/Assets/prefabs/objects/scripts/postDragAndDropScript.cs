@@ -17,7 +17,7 @@ public class postDragAndDropScript : NetworkBehaviour {
 
     #region Dragging the placed object.
     private void OnMouseDown() {
-        offset = CalculateOffset(GetMouseToWorldPoint(), thisTransform.position);
+        offset = WindowScript.CalculateOffset(GetMouseToWorldPoint(), thisTransform.position);
         return;
     }
 
@@ -37,10 +37,5 @@ public class postDragAndDropScript : NetworkBehaviour {
     private static Vector3 GetMouseToWorldPoint() {
         Vector3 mouseInput = Input.mousePosition;
         return sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(mouseInput.x, mouseInput.y, 10f));
-    }
-
-    private static Vector2 CalculateOffset(Vector3 mousePosition, Vector3 gameObjectPosition) {
-        Vector2 offset = new Vector2((mousePosition.x - gameObjectPosition.x), (mousePosition.y - gameObjectPosition.y));
-        return offset;
     }
 }
