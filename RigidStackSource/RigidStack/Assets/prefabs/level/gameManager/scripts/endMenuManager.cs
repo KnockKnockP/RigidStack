@@ -30,7 +30,7 @@ public class endMenuManager : NetworkBehaviour {
     [NonSerialized] public List<objectInformation> objectInformations = new List<objectInformation>();
 
     private void Awake() {
-        kickButton.gameObject.SetActive(NetworkManagerScript.isMultiplayerGame);
+        kickButton?.gameObject.SetActive(NetworkManagerScript.isMultiplayerGame || Debug.isDebugBuild);
     }
 
     private void Update() {
