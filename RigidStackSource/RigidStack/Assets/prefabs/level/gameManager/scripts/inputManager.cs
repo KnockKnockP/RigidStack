@@ -75,7 +75,7 @@ public class inputManager : MonoBehaviour {
     }
 
     private void manageOthers() {
-        if ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true)) {
+        if ((LoadedPlayerData.playerData.isManualCheckingEnabled == true) && ((Input.GetKeyDown(KeyCode.LeftControl) == true) || (Input.GetKeyDown(KeyCode.RightControl) == true))) {
             _heightScript.manuallyCheckHeight();
         }
         if ((isDebugBuild == true) && (Input.GetKeyDown(KeyCode.Menu) == true)) {
