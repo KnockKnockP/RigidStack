@@ -23,4 +23,9 @@ public class WindowScript : MonoBehaviour, IPointerDownHandler, IDragHandler {
         Vector2 offset = new Vector2((mousePosition.x - gameObjectPosition.x), (mousePosition.y - gameObjectPosition.y));
         return offset;
     }
+
+    public static Vector3 GetMouseToWorldPoint() {
+        Vector3 mouseInput = Input.mousePosition;
+        return sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(mouseInput.x, mouseInput.y, 10f));
+    }
 }

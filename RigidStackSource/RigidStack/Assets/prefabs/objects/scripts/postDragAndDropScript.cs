@@ -17,12 +17,12 @@ public class postDragAndDropScript : NetworkBehaviour {
 
     #region Dragging the placed object.
     private void OnMouseDown() {
-        offset = WindowScript.CalculateOffset(GetMouseToWorldPoint(), thisTransform.position);
+        offset = WindowScript.CalculateOffset(WindowScript.GetMouseToWorldPoint(), thisTransform.position);
         return;
     }
 
     private void OnMouseDrag() {
-        commandDragObject(GetMouseToWorldPoint(), offset);
+        commandDragObject(WindowScript.GetMouseToWorldPoint(), offset);
         return;
     }
 
@@ -33,9 +33,4 @@ public class postDragAndDropScript : NetworkBehaviour {
         return;
     }
     #endregion
-
-    private static Vector3 GetMouseToWorldPoint() {
-        Vector3 mouseInput = Input.mousePosition;
-        return sharedMonobehaviour._sharedMonobehaviour.mainCamera.ScreenToWorldPoint(new Vector3(mouseInput.x, mouseInput.y, 10f));
-    }
 }
