@@ -12,9 +12,14 @@ public class objectInformation : NetworkBehaviour {
     protected static readonly Color32 dimmedColor = new Color32(50, 50, 50, 255);
     public delegate void DimDelegate();
     public DimDelegate dimDelegate = null;
-
     public delegate void UnDimDelegate();
     public UnDimDelegate unDimDelegate = null;
+
+    protected static readonly Color32 highlightedColor = new Color32(255, 0, 0, 255);
+    public delegate void HighlightDelegate();
+    public HighlightDelegate highlightDelegate = null;
+    public delegate void UnHighlightDelegate();
+    public UnHighlightDelegate unHighlightDelegate = null;
 
     private void OnValidate() {
 #if UNITY_EDITOR
@@ -45,6 +50,16 @@ public class objectInformation : NetworkBehaviour {
     }
 
     public virtual void UnDim() {
+        spriteRenderer.color = Color.white;
+        return;
+    }
+
+    public virtual void Highlight() {
+        spriteRenderer.color = highlightedColor;
+        return;
+    }
+
+    public virtual void UnHighlight() {
         spriteRenderer.color = Color.white;
         return;
     }

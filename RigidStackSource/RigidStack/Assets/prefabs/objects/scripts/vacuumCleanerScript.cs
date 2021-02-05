@@ -20,6 +20,8 @@ public class vacuumCleanerScript : objectInformation {
         _isServer = isServer;
         dimDelegate = Dim;
         unDimDelegate = UnDim;
+        highlightDelegate = Highlight;
+        unHighlightDelegate = UnHighlight;
         return;
     }
 
@@ -86,6 +88,18 @@ public class vacuumCleanerScript : objectInformation {
 
     public override void UnDim() {
         base.UnDim();
+        containerSpriteRenderer.color = originalContainerColor;
+        return;
+    }
+
+    public override void Highlight() {
+        base.Highlight();
+        containerSpriteRenderer.color = highlightedColor;
+        return;
+    }
+
+    public override void UnHighlight() {
+        base.UnHighlight();
         containerSpriteRenderer.color = originalContainerColor;
         return;
     }

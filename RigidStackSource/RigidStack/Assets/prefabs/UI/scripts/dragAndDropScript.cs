@@ -16,6 +16,16 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     //The object the player can place using this drag and drop image.
     [NonSerialized] public GameObject objectToPlace, placedGameObject;
 
+    [NonSerialized] public readonly PlacedObjectAndPlacerSyncList allPlacedObjects = new PlacedObjectAndPlacerSyncList();
+
+    public struct PlacedObjectAndPlacer {
+        public string playerName;
+        public objectInformation _objectInformation;
+    }
+
+    public class PlacedObjectAndPlacerSyncList : SyncList<PlacedObjectAndPlacer> {
+    }
+
     private void OnValidate() {
 #if UNITY_EDITOR
         if (_dragAndDropImageScript == null) {
@@ -128,12 +138,18 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     #region Placing the object.
     public void placeObject() {
         disableObjectEditingPanel();
-        commandPlaceObject(placedGameObjectNetId);
+        commandPlaceObject(placedGameObjectNetId, LoadedPlayerData.playerData.name);
         return;
     }
 
     [Command(ignoreAuthority = true)]
-    private void commandPlaceObject(uint id) {
+    private void commandPlaceObject(uint id, string placerName) {
+        PlacedObjectAndPlacer placedObjectAndPlacer = new PlacedObjectAndPlacer {
+            playerName = placerName,
+            _objectInformation = NetworkIdentity.spawned[id].GetComponent<objectInformation>()
+        };
+        allPlacedObjects.Add(placedObjectAndPlacer);
+        Debug.LogWarning(LoadedPlayerData.playerData.name);
         clientRPCPlaceObject(id);
         return;
     }

@@ -19,6 +19,9 @@ public class televisionScript : objectInformation {
 
     private void Awake() {
         dimDelegate = Dim;
+        unDimDelegate = UnDim;
+        highlightDelegate = Highlight;
+        unHighlightDelegate = UnHighlight;
         return;
     }
 
@@ -41,5 +44,17 @@ public class televisionScript : objectInformation {
         base.UnDim();
         videoPlayerSpriteRenderer.color = Color.white;
         videoPlayer.Play();
+    }
+
+    public override void Highlight() {
+        base.Highlight();
+        videoPlayerSpriteRenderer.color = highlightedColor;
+        return;
+    }
+
+    public override void UnHighlight() {
+        base.UnHighlight();
+        videoPlayerSpriteRenderer.color = Color.white;
+        return;
     }
 }
