@@ -52,23 +52,29 @@ public class multiplayerLobbyScript : NetworkBehaviour {
         kcpTransport.Port = NetworkManagerScript.getAvailablePort();
         lobbyName = (LoadedPlayerData.playerData.name + "'s lobby.");
         networkManager.maxConnections = 5;
-        networkManager.StartHost();
-        StartCoroutine(nameof(checkPort));
+        try {
+            networkManager.StartHost();
+            StartCoroutine(nameof(checkPort));
+        } catch (Exception exception) {
+            Debug.LogError(exception.Message);
+            customNetworkDiscovery.StopDiscovery();
+            networkManager.StopHost();
+            //TODO : Show error shits.
+        }
         return;
     }
 
     private IEnumerator checkPort() {
         const int timeOut = 5;
         for (int i = timeOut; i >= 0; i--) {
-            selectMultiplayerText.text = ("Please wait for " + i + ((i == 1) ? " second." : " seconds."));
+            selectMultiplayerText.text = ("Please wait for " + i + ((i == 1) ? " second" : " seconds") + ".");
             yield return new WaitForSeconds(1);
         }
         if (kcpTransport.ServerActive() == false) {
-            Debug.LogWarning("Something went wrong with creation of the multiplayer lobby.\r\n" +
-                             "Retrying.");
+            Debug.LogWarning("Something went wrong with creation of the multiplayer lobby.\r\n");
+            //TODO : Show error shits.
             customNetworkDiscovery.StopDiscovery();
             networkManager.StopHost();
-            createLobby();
         } else {
             selectMultiplayerText.text = "";
             lobbyPanel.SetActive(true);
