@@ -137,7 +137,7 @@ public class endMenuManager : NetworkBehaviour {
 
     public void exit() {
         FindObjectOfType<savingScript>().save();
-        if (NetworkManager.singleton != null) {
+        if ((NetworkManagerScript.isMultiplayerGame == true) && (NetworkManager.singleton != null) && (NetworkManager.singleton.isNetworkActive == true)) {
             clientRPCStopConnection(false, false, SceneNames.MainMenu, "Server exited the game.");
         }
         Application.Quit();
