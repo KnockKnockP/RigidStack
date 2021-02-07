@@ -4556,7 +4556,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   selectMultiplayerText: {fileID: 151158389}
-  multiplayerLobbyListScrollViewViewport: {fileID: 1833687547}
+  multiplayerLobbyListScrollViewViewport: {fileID: 1833687548}
   multiplayerLobbyListTemplate: {fileID: 8057980312650228466, guid: fb187b2721f1b8e4e8e96d36d827412c,
     type: 3}
   statusText: {fileID: 1543721913}
@@ -8149,10 +8149,10 @@ RectTransform:
   m_Father: {fileID: 995502249}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0022125, y: -40}
-  m_SizeDelta: {x: 1157.7, y: 1000}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0.0021972656, y: -40}
+  m_SizeDelta: {x: -10.300049, y: -80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1921144800
 MonoBehaviour:

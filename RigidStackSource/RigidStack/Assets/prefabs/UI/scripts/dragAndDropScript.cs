@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,15 +16,11 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     [SerializeField] private GameObject dragAndDropImageGameobject = null;
     //The object the player can place using this drag and drop image.
     [NonSerialized] public GameObject objectToPlace, placedGameObject;
-
-    [NonSerialized] public readonly PlacedObjectAndPlacerSyncList allPlacedObjects = new PlacedObjectAndPlacerSyncList();
+    public static readonly List<PlacedObjectAndPlacer> allPlacedObjects = new List<PlacedObjectAndPlacer>();
 
     public struct PlacedObjectAndPlacer {
         public string playerName;
         public objectInformation _objectInformation;
-    }
-
-    public class PlacedObjectAndPlacerSyncList : SyncList<PlacedObjectAndPlacer> {
     }
 
     private void OnValidate() {
@@ -44,6 +41,7 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
     }
 
     public void _Start() {
+        allPlacedObjects.Clear();
         disableObjectEditingPanel();
         return;
     }
@@ -149,7 +147,6 @@ public class dragAndDropScript : NetworkBehaviour, IPointerDownHandler, IDragHan
             _objectInformation = NetworkIdentity.spawned[id].GetComponent<objectInformation>()
         };
         allPlacedObjects.Add(placedObjectAndPlacer);
-        Debug.LogWarning(LoadedPlayerData.playerData.name);
         clientRPCPlaceObject(id);
         return;
     }

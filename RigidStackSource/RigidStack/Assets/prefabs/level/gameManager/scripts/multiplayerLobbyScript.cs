@@ -21,7 +21,8 @@ public class multiplayerLobbyScript : NetworkBehaviour {
 
     [Header("Select multiplayer panel."), SerializeField] private Text selectMultiplayerText = null;
 
-    [Header("Join multiplayer lobby panel."), SerializeField] private GameObject multiplayerLobbyListScrollViewViewport = null, multiplayerLobbyListTemplate = null;
+    [Header("Join multiplayer lobby panel."), SerializeField] private Transform multiplayerLobbyListScrollViewViewport = null;
+    [SerializeField] private GameObject multiplayerLobbyListTemplate = null;
 
     [Header("Multiplayer lobby."), SerializeField] private Text statusText = null;
     [SerializeField] private Button startButton = null, kickButton = null;
@@ -144,7 +145,7 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #region Fetching servers.
     public void addServerResponce(DiscoveryResponse discoveryResponse) {
         discoveredServers.Add(discoveryResponse);
-        MultiplayerLobbyListScript multiplayerLobbyListScript = Instantiate(multiplayerLobbyListTemplate, multiplayerLobbyListScrollViewViewport.transform).GetComponent<MultiplayerLobbyListScript>();
+        MultiplayerLobbyListScript multiplayerLobbyListScript = Instantiate(multiplayerLobbyListTemplate, multiplayerLobbyListScrollViewViewport).GetComponent<MultiplayerLobbyListScript>();
         multiplayerLobbyListScript.index = (discoveredServers.Count - 1);
         multiplayerLobbyListScript.multiplayerLobbyNameText.text = discoveryResponse.name;
         multiplayerLobbyListScript.multiplayerLobbyPlayerCountText.text = (discoveryResponse.currentPlayerCount + " / " + discoveryResponse.maxPlayerCount + ".");

@@ -35,12 +35,9 @@ public class PlayerKickTemplateScript : NetworkBehaviour {
         selectedPlayer = playerName;
 
         highlightedObjects.Clear();
-        Debug.LogWarning("Here 1.");
-        foreach (dragAndDropScript.PlacedObjectAndPlacer placedObjectAndPlacer in FindObjectOfType<dragAndDropScript>().allPlacedObjects) {
+        foreach (dragAndDropScript.PlacedObjectAndPlacer placedObjectAndPlacer in dragAndDropScript.allPlacedObjects) {
             if (placedObjectAndPlacer.playerName == playerName) {
-                Debug.LogWarning("Here 2.");
                 if (placedObjectAndPlacer._objectInformation.highlightDelegate == null) {
-                    Debug.LogWarning("Here 3.");
                     placedObjectAndPlacer._objectInformation.highlightDelegate = placedObjectAndPlacer._objectInformation.Highlight;
                 }
                 placedObjectAndPlacer._objectInformation.highlightDelegate();
