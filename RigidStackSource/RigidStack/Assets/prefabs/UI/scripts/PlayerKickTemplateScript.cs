@@ -18,7 +18,22 @@ public class PlayerKickTemplateScript : NetworkBehaviour {
     private readonly List<dragAndDropScript.PlacedObjectAndPlacer> highlightedObjects = new List<dragAndDropScript.PlacedObjectAndPlacer>();
     [NonSerialized] public GameObject parent;
 
+    private static string selectedPlayer;
+    [SerializeField] private GameObject selectButton = null, yesButton = null, noButton = null;
+
+    private void Awake() {
+        KickWindowScript.playerKickTemplateScripts.Add(this);
+        return;
+    }
+
     public void HighlightPlacedObjects() {
+        foreach (PlayerKickTemplateScript playerKickTemplateScript in KickWindowScript.playerKickTemplateScripts) {
+            if (playerKickTemplateScript.playerName == selectedPlayer) {
+                playerKickTemplateScript.Cancel();
+            }
+        }
+        selectedPlayer = playerName;
+
         highlightedObjects.Clear();
         Debug.LogWarning("Here 1.");
         foreach (dragAndDropScript.PlacedObjectAndPlacer placedObjectAndPlacer in FindObjectOfType<dragAndDropScript>().allPlacedObjects) {
@@ -35,7 +50,8 @@ public class PlayerKickTemplateScript : NetworkBehaviour {
         return;
     }
 
-    public void UnHighlightPlacedObjects() {
+    private void UnHighlightPlacedObjects() {
+        selectedPlayer = null;
         foreach (dragAndDropScript.PlacedObjectAndPlacer placedObjectAndPlacer in highlightedObjects) {
             if (placedObjectAndPlacer.playerName == playerName) {
                 if (placedObjectAndPlacer._objectInformation.unHighlightDelegate == null) {
@@ -45,6 +61,14 @@ public class PlayerKickTemplateScript : NetworkBehaviour {
             }
         }
         highlightedObjects.Clear();
+        return;
+    }
+
+    public void Cancel() {
+        selectButton.SetActive(true);
+        yesButton.SetActive(false);
+        noButton.SetActive(false);
+        UnHighlightPlacedObjects();
         return;
     }
 

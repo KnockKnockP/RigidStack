@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class KickWindowScript : NetworkBehaviour {
     [SerializeField] private Transform scrollTransform = null;
+    public static readonly List<PlayerKickTemplateScript> playerKickTemplateScripts = new List<PlayerKickTemplateScript>();
     private GameObject _gameObject;
     [SerializeField] private GameObject template = null;
     private readonly List<GameObject> generatedTemplates = new List<GameObject>();
@@ -16,22 +17,12 @@ public class KickWindowScript : NetworkBehaviour {
         return;
     }
 
-    private void Start() {
-        _gameObject.SetActive(false);
-        return;
-    }
-
     private void OnEnable() {
         if (NetworkManager.singleton.isNetworkActive == false) {
             return;
         }
 
-#if UNITY_EDITOR
-        if (NetworkManagerScript.playerNames.Count == 0) {
-            NetworkManagerScript.playerNames.Add("Profile 1.");
-            NetworkManagerScript.playerNames.Add("Profile 2.");
-        }
-#endif
+        playerKickTemplateScripts.Clear();
         foreach (GameObject _template in generatedTemplates) {
             NetworkServer.Destroy(_template);
         }
@@ -47,6 +38,18 @@ public class KickWindowScript : NetworkBehaviour {
                 clone.SetActive(true);
                 generatedTemplates.Add(clone);
             }
+        }
+        return;
+    }
+
+    private void Start() {
+        _gameObject.SetActive(false);
+        return;
+    }
+
+    private void OnDisable() {
+        foreach (PlayerKickTemplateScript playerKickTemplateScript in playerKickTemplateScripts) {
+            playerKickTemplateScript.Cancel();
         }
         return;
     }
