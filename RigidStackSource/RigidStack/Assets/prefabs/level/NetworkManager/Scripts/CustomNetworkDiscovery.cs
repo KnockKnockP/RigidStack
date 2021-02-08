@@ -20,18 +20,20 @@ public class DiscoveryResponse : NetworkMessage {
 }
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse> {
-    [SerializeField] private multiplayerLobbyScript _multiplayerLobbyScript = null;
+    private multiplayerLobbyScript _multiplayerLobbyScript = null;
     [SerializeField] private KcpTransport kcpTransport = null;
 
     private void OnValidate() {
 #if UNITY_EDITOR
-        if (_multiplayerLobbyScript == null) {
-            _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
-        }
         if (kcpTransport == null) {
             kcpTransport = FindObjectOfType<KcpTransport>();
         }
 #endif
+        return;
+    }
+
+    private void Awake() {
+        _multiplayerLobbyScript = FindObjectOfType<multiplayerLobbyScript>();
         return;
     }
 

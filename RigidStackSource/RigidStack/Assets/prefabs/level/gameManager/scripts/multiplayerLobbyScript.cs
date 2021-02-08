@@ -144,10 +144,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
     #region Fetching servers.
     public void addServerResponce(DiscoveryResponse discoveryResponse) {
         discoveredServers.Add(discoveryResponse);
-        Debug.LogWarning(gameObject.name);
-        Debug.LogWarning(multiplayerLobbyListTemplate);
-        Debug.LogWarning(multiplayerLobbyListScrollViewViewport);
-        Debug.LogWarning(multiplayerLobbyListScrollViewViewport.transform);
         MultiplayerLobbyListScript multiplayerLobbyListScript = Instantiate(multiplayerLobbyListTemplate, multiplayerLobbyListScrollViewViewport.transform).GetComponent<MultiplayerLobbyListScript>();
         multiplayerLobbyListScript.index = (discoveredServers.Count - 1);
         multiplayerLobbyListScript.multiplayerLobbyNameText.text = discoveryResponse.name;
@@ -301,8 +297,6 @@ public class multiplayerLobbyScript : NetworkBehaviour {
             yield return null;
         }
         networkManager.StopHost();
-        Destroy(networkManager.gameObject);
-        loadSceneScript.loadScene(SceneNames.MainMenu);
         yield break;
     }
     #endregion
