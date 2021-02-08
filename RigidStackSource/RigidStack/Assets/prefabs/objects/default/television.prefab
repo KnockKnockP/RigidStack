@@ -298,8 +298,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  minimumAmount: 3
-  maximumAmount: 6
+  minimumAmount: 1
+  maximumAmount: 3
   spriteRenderer: {fileID: 4066143604225231544}
   _collider2D: {fileID: 8132156020442810189}
   _rigidBody2D: {fileID: 3143912039278302248}

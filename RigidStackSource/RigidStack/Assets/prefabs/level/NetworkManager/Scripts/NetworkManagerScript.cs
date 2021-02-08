@@ -57,6 +57,8 @@ public class NetworkManagerScript : MonoBehaviour {
     public static ushort getAvailablePort() {
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         socket.Bind(defaultLoopbackEndpoint);
-        return (ushort)(((IPEndPoint)socket.LocalEndPoint).Port);
+        ushort port = (ushort)(((IPEndPoint)(socket.LocalEndPoint)).Port);
+        socket.Close();
+        return port;
     }
 }
